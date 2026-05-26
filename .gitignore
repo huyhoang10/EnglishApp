@@ -1,0 +1,19 @@
+# Android Studio và IntelliJ
+*.iml
+.gradle
+/.idea
+!/.idea/codeStyles/
+
+# Các file build và sản phẩm đầu ra
+/build
+/captures
+.externalNativeBuild
+.cxx
+
+# File cấu hình cá nhân và bảo mật (QUAN TRỌNG)
+local.properties
+
+
+# Hệ điều hành
+.DS_Store
+Thumbs.db
