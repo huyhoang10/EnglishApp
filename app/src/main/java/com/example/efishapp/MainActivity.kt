@@ -3,45 +3,45 @@ package com.example.efishapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.efishapp.ui.theme.EfishAppTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.example.efishapp.Core.designsystem.AppTheme
+import com.example.efishapp.feature.Auth.Data.Repository.AuthRepositoryImpl
+import com.example.efishapp.feature.Auth.Domain.UseCase.ForgotPasswordUseCase
+import com.example.efishapp.feature.Auth.Domain.UseCase.LoginUseCase
+import com.example.efishapp.feature.Auth.Domain.UseCase.LoginWithGoogleUseCase
+import com.example.efishapp.feature.Auth.Domain.UseCase.RegisterUseCase
+import com.example.efishapp.feature.Auth.Presentation.AuthNavGraph
+import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // 1. Khởi tạo tầng Data (Firebase SDK)
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val authRepository = AuthRepositoryImpl(firebaseAuth)
+
+        // 2. Khởi tạo tầng Domain (Các UseCases)
+        val loginUseCase = LoginUseCase(authRepository)
+        val registerUseCase = RegisterUseCase(authRepository)
+        val forgotPasswordUseCase = ForgotPasswordUseCase(authRepository)
+        val loginWithGoogleUseCase = LoginWithGoogleUseCase(authRepository)
+
+        // 3. Khởi tạo tầng Presentation (ViewModel)
+        // (Lưu ý: Cách khởi tạo trực tiếp này dùng để chạy ngay, thực tế sau này bạn nên dùng DI như Hilt/Koin)
+        val authViewModel = AuthViewModel(
+            loginUseCase = loginUseCase,
+            registerUseCase = registerUseCase,
+            forgotPasswordUseCase = forgotPasswordUseCase,
+            loginWithGoogleUseCase = loginWithGoogleUseCase
+        )
+
         setContent {
-            EfishAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+            // 4. Áp dụng Theme dùng chung từ nhánh <core>
+            AppTheme {
+                // 5. Kích hoạt luồng điều hướng màn hình
+                AuthNavGraph(viewModel = authViewModel)
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    EfishAppTheme {
-        Greeting("Android")
     }
 }
