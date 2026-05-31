@@ -12,6 +12,7 @@ import com.example.efishapp.feature.Auth.Domain.UseCase.LoginWithGoogleUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.RegisterUseCase
 import com.example.efishapp.feature.Auth.Presentation.AuthNavGraph
 import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
+import com.example.efishapp.navigation.EfishNavGraph
 import com.example.efishapp.ui.theme.EfishAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -47,7 +48,7 @@ class MainActivity : ComponentActivity() {
 //                        vocabularies = vocabularies
 //                    )
 //                }
-                AuthNavGraph(viewModel = authViewModel)
+                EfishNavGraph(authViewModel = authViewModel)
             }
         }
     }
