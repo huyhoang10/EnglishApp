@@ -1,8 +1,6 @@
 package com.example.efishapp.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -27,7 +25,7 @@ fun EfishNavGraph(
                 onNavigateToRegister = {navController.navigate(AuthScreen.REGISTER)},
                 onNavigateToForgotPassword = {navController.navigate(AuthScreen.FORGOT_PASSWORD)},
                 onLoginSuccess = {navController.navigate(AuthScreen.HOME) {
-                    popUpTo(com.example.efishapp.feature.Auth.Presentation.AuthScreen.LOGIN) {
+                    popUpTo(AuthScreen.LOGIN) {
                         inclusive = true} // Xóa màn Login khỏi lịch sử
                     }
                 }
@@ -48,7 +46,7 @@ fun EfishNavGraph(
             )
         }
 
-        composable(com.example.efishapp.feature.Auth.Presentation.AuthScreen.HOME) {
+        composable(AuthScreen.HOME) {
             androidx.compose.material3.Text(text = "ĐĂNG NHẬP THÀNH CÔNG! Chào mừng vào App.")
         }
     }

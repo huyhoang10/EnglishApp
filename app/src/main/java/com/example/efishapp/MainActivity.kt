@@ -10,7 +10,6 @@ import com.example.efishapp.feature.Auth.Domain.UseCase.ForgotPasswordUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.LoginUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.LoginWithGoogleUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.RegisterUseCase
-import com.example.efishapp.feature.Auth.Presentation.AuthNavGraph
 import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
 import com.example.efishapp.navigation.EfishNavGraph
 import com.example.efishapp.ui.theme.EfishAppTheme
