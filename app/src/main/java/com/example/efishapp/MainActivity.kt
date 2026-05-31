@@ -4,75 +4,54 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.AnimationVector
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Book
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
-import com.example.efishapp.feature.flashcard.presentation.Vocabulary
+import com.google.firebase.auth.FirebaseAuth
+import com.example.efishapp.feature.Auth.Data.Repository.AuthRepositoryImpl
+import com.example.efishapp.feature.Auth.Domain.UseCase.ForgotPasswordUseCase
+import com.example.efishapp.feature.Auth.Domain.UseCase.LoginUseCase
+import com.example.efishapp.feature.Auth.Domain.UseCase.LoginWithGoogleUseCase
+import com.example.efishapp.feature.Auth.Domain.UseCase.RegisterUseCase
+import com.example.efishapp.feature.Auth.Presentation.AuthNavGraph
+import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
 import com.example.efishapp.ui.theme.EfishAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 1. Khởi tạo tầng Data (Firebase SDK)
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val authRepository = AuthRepositoryImpl(firebaseAuth)
+
+        // 2. Khởi tạo tầng Domain (Các UseCases)
+        val loginUseCase = LoginUseCase(authRepository)
+        val registerUseCase = RegisterUseCase(authRepository)
+        val forgotPasswordUseCase = ForgotPasswordUseCase(authRepository)
+        val loginWithGoogleUseCase = LoginWithGoogleUseCase(authRepository)
+
+        // 3. Khởi tạo tầng Presentation (ViewModel)
+        // (Lưu ý: Cách khởi tạo trực tiếp này dùng để chạy ngay, thực tế sau này bạn nên dùng DI như Hilt/Koin)
+        val authViewModel = AuthViewModel(
+            loginUseCase = loginUseCase,
+            registerUseCase = registerUseCase,
+            forgotPasswordUseCase = forgotPasswordUseCase,
+            loginWithGoogleUseCase = loginWithGoogleUseCase
+        )
         enableEdgeToEdge()
         setContent {
             EfishAppTheme {
-                var vocabularies by remember { mutableStateOf<List<Vocabulary>?>(null) }
-
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // 2. Bây giờ bạn có thể truyền innerPadding và vocabularys vào đây mà không bị lỗi
-                    FlashcardScreen(
-                        innerPadding = innerPadding,
-                        vocabularies = vocabularies
-                    )
-                }
+//                var vocabularies by remember { mutableStateOf<List<Vocabulary>?>(null) }
+//
+//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                    // 2. Bây giờ bạn có thể truyền innerPadding và vocabularys vào đây mà không bị lỗi
+//                    FlashcardScreen(
+//                        innerPadding = innerPadding,
+//                        vocabularies = vocabularies
+//                    )
+//                }
+                AuthNavGraph(viewModel = authViewModel)
             }
         }
     }
 }
+
+
 
