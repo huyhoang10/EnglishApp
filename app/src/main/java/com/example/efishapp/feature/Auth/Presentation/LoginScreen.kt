@@ -86,6 +86,7 @@ fun LoginScreen(
     // Xử lý các hiệu ứng phụ dựa trên sự thay đổi của AuthUiState
     LaunchedEffect(uiState) {
         if (uiState is AuthUiState.Success) {
+            println("Login Success detected in UI") // Debug log
             onLoginSuccess()
             viewModel.resetUiState() // Đưa State về Idle sau khi hoàn thành chuyển màn
         }

@@ -25,13 +25,18 @@ import com.example.efishapp.feature.flashcard.presentation.Vocabulary
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 import com.example.efishapp.navigation.EfishNavGraph
 import com.example.efishapp.ui.theme.EfishAppTheme
+import com.google.firebase.firestore.FirebaseFirestore
+import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 1. Khởi tạo tầng Data (Firebase SDK)
         val firebaseAuth = FirebaseAuth.getInstance()
+        val firestore = FirebaseFirestore.getInstance()
         val authRepository = AuthRepositoryImpl(firebaseAuth)
+        val userProfileRepository = UserProfileRepositoryImpl(firebaseAuth, firestore)
 
         // 2. Khởi tạo tầng Domain (Các UseCases)
         val loginUseCase = LoginUseCase(authRepository)
@@ -52,6 +57,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             EfishAppTheme {
+
+
 //                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 //                    // 2. Bây giờ bạn có thể truyền innerPadding và vocabularys vào đây mà không bị lỗi
 //
