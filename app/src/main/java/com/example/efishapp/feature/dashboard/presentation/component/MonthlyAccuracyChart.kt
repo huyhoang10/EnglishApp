@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.efishapp.core.ui.typography.ChartTypography
+import com.example.efishapp.feature.dashboard.presentation.DashboardUiState
 
 data class MonthlyAccuracyStats(
     val correctWords: Int,
@@ -39,14 +40,9 @@ data class MonthlyAccuracyStats(
 }
 
 @Composable
-fun MonthlyStatsScreen() {
-    val myStats = MonthlyAccuracyStats(
-        correctWords = 320,
-        forgottenWords = 107,
-        monthName = "Tháng 5/2024"
-    )
+fun MonthlyStatsScreen(state: DashboardUiState) {
     Column(modifier = Modifier.fillMaxSize()) {
-        MonthlyAccuracyChart(stats = myStats)
+        MonthlyAccuracyChart(stats = state.monthlyLearningStat)
     }
 }
 
@@ -73,7 +69,7 @@ fun MonthlyAccuracyChart(
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(text = "Độ chính xác từ vựng", style = ChartTypography.title)
-            Text(text = stats.monthName, style = ChartTypography.legend)
+            Text(text = "Tháng ${stats.monthName}", style = ChartTypography.legend)
 
             Spacer(modifier = Modifier.height(24.dp))
 

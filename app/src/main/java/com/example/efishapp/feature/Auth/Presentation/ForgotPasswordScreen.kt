@@ -23,8 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.efishapp.Core.designsystem.ErrorDialog
-import com.example.efishapp.Core.designsystem.LoadingDialog
+import com.example.efishapp.core.designsystem.ErrorDialog
+import com.example.efishapp.core.designsystem.LoadingDialog
 import com.example.efishapp.feature.Auth.Presentation.components.AuthTextField
 
 @Composable

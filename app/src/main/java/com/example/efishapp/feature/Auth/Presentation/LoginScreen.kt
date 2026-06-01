@@ -27,9 +27,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.efishapp.Core.designsystem.ErrorDialog
-import com.example.efishapp.Core.designsystem.LoadingDialog
-import com.example.efishapp.R
+import com.example.efishapp.core.designsystem.ErrorDialog
+import com.example.efishapp.core.designsystem.LoadingDialog
 import com.example.efishapp.feature.Auth.Presentation.components.AuthTextField
 import com.example.efishapp.feature.Auth.Presentation.components.GoogleSignInButton
 import com.google.android.gms.auth.api.signin.GoogleSignIn

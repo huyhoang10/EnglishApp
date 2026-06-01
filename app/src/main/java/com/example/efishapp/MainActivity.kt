@@ -19,6 +19,7 @@ import com.example.efishapp.feature.Auth.Domain.UseCase.LoginUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.LoginWithGoogleUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.RegisterUseCase
 import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
+import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.Vocabulary
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
@@ -46,14 +47,11 @@ class MainActivity : ComponentActivity() {
             forgotPasswordUseCase = forgotPasswordUseCase,
             loginWithGoogleUseCase = loginWithGoogleUseCase
         )
-        val flashcardViewModel = FlashcardViewModel(
-
-        )
+        val flashcardViewModel = FlashcardViewModel()
+        val dashboardUiState = DashboardViewModel()
         enableEdgeToEdge()
         setContent {
             EfishAppTheme {
-
-
 //                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 //                    // 2. Bây giờ bạn có thể truyền innerPadding và vocabularys vào đây mà không bị lỗi
 //
@@ -61,7 +59,9 @@ class MainActivity : ComponentActivity() {
 //                        modifier = Modifier.padding(innerPadding)
 //                    )
 //                }
-                EfishNavGraph(authViewModel = authViewModel, flashcardViewModel = flashcardViewModel)
+                EfishNavGraph(authViewModel = authViewModel,
+                    flashcardViewModel = flashcardViewModel,
+                    dashboardViewModel = dashboardUiState)
             }
         }
     }

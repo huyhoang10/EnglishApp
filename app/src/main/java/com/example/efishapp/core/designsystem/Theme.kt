@@ -1,4 +1,4 @@
-package com.example.efishapp.Core.designsystem
+package com.example.efishapp.core.designsystem
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

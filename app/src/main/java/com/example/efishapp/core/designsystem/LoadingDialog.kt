@@ -1,4 +1,4 @@
-package com.example.efishapp.Core.designsystem
+package com.example.efishapp.core.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

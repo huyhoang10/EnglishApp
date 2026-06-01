@@ -11,6 +11,7 @@ import com.example.efishapp.feature.Auth.Presentation.ForgotPasswordScreen
 import com.example.efishapp.feature.Auth.Presentation.LoginScreen
 import com.example.efishapp.feature.Auth.Presentation.RegisterScreen
 import com.example.efishapp.feature.dashboard.presentation.DashboardScreen
+import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
 import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
@@ -19,11 +20,12 @@ import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 fun EfishNavGraph(
     authViewModel: AuthViewModel,
     flashcardViewModel: FlashcardViewModel,
+    dashboardViewModel: DashboardViewModel,
     navController: NavHostController = rememberNavController()
 ){
     NavHost(
         navController = navController,
-        startDestination = Screen.HOME
+        startDestination = Screen.LOGIN
     ){
         composable(Screen.LOGIN){
             LoginScreen(
@@ -53,7 +55,7 @@ fun EfishNavGraph(
         }
 
         composable(Screen.HOME) {
-            DashboardScreen(Modifier)
+            DashboardScreen(dashboardViewModel, Modifier)
         }
 
         composable(Screen.FLASHCARD) {

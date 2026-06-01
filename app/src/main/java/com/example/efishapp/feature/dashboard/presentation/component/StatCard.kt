@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import com.example.efishapp.R
+import com.example.efishapp.feature.dashboard.presentation.DashboardUiState
 
 // 1. Quản lý diện mạo, kích thước hệ thống (Style Tokens)
 data class StatCardStyleConfig(
@@ -94,22 +95,22 @@ fun StatCard(
 
 @Composable
 fun StreakCard(
-    streak: Int,
+    state: DashboardUiState,
     modifier: Modifier = Modifier
 ){
     StatCard(
-        data = StatCardData(title = "Streak", value = streak, iconRes = R.drawable.streakicon),
+        data = StatCardData(title = "Streak", value = state.streak, iconRes = R.drawable.streakicon),
         modifier = modifier
     )
 }
 
 @Composable
 fun ReviewCard(
-    numVocabularyReview: Int,
+    state: DashboardUiState,
     modifier: Modifier = Modifier
 ){
     StatCard(
-        data = StatCardData(title = "Review", value = numVocabularyReview, iconRes = R.drawable.reviewicon), // Bạn nhớ đổi R.drawable.review_icon tương ứng nhé
+        data = StatCardData(title = "Review", value = state.numVocabularyReview, iconRes = R.drawable.reviewicon), // Bạn nhớ đổi R.drawable.review_icon tương ứng nhé
         modifier = modifier
     )
 }

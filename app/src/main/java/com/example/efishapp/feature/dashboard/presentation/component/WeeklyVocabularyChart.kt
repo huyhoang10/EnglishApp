@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.efishapp.core.ui.typography.ChartTypography
+import com.example.efishapp.feature.dashboard.presentation.DashboardUiState
 import kotlin.math.ceil
 
 
@@ -53,7 +54,7 @@ data class BarChartConfig(
 
 @Composable
 fun WeeklyVocabularyChart(
-    weeklyData: List<DailyLearningStats>,
+    state: DashboardUiState,
     modifier: Modifier = Modifier,
     config: BarChartConfig = BarChartConfig() // Nhận cấu hình từ ngoài vào thông qua data class
 ) {
@@ -67,7 +68,7 @@ fun WeeklyVocabularyChart(
     ) {
         val textMeasurer = rememberTextMeasurer()
 
-        val rawMax = weeklyData.maxOfOrNull { it.total }?.toFloat() ?: 1f
+        val rawMax = state.weeklyLearningStats.maxOfOrNull { it.total }?.toFloat() ?: 1f
         val maxAxisValue = (ceil(rawMax / 10f) * 10f).coerceAtLeast(10f)
 
         Column(
@@ -140,11 +141,11 @@ fun WeeklyVocabularyChart(
                 )
 
                 // --- VẼ CÁC CỘT XẾP CHỒNG & NHÃN TRỤC X ---
-                val barCount = weeklyData.size
+                val barCount = state.weeklyLearningStats.size
                 val barWidth = chartWidth / (barCount * config.barWidthRatio)
                 val spacing = (chartWidth - (barWidth * barCount)) / (barCount + 1)
 
-                weeklyData.forEachIndexed { index, data ->
+                state.weeklyLearningStats.forEachIndexed { index, data ->
                     val xOffset = paddingLeftPx + spacing + index * (barWidth + spacing)
 
                     val totalHeight = (data.total.toFloat() / maxAxisValue) * chartHeight
