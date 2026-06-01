@@ -5,6 +5,7 @@ import com.example.efishapp.feature.profile.domain.repository.UserProfileReposit
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 
@@ -15,7 +16,7 @@ class UserProfileRepositoryImpl(
 
     override suspend fun getProfile(): UserProfile {
         val user = auth.currentUser ?: return UserProfile()
-        
+
         return try {
             val doc = withTimeout(5000) {
                 firestore.collection("users").document(user.uid).get().await()
@@ -56,7 +57,7 @@ class UserProfileRepositoryImpl(
     ): Result<Unit> {
         return try {
             val user = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
-            
+
             // Đồng bộ fullName vào displayName của Auth luôn
             if (fullName != null) {
                 val request = userProfileChangeRequest {
@@ -75,7 +76,7 @@ class UserProfileRepositoryImpl(
 
             withTimeout(8000) {
                 firestore.collection("users").document(user.uid)
-                    .set(updates, com.google.firebase.firestore.SetOptions.merge())
+                    .set(updates, SetOptions.merge())
                     .await()
             }
 
