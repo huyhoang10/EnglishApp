@@ -13,8 +13,9 @@
 # File cấu hình cá nhân và bảo mật (QUAN TRỌNG)
 local.properties
 /app/google-services.jon
-
+/app/google-services.json
 
 # Hệ điều hành
 .DS_Store
 Thumbs.db
+

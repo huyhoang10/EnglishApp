@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">EfishApp</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Chào mừng đến với EFISH</string>
+    <string name="onboarding_welcome_desc">Học tiếng Anh dễ dàng và hiệu quả với ứng dụng của chúng tôi</string>
+    <string name="onboarding_learn_title">Học từ vựng</string>
+    <string name="onboarding_learn_desc">Khám phá hàng nghìn từ vựng với hình ảnh và phát âm chuẩn</string>
+    <string name="onboarding_practice_title">Luyện tập mỗi ngày</string>
+    <string name="onboarding_practice_desc">Củng cố kiến thức với các bài luyện tập tương tác</string>
+    <string name="onboarding_skip">Bỏ qua</string>
+    <string name="onboarding_next">Tiếp theo</string>
+    <string name="onboarding_get_started">Bắt đầu ngay</string>
 </resources>
