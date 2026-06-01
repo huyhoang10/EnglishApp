@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
-
 }
 
 android {
@@ -49,6 +48,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
@@ -66,9 +66,15 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
     implementation("androidx.navigation:navigation-compose:2.8.5")
 
+    // datastore for preferences
+    implementation("androidx.datastore:datastore-preferences:1.1.2")
+
     // icon lib
     implementation("androidx.compose.material:material-icons-extended")
 
     // Hilt
     implementation("androidx.hilt:hilt-lifecycle-viewmodel-compose:1.3.0")
+
+    // hilt
+    //implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 }

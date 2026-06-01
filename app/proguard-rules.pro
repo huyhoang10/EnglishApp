@@ -19,3 +19,12 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Firestore - Keep model classes for deserialization
+-keep class com.example.efishapp.feature.vocabulary.domain.model.Vocabulary { *; }
+-keep class com.example.efishapp.feature.folder.domain.model.Folder { *; }
+-keep class com.example.efishapp.feature.folder.domain.model.Topic { *; }
+-keep class com.example.efishapp.feature.folder.data.model.FolderDTO { *; }
+
+# Keep Firebase classes
+-keep class com.google.firebase.firestore.** { *; }
