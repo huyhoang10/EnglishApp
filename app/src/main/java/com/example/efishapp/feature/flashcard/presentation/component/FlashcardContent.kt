@@ -29,12 +29,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.efishapp.feature.flashcard.presentation.FlashcardUiEvent
+import com.example.efishapp.feature.flashcard.presentation.FlashcardUiState
 import com.example.efishapp.feature.flashcard.presentation.Vocabulary
 
-/**
- * 1. Quản lý toàn bộ thông số diện mạo, kích thước và kiểu chữ của Flashcard (Style Tokens).
- * Các kiểu văn bản khác nhau được gom nhóm gọn gàng inside hai thuộc tính [largeTextStyle] và [mediumTextStyle].
- */
 data class FlashcardContentCardConfig(
     val cornerRadius: Dp = 24.dp,
     val elevation: Dp = 2.dp,
@@ -45,7 +43,6 @@ data class FlashcardContentCardConfig(
     val animationDurationMillis: Int = 300,
     val cameraDistanceDensity: Float = 12f,
 
-    // Gom cụm các tham số Text thành các đối tượng TextStyle
     val largeTextStyle: TextStyle = TextStyle(
         fontSize = 28.sp,
         fontWeight = FontWeight.Bold,
@@ -53,25 +50,22 @@ data class FlashcardContentCardConfig(
     ),
     val mediumTextStyle: TextStyle = TextStyle(
         fontSize = 24.sp,
-        fontWeight = FontWeight.Normal, // Mặc định từ example cũ của bạn
+        fontWeight = FontWeight.Normal,
         color = Color.Black
     )
 )
 
-/**
- * 2. Thành phần Composable thẻ nội dung Flashcard hỗ trợ hiệu ứng lật 3D mặt trước/mặt sau.
- */
 @Composable
 fun FlashcardContentCard(
-    vocabulary: Vocabulary,
-    isShowDetail: Boolean,
-    modifier: Modifier = Modifier,
-    config: FlashcardContentCardConfig = FlashcardContentCardConfig() // Nhận cấu hình tập trung mặc định
+    state : FlashcardUiState,
+    onEvent: (FlashcardUiEvent) -> Unit,
+    modifier: Modifier,
+    config: FlashcardContentCardConfig = FlashcardContentCardConfig()
 ) {
-    var isFlipped by remember { mutableStateOf(false) }
+    val vocabulary: Vocabulary = state.vocabularies[state.indexWord]
 
     val cardRotation by animateFloatAsState(
-        targetValue = if (isFlipped) 180f else 0f,
+        targetValue = if (state.isFlipped) 180f else 0f,
         animationSpec = tween(durationMillis = config.animationDurationMillis),
         label = "CardRotationAnimation"
     )
@@ -79,7 +73,7 @@ fun FlashcardContentCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { isFlipped = !isFlipped }
+            .clickable { onEvent(FlashcardUiEvent.OnFlipCard) }
             .graphicsLayer {
                 this.rotationY = cardRotation
                 cameraDistance = config.cameraDistanceDensity * density
@@ -94,33 +88,31 @@ fun FlashcardContentCard(
             contentAlignment = Alignment.Center
         ) {
             if (cardRotation > 90f) {
-                // --- MẶT SAU (Hiển thị Nghĩa và Ví dụ) ---
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = vocabulary.meaning,
-                        style = config.largeTextStyle, // Áp dụng TextStyle kiểu lớn
+                        style = config.largeTextStyle,
                         modifier = Modifier.graphicsLayer { rotationY = 180f }
                     )
                     Spacer(modifier = Modifier.height(config.spacerHeight))
                     Text(
                         text = vocabulary.example,
-                        style = config.mediumTextStyle, // Áp dụng TextStyle kiểu trung bình
+                        style = config.mediumTextStyle,
                         modifier = Modifier.graphicsLayer { rotationY = 180f }
                     )
                 }
-                if (isShowDetail) {
+                if (state.isShowDetail) {
                     DetailCard(vocabulary)
                 }
             } else {
-                // --- MẶT TRƯỚC (Hiển thị Từ gốc) ---
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = vocabulary.word,
-                        style = config.largeTextStyle // Áp dụng TextStyle kiểu lớn
+                        style = config.largeTextStyle
                     )
                 }
             }
