@@ -24,7 +24,7 @@ import com.example.efishapp.feature.flashcard.presentation.Vocabulary
 @Composable
 fun DetailCard(vocabulary: Vocabulary){
     Card(modifier = Modifier.fillMaxSize(),
-        colors = CardDefaults.cardColors(contentColor = Color.White)) {
+        colors = CardDefaults.cardColors(containerColor = Color.White)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -45,9 +45,6 @@ data class DetailRowStyleConfig(
 
 )
 
-/**
- * 2. Thành phần Composable hiển thị thông tin chi tiết theo dòng.
- */
 @Composable
 fun DetailTextRow(
     label: String,

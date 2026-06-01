@@ -4,6 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.google.firebase.auth.FirebaseAuth
 import com.example.efishapp.feature.Auth.Data.Repository.AuthRepositoryImpl
 import com.example.efishapp.feature.Auth.Domain.UseCase.ForgotPasswordUseCase
@@ -11,10 +19,11 @@ import com.example.efishapp.feature.Auth.Domain.UseCase.LoginUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.LoginWithGoogleUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.RegisterUseCase
 import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
-import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
 import com.example.efishapp.navigation.EfishNavGraph
 import com.example.efishapp.ui.theme.EfishAppTheme
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
+import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,22 +48,23 @@ class MainActivity : ComponentActivity() {
             forgotPasswordUseCase = forgotPasswordUseCase,
             loginWithGoogleUseCase = loginWithGoogleUseCase
         )
+        val flashcardViewModel = FlashcardViewModel(
+
+        )
         enableEdgeToEdge()
         setContent {
             EfishAppTheme {
-//                var vocabularies by remember { mutableStateOf<List<Vocabulary>?>(null) }
-//
+
+
 //                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 //                    // 2. Bây giờ bạn có thể truyền innerPadding và vocabularys vào đây mà không bị lỗi
+//
 //                    FlashcardScreen(
-//                        innerPadding = innerPadding,
-//                        vocabularies = vocabularies
+//                        modifier = Modifier.padding(innerPadding)
 //                    )
 //                }
-                EfishNavGraph(
-                    authViewModel = authViewModel,
-                    userProfileRepository = userProfileRepository
-                )
+                EfishNavGraph(authViewModel = authViewModel, flashcardViewModel = flashcardViewModel)//userProfileRepository = userProfileRepository)
+
             }
         }
     }

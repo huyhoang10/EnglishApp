@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.efishapp.feature.flashcard.presentation.FlashcardUiEvent
 
 data class FlashcardBottomNavConfig(
     val barHeight: Dp = 64.dp,
@@ -30,10 +31,9 @@ data class FlashcardBottomNavConfig(
 
 @Composable
 fun FlashcardBottomNavigation(
-    onClickDetails: () -> Unit,
-    onUndoClick: () -> Unit = {}, // Bổ sung sự kiện để bên ngoài có thể xử lý nút Quay lại
+    onEvent: (FlashcardUiEvent) -> Unit,
     modifier: Modifier = Modifier,
-    config: FlashcardBottomNavConfig = FlashcardBottomNavConfig() // Nhận cấu hình tập trung mặc định
+    config: FlashcardBottomNavConfig = FlashcardBottomNavConfig()
 ) {
     NavigationBar(
         containerColor = config.containerColor,
@@ -47,7 +47,7 @@ fun FlashcardBottomNavigation(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            IconButton(onClick = onUndoClick) {
+            IconButton(onClick = {onEvent(FlashcardUiEvent.OnClickBack)}) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
@@ -56,10 +56,10 @@ fun FlashcardBottomNavigation(
                 )
             }
 
-            IconButton(onClick = onClickDetails) {
+            IconButton(onClick = {onEvent(FlashcardUiEvent.OnClickDetail)}) {
                 Icon(
                     imageVector = Icons.Default.Lightbulb,
-                    contentDescription = "Deck",
+                    contentDescription = "Detail",
                     tint = config.iconTint,
                     modifier = Modifier.size(config.iconSize)
                 )
