@@ -4,22 +4,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.efishapp.feature.folder.domain.model.Folder
 import com.example.efishapp.feature.folder.domain.model.Topic
+import com.example.efishapp.feature.folder.domain.repository.FolderRepository
 import com.example.efishapp.feature.folder.domain.usecase.CreateFolder
 import com.example.efishapp.feature.folder.domain.usecase.DeleteFolder
 import com.example.efishapp.feature.folder.domain.usecase.GetFolder
 import com.example.efishapp.feature.folder.domain.usecase.UpdateFolder
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class FolderViewModel(
+@HiltViewModel
+class FolderViewModel @Inject constructor(
     private val getFolder: GetFolder,
-    private val createFolder: CreateFolder,
+    private val createFolderUseCase: CreateFolder,
     private val updateFolderUseCase: UpdateFolder,
-    private val deleteFolderUseCase: DeleteFolder
+    private val deleteFolderUseCase: DeleteFolder,
+    private val folderRepository: FolderRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FolderUiState())
@@ -95,7 +100,7 @@ class FolderViewModel(
                 colorHex = colorHex
             )
 
-            createFolder(folder)
+            createFolderUseCase(folder)
                 .onSuccess {
                     hideDialog()
                     _uiState.update { it.copy(successMessage = "Tạo thư mục thành công") }

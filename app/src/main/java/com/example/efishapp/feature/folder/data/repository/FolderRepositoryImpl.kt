@@ -81,6 +81,15 @@ class FolderRepositoryImpl (
         }
     }
 
+    override suspend fun updateVocabularyCount(folderId: String) {
+        try {
+            val count = getVocabularyCount(folderId)
+            foldersCollection.document(folderId).update("vocabularyCount", count)
+        } catch (e: Exception) {
+            // Ignore
+        }
+    }
+
     suspend fun getVocabularyCount(folderId: String): Int {
         return try {
             val snapshot = vocabulariesCollection

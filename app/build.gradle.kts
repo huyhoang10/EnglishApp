@@ -72,4 +72,6 @@ dependencies {
     // icon lib
     implementation("androidx.compose.material:material-icons-extended")
 
+    // hilt
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 }

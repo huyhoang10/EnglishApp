@@ -1,5 +1,6 @@
 package com.example.efishapp.feature.vocabulary.presentation
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.efishapp.feature.vocabulary.domain.model.Vocabulary
@@ -8,21 +9,27 @@ import com.example.efishapp.feature.vocabulary.domain.usecase.CreateVocabularyUs
 import com.example.efishapp.feature.vocabulary.domain.usecase.DeleteVocabularyUseCase
 import com.example.efishapp.feature.vocabulary.domain.usecase.GetVocabulariesUseCase
 import com.example.efishapp.feature.vocabulary.domain.usecase.UpdateVocabularyUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class VocabularyViewModel(
-    private val folderId: String,
+@HiltViewModel
+class VocabularyViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val vocabularyRepository: VocabularyRepository,
+    private val folderRepository: com.example.efishapp.feature.folder.domain.repository.FolderRepository,
     private val getVocabulariesUseCase: GetVocabulariesUseCase,
     private val createVocabularyUseCase: CreateVocabularyUseCase,
     private val updateVocabularyUseCase: UpdateVocabularyUseCase,
     private val deleteVocabularyUseCase: DeleteVocabularyUseCase
 ) : ViewModel() {
+
+    private val folderId: String = savedStateHandle.get<String>("folderId") ?: ""
 
     private val _uiState = MutableStateFlow(VocabularyUiState())
     val uiState: StateFlow<VocabularyUiState> = _uiState.asStateFlow()
@@ -46,7 +53,7 @@ class VocabularyViewModel(
 
     private fun updateFolderVocabularyCount() {
         viewModelScope.launch {
-            vocabularyRepository.updateFolderVocabularyCount(folderId)
+            folderRepository.updateVocabularyCount(folderId)
         }
     }
 

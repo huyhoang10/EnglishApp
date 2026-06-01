@@ -9,4 +9,5 @@ interface FolderRepository {
     suspend fun createFolder(folder: Folder): Result<String>
     suspend fun updateFolder(folder: Folder): Result<Unit>
     suspend fun deleteFolder(folderId: String): Result<Unit>
+    suspend fun updateVocabularyCount(folderId: String)
 }

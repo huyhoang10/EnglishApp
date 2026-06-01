@@ -8,44 +8,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.efishapp.feature.Auth.Data.Repository.AuthRepositoryImpl
-import com.example.efishapp.feature.Auth.Domain.UseCase.ForgotPasswordUseCase
-import com.example.efishapp.feature.Auth.Domain.UseCase.LoginUseCase
-import com.example.efishapp.feature.Auth.Domain.UseCase.LoginWithGoogleUseCase
-import com.example.efishapp.feature.Auth.Domain.UseCase.RegisterUseCase
 import com.example.efishapp.feature.Auth.Presentation.AuthNavGraph
 import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
-import com.example.efishapp.feature.folder.data.repository.FolderRepositoryImpl
 import com.example.efishapp.feature.folder.presentation.FolderNavGraph
 import com.example.efishapp.feature.onboarding.presentation.OnboardingScreen
-import com.example.efishapp.feature.vocabulary.data.repository.VocabularyRepositoryImpl
 import com.example.efishapp.ui.theme.EfishAppTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var authViewModel: AuthViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        val firebaseAuth = FirebaseAuth.getInstance()
-        val firestore = FirebaseFirestore.getInstance()
-        
-        val authRepository = AuthRepositoryImpl(firebaseAuth)
-        val folderRepository = FolderRepositoryImpl(firestore)
-        val vocabularyRepository = VocabularyRepositoryImpl(firestore)
-
-        val loginUseCase = LoginUseCase(authRepository)
-        val registerUseCase = RegisterUseCase(authRepository)
-        val forgotPasswordUseCase = ForgotPasswordUseCase(authRepository)
-        val loginWithGoogleUseCase = LoginWithGoogleUseCase(authRepository)
-
-        val authViewModel = AuthViewModel(
-            loginUseCase = loginUseCase,
-            registerUseCase = registerUseCase,
-            forgotPasswordUseCase = forgotPasswordUseCase,
-            loginWithGoogleUseCase = loginWithGoogleUseCase
-        )
-        
         enableEdgeToEdge()
         setContent {
             EfishAppTheme {
@@ -73,10 +53,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     showFolder -> {
-                        FolderNavGraph(
-                            folderRepository = folderRepository,
-                            vocabularyRepository = vocabularyRepository
-                        )
+                        FolderNavGraph()
                     }
                 }
             }
