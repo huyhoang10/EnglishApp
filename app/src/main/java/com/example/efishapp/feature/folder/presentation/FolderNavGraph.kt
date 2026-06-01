@@ -67,6 +67,7 @@ fun FolderNavGraph(
             val viewModel = remember {
                 VocabularyViewModel(
                     folderId = folderId,
+                    vocabularyRepository = vocabularyRepository,
                     getVocabulariesUseCase = GetVocabulariesUseCase(vocabularyRepository),
                     createVocabularyUseCase = CreateVocabularyUseCase(vocabularyRepository),
                     updateVocabularyUseCase = UpdateVocabularyUseCase(vocabularyRepository),

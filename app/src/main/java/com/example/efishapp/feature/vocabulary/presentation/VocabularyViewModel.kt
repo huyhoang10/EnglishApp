@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class VocabularyViewModel(
     private val folderId: String,
+    private val vocabularyRepository: VocabularyRepository,
     private val getVocabulariesUseCase: GetVocabulariesUseCase,
     private val createVocabularyUseCase: CreateVocabularyUseCase,
     private val updateVocabularyUseCase: UpdateVocabularyUseCase,
@@ -40,6 +41,12 @@ class VocabularyViewModel(
                 .collect { vocabularies ->
                     _uiState.update { it.copy(vocabularies = vocabularies, isLoading = false) }
                 }
+        }
+    }
+
+    private fun updateFolderVocabularyCount() {
+        viewModelScope.launch {
+            vocabularyRepository.updateFolderVocabularyCount(folderId)
         }
     }
 
@@ -84,6 +91,8 @@ class VocabularyViewModel(
             createVocabularyUseCase(vocabulary)
                 .onSuccess {
                     hideVocabularyDialog()
+                    updateFolderVocabularyCount()
+                    _uiState.update { it.copy(successMessage = "Thêm từ vựng thành công") }
                 }
                 .onFailure { e ->
                     _uiState.update { it.copy(error = e.message) }
@@ -104,6 +113,7 @@ class VocabularyViewModel(
             updateVocabularyUseCase(updatedVocabulary)
                 .onSuccess {
                     hideVocabularyDialog()
+                    _uiState.update { it.copy(successMessage = "Cập nhật từ vựng thành công") }
                 }
                 .onFailure { e ->
                     _uiState.update { it.copy(error = e.message) }
@@ -125,6 +135,8 @@ class VocabularyViewModel(
             deleteVocabularyUseCase(vocabulary.id)
                 .onSuccess {
                     hideDeleteConfirmation()
+                    updateFolderVocabularyCount()
+                    _uiState.update { it.copy(successMessage = "Xóa từ vựng thành công") }
                 }
                 .onFailure { e ->
                     _uiState.update { it.copy(error = e.message) }
@@ -136,10 +148,65 @@ class VocabularyViewModel(
         viewModelScope.launch {
             val updatedVocabulary = vocabulary.copy(isLearned = !vocabulary.isLearned)
             updateVocabularyUseCase(updatedVocabulary)
+                .onSuccess {
+                    val message = if (!vocabulary.isLearned) "Đã đánh dấu là đã học" else "Đã bỏ đánh dấu"
+                    _uiState.update { it.copy(successMessage = message) }
+                }
         }
     }
 
     fun clearError() {
         _uiState.update { it.copy(error = null) }
+    }
+
+    fun clearSuccessMessage() {
+        _uiState.update { it.copy(successMessage = null) }
+    }
+
+    fun toggleSelectionMode() {
+        _uiState.update {
+            it.copy(
+                isSelectionMode = !it.isSelectionMode,
+                selectedVocabularyIds = emptySet()
+            )
+        }
+    }
+
+    fun toggleVocabularySelection(vocabularyId: String) {
+        _uiState.update {
+            val newSelectedIds = if (it.selectedVocabularyIds.contains(vocabularyId)) {
+                it.selectedVocabularyIds - vocabularyId
+            } else {
+                it.selectedVocabularyIds + vocabularyId
+            }
+            it.copy(selectedVocabularyIds = newSelectedIds)
+        }
+    }
+
+    fun selectAll() {
+        _uiState.update {
+            it.copy(selectedVocabularyIds = it.vocabularies.map { vocab -> vocab.id }.toSet())
+        }
+    }
+
+    fun deleteSelectedVocabularies() {
+        val selectedIds = _uiState.value.selectedVocabularyIds
+        if (selectedIds.isEmpty()) return
+
+        viewModelScope.launch {
+            var successCount = 0
+            selectedIds.forEach { vocabId ->
+                deleteVocabularyUseCase(vocabId)
+                    .onSuccess { successCount++ }
+            }
+            updateFolderVocabularyCount()
+            _uiState.update {
+                it.copy(
+                    isSelectionMode = false,
+                    selectedVocabularyIds = emptySet(),
+                    successMessage = "Đã xóa $successCount từ vựng"
+                )
+            }
+        }
     }
 }

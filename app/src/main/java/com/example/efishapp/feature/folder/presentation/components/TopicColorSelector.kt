@@ -40,7 +40,7 @@ fun TopicSelector(
         Text(
             text = "Chọn chủ đề",
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.8f)
+            color = Color(0xFF1A1A2E).copy(alpha = 0.8f)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -74,8 +74,8 @@ fun TopicChip(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(
-                if (isSelected) topicColor.copy(alpha = 0.3f)
-                else topicColor.copy(alpha = 0.1f)
+                if (isSelected) topicColor
+                else topicColor.copy(alpha = 0.15f)
             )
             .border(
                 width = if (isSelected) 2.dp else 1.dp,
@@ -89,7 +89,7 @@ fun TopicChip(
         Text(
             text = topic.displayName,
             style = MaterialTheme.typography.bodyMedium,
-            color = if (isSelected) Color.White else Color.White.copy(alpha = 0.8f)
+            color = if (isSelected) Color.White else Color(0xFF1A1A2E)
         )
     }
 }
@@ -105,7 +105,7 @@ fun ColorSelector(
         Text(
             text = "Chọn màu",
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.8f)
+            color = Color(0xFF1A1A2E).copy(alpha = 0.8f)
         )
 
         Spacer(modifier = Modifier.height(12.dp))

@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -32,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -53,6 +57,9 @@ fun CreateEditFolderDialog(
     var selectedColor by remember { mutableLongStateOf(folder?.colorHex ?: TopicColors.first().value.toLong()) }
 
     val isEditing = folder != null
+    val scrollState = rememberScrollState()
+    val configuration = LocalConfiguration.current
+    val maxHeight = configuration.screenHeightDp.dp * 0.85f
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -63,19 +70,22 @@ fun CreateEditFolderDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(max = maxHeight)
                 .padding(horizontal = 24.dp)
                 .clip(RoundedCornerShape(24.dp))
                 .background(
-                    color = Color(0xFF2D2D44).copy(alpha = 0.95f)
+                    color = Color.White
                 )
                 .border(
                     width = 1.dp,
-                    color = GlassBorder,
+                    color = Color(0xFFE0E0E0),
                     shape = RoundedCornerShape(24.dp)
                 )
                 .padding(24.dp)
         ) {
-            Column {
+            Column (
+                modifier = Modifier.verticalScroll(scrollState)
+            ){
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -84,13 +94,13 @@ fun CreateEditFolderDialog(
                     Text(
                         text = if (isEditing) "Chỉnh sửa thư mục" else "Tạo thư mục mới",
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color.White
+                        color = Color(0xFF1A1A2E)
                     )
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = Color.White
+                            tint = Color(0xFF1A1A2E)
                         )
                     }
                 }
@@ -141,7 +151,7 @@ fun CreateEditFolderDialog(
                     OutlinedButton(
                         onClick = onDismiss,
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color.White
+                            contentColor = Color(0xFF1A1A2E)
                         )
                     ) {
                         Text("Hủy")
@@ -160,7 +170,7 @@ fun CreateEditFolderDialog(
                             containerColor = Color(selectedColor)
                         )
                     ) {
-                        Text(if (isEditing) "Lưu" else "Tạo")
+                        Text(if (isEditing) "Lưu" else "Tạo", color = Color.White)
                     }
                 }
             }

@@ -8,7 +8,7 @@ class UpdateFolder (
 ) {
     suspend operator fun invoke(folder: Folder): Result<Unit> {
         if (folder.name.isBlank()) {
-            return Result.failure(IllegalArgumentException("Tên thư mục không được trống"))
+            return Result.failure(IllegalArgumentException("Tên thư mục không được để trống!"))
         }
         return folderRepository.updateFolder(folder)
     }

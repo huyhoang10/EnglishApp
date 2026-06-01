@@ -1,5 +1,6 @@
 package com.example.efishapp.feature.folder.data.repository
 
+import com.example.efishapp.feature.vocabulary.domain.model.Vocabulary
 import com.example.efishapp.feature.folder.domain.model.Folder
 import com.example.efishapp.feature.folder.domain.model.Topic
 import com.example.efishapp.feature.folder.domain.repository.FolderRepository
@@ -15,6 +16,7 @@ class FolderRepositoryImpl (
 ) : FolderRepository {
 
     private val foldersCollection = firestore.collection("folders")
+    private val vocabulariesCollection = firestore.collection("vocabularies")
 
     override fun getFolders(): Flow<List<Folder>> = callbackFlow {
         val listener = foldersCollection
@@ -76,6 +78,59 @@ class FolderRepositoryImpl (
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    suspend fun getVocabularyCount(folderId: String): Int {
+        return try {
+            val snapshot = vocabulariesCollection
+                .whereEqualTo("folderId", folderId)
+                .get()
+                .await()
+            snapshot.size()
+        } catch (e: Exception) {
+            0
+        }
+    }
+
+    suspend fun incrementVocabularyCount(folderId: String) {
+        try {
+            val folderDoc = foldersCollection.document(folderId)
+            val snapshot = folderDoc.get().await()
+            val currentCount = snapshot.getLong("vocabularyCount") ?: 0
+            folderDoc.update("vocabularyCount", currentCount + 1)
+        } catch (e: Exception) {
+            // Ignore
+        }
+    }
+
+    suspend fun decrementVocabularyCount(folderId: String) {
+        try {
+            val folderDoc = foldersCollection.document(folderId)
+            val snapshot = folderDoc.get().await()
+            val currentCount = snapshot.getLong("vocabularyCount") ?: 0
+            if (currentCount > 0) {
+                folderDoc.update("vocabularyCount", currentCount - 1)
+            }
+        } catch (e: Exception) {
+            // Ignore
+        }
+    }
+
+    suspend fun deleteAllVocabulariesInFolder(folderId: String) {
+        try {
+            val snapshot = vocabulariesCollection
+                .whereEqualTo("folderId", folderId)
+                .get()
+                .await()
+            
+            val batch = firestore.batch()
+            snapshot.documents.forEach { document ->
+                batch.delete(document.reference)
+            }
+            batch.commit().await()
+        } catch (e: Exception) {
+            // Ignore
         }
     }
 

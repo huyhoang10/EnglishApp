@@ -2,12 +2,10 @@ package com.example.efishapp.feature.folder.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -20,8 +18,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
-import com.example.efishapp.feature.folder.presentation.theme.GlassBackground
-import com.example.efishapp.feature.folder.presentation.theme.GlassBorder
 
 @Composable
 fun GlassTextField(
@@ -38,7 +34,7 @@ fun GlassTextField(
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.8f)
+            color = Color(0xFF1A1A2E).copy(alpha = 0.8f)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -49,16 +45,16 @@ fun GlassTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(GlassBackground)
+                .background(Color.White)
                 .border(
                     width = 1.dp,
-                    color = GlassBorder,
+                    color = Color(0xFFE0E0E0),
                     shape = RoundedCornerShape(12.dp)
                 ),
             placeholder = {
                 Text(
                     text = placeholder,
-                    color = Color.White.copy(alpha = 0.4f)
+                    color = Color(0xFF1A1A2E).copy(alpha = 0.4f)
                 )
             },
             singleLine = singleLine,
@@ -67,11 +63,11 @@ fun GlassTextField(
                 capitalization = keyboardCapitalization
             ),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                cursorColor = Color.White,
-                focusedBorderColor = Color.White.copy(alpha = 0.5f),
-                unfocusedBorderColor = Color.Transparent
+                focusedTextColor = Color(0xFF1A1A2E),
+                unfocusedTextColor = Color(0xFF1A1A2E),
+                cursorColor = Color(0xFF4C58BA),
+                focusedBorderColor = Color(0xFF4C58BA),
+                unfocusedBorderColor = Color(0xFFE0E0E0)
             )
         )
     }

@@ -12,11 +12,19 @@ import com.example.efishapp.feature.vocabulary.domain.usecase.CreateVocabularyUs
 import com.example.efishapp.feature.vocabulary.domain.usecase.DeleteVocabularyUseCase
 import com.example.efishapp.feature.vocabulary.domain.usecase.GetVocabulariesUseCase
 import com.example.efishapp.feature.vocabulary.domain.usecase.UpdateVocabularyUseCase
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 sealed class VocabularyRoute(val route: String) {
     data object VocabularyList : VocabularyRoute("vocabulary_list/{folderId}/{folderName}/{folderColor}") {
         fun createRoute(folderId: String, folderName: String, folderColor: Long) =
-            "vocabulary_list/$folderId/$folderName/$folderColor"
+            "vocabulary_list/$folderId/${URLEncoder.encode(folderName, StandardCharsets.UTF_8)}/$folderColor"
+    }
+
+    data object VocabularyDetail : VocabularyRoute("vocabulary_detail/{vocabularyId}/{folderColor}") {
+        fun createRoute(vocabularyId: String, folderColor: Long) =
+            "vocabulary_detail/$vocabularyId/$folderColor"
     }
 }
 
@@ -39,12 +47,15 @@ fun VocabularyNavGraph(
             )
         ) { backStackEntry ->
             val folderId = backStackEntry.arguments?.getString("folderId") ?: ""
-            val folderName = backStackEntry.arguments?.getString("folderName") ?: ""
+            val folderName = backStackEntry.arguments?.getString("folderName")?.let {
+                URLDecoder.decode(it, StandardCharsets.UTF_8.toString())
+            } ?: ""
             val folderColor = backStackEntry.arguments?.getLong("folderColor") ?: 0xFF4C58BA
 
             val viewModel = remember(folderId) {
                 VocabularyViewModel(
                     folderId = folderId,
+                    vocabularyRepository = vocabularyRepository,
                     getVocabulariesUseCase = GetVocabulariesUseCase(vocabularyRepository),
                     createVocabularyUseCase = CreateVocabularyUseCase(vocabularyRepository),
                     updateVocabularyUseCase = UpdateVocabularyUseCase(vocabularyRepository),
@@ -56,6 +67,34 @@ fun VocabularyNavGraph(
                 folderName = folderName,
                 folderColor = folderColor,
                 onNavigateBack = onNavigateBack,
+                onVocabularyClick = { vocabulary ->
+                    navController.navigate(VocabularyRoute.VocabularyDetail.createRoute(vocabulary.id, folderColor))
+                },
+                viewModel = viewModel
+            )
+        }
+
+        composable(
+            route = VocabularyRoute.VocabularyDetail.route,
+            arguments = listOf(
+                navArgument("vocabularyId") { type = NavType.StringType },
+                navArgument("folderColor") { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val vocabularyId = backStackEntry.arguments?.getString("vocabularyId") ?: ""
+            val folderColor = backStackEntry.arguments?.getLong("folderColor") ?: 0xFF4C58BA
+
+            val viewModel = remember {
+                VocabularyDetailViewModel(
+                    vocabularyId = vocabularyId,
+                    vocabularyRepository = vocabularyRepository
+                )
+            }
+
+            VocabularyDetailScreen(
+                vocabularyId = vocabularyId,
+                folderColor = folderColor,
+                onNavigateBack = { navController.popBackStack() },
                 viewModel = viewModel
             )
         }

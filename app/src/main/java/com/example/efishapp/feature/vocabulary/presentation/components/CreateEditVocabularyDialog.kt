@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,8 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.efishapp.feature.vocabulary.domain.model.Vocabulary
-import com.example.efishapp.feature.folder.presentation.theme.GlassBackground
-import com.example.efishapp.feature.folder.presentation.theme.GlassBorder
 
 @Composable
 fun CreateEditVocabularyDialog(
@@ -63,10 +62,10 @@ fun CreateEditVocabularyDialog(
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
                 .clip(RoundedCornerShape(24.dp))
-                .background(Color(0xFF2D2D44).copy(alpha = 0.95f))
+                .background(Color.White)
                 .border(
                     width = 1.dp,
-                    color = GlassBorder,
+                    color = Color(0xFFE0E0E0),
                     shape = RoundedCornerShape(24.dp)
                 )
                 .padding(24.dp)
@@ -79,14 +78,14 @@ fun CreateEditVocabularyDialog(
                     Text(
                         text = if (isEditing) "Chỉnh sửa từ vựng" else "Thêm từ vựng mới",
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color.White,
+                        color = Color(0xFF1A1A2E),
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = Color.White
+                            tint = Color(0xFF1A1A2E)
                         )
                     }
                 }
@@ -97,7 +96,8 @@ fun CreateEditVocabularyDialog(
                     value = word,
                     onValueChange = { word = it },
                     label = "Từ *",
-                    placeholder = "Nhập từ vựng"
+                    placeholder = "Nhập từ vựng",
+                    folderColor = folderColor
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -106,7 +106,8 @@ fun CreateEditVocabularyDialog(
                     value = phonetic,
                     onValueChange = { phonetic = it },
                     label = "Phiên âm",
-                    placeholder = "/prəˌnʌnsiˈeɪʃn/"
+                    placeholder = "/prəˌnʌnsiˈeɪʃn/",
+                    folderColor = folderColor
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -115,7 +116,8 @@ fun CreateEditVocabularyDialog(
                     value = meaning,
                     onValueChange = { meaning = it },
                     label = "Nghĩa *",
-                    placeholder = "Nhập nghĩa của từ"
+                    placeholder = "Nhập nghĩa của từ",
+                    folderColor = folderColor
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -127,7 +129,8 @@ fun CreateEditVocabularyDialog(
                     placeholder = "Enter an example sentence",
                     singleLine = false,
                     maxLines = 2,
-                    keyboardCapitalization = KeyboardCapitalization.Sentences
+                    keyboardCapitalization = KeyboardCapitalization.Sentences,
+                    folderColor = folderColor
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -137,7 +140,8 @@ fun CreateEditVocabularyDialog(
                     onValueChange = { exampleMeaning = it },
                     label = "Nghĩa ví dụ",
                     placeholder = "Dịch nghĩa ví dụ",
-                    singleLine = true
+                    singleLine = true,
+                    folderColor = folderColor
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -149,7 +153,7 @@ fun CreateEditVocabularyDialog(
                     OutlinedButton(
                         onClick = onDismiss,
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color.White
+                            contentColor = Color(0xFF1A1A2E)
                         )
                     ) {
                         Text("Hủy")
@@ -168,7 +172,7 @@ fun CreateEditVocabularyDialog(
                             containerColor = folderColor
                         )
                     ) {
-                        Text(if (isEditing) "Lưu" else "Thêm")
+                        Text(if (isEditing) "Lưu" else "Thêm", color = Color.White)
                     }
                 }
             }
@@ -181,6 +185,7 @@ fun VocabularyTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
+    folderColor: Color,
     modifier: Modifier = Modifier,
     placeholder: String = "",
     singleLine: Boolean = true,
@@ -191,7 +196,7 @@ fun VocabularyTextField(
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.8f)
+            color = Color(0xFF1A1A2E).copy(alpha = 0.8f)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -202,16 +207,16 @@ fun VocabularyTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(GlassBackground)
+                .background(Color.White)
                 .border(
                     width = 1.dp,
-                    color = GlassBorder,
+                    color = Color(0xFFE0E0E0),
                     shape = RoundedCornerShape(12.dp)
                 ),
             placeholder = {
                 Text(
                     text = placeholder,
-                    color = Color.White.copy(alpha = 0.4f)
+                    color = Color(0xFF1A1A2E).copy(alpha = 0.4f)
                 )
             },
             singleLine = singleLine,
@@ -219,12 +224,12 @@ fun VocabularyTextField(
             keyboardOptions = KeyboardOptions(
                 capitalization = keyboardCapitalization
             ),
-            colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                cursorColor = Color.White,
-                focusedBorderColor = Color.White.copy(alpha = 0.5f),
-                unfocusedBorderColor = Color.Transparent
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color(0xFF1A1A2E),
+                unfocusedTextColor = Color(0xFF1A1A2E),
+                cursorColor = folderColor,
+                focusedBorderColor = folderColor,
+                unfocusedBorderColor = Color(0xFFE0E0E0)
             )
         )
     }

@@ -98,6 +98,7 @@ class FolderViewModel(
             createFolder(folder)
                 .onSuccess {
                     hideDialog()
+                    _uiState.update { it.copy(successMessage = "Tạo thư mục thành công") }
                 }
                 .onFailure { exception ->
                     _uiState.update {
@@ -126,6 +127,7 @@ class FolderViewModel(
             updateFolderUseCase(updatedFolder)
                 .onSuccess {
                     hideDialog()
+                    _uiState.update { it.copy(successMessage = "Cập nhật thư mục thành công") }
                 }
                 .onFailure { exception ->
                     _uiState.update {
@@ -160,6 +162,7 @@ class FolderViewModel(
             deleteFolderUseCase(folder.id)
                 .onSuccess {
                     hideDeleteConfirmation()
+                    _uiState.update { it.copy(successMessage = "Xóa thư mục thành công") }
                 }
                 .onFailure { exception ->
                     _uiState.update {
@@ -172,6 +175,58 @@ class FolderViewModel(
     fun clearError() {
         _uiState.update {
             it.copy(error = null)
+        }
+    }
+
+    fun clearSuccessMessage() {
+        _uiState.update {
+            it.copy(successMessage = null)
+        }
+    }
+
+    fun toggleSelectionMode() {
+        _uiState.update {
+            it.copy(
+                isSelectionMode = !it.isSelectionMode,
+                selectedFolderIds = emptySet()
+            )
+        }
+    }
+
+    fun toggleFolderSelection(folderId: String) {
+        _uiState.update {
+            val newSelectedIds = if (it.selectedFolderIds.contains(folderId)) {
+                it.selectedFolderIds - folderId
+            } else {
+                it.selectedFolderIds + folderId
+            }
+            it.copy(selectedFolderIds = newSelectedIds)
+        }
+    }
+
+    fun selectAll() {
+        _uiState.update {
+            it.copy(selectedFolderIds = it.folders.map { folder -> folder.id }.toSet())
+        }
+    }
+
+    fun deleteSelectedFolders() {
+        val selectedIds = _uiState.value.selectedFolderIds
+        if (selectedIds.isEmpty()) return
+
+        viewModelScope.launch {
+            var successCount = 0
+            selectedIds.forEach { folderId ->
+                deleteFolderUseCase(folderId)
+                    .onSuccess { successCount++ }
+            }
+            _uiState.update {
+                it.copy(
+                    isSelectionMode = false,
+                    selectedFolderIds = emptySet(),
+                    successMessage = "Đã xóa $successCount thư mục"
+                )
+            }
         }
     }
 }

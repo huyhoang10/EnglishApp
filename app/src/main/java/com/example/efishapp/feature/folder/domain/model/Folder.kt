@@ -2,7 +2,7 @@ package com.example.efishapp.feature.folder.domain.model
 
 data class Folder(
     val id: String = "",
-    val name: String,
+    val name: String = "",
     val description: String = "",
     val topicType: Topic = Topic.CUSTOM,
     val vocabularyCount: Int = 0,

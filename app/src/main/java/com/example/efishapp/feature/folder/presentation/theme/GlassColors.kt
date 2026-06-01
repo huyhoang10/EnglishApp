@@ -3,12 +3,12 @@ package com.example.efishapp.feature.folder.presentation.theme
 import androidx.compose.ui.graphics.Color
 
 // Background gradient colors
-val GradientStart = Color(0xFF667EEA)
-val GradientEnd = Color(0xFF764BA2)
+val GradientStart = Color(0xFFFFFFFF)
+val GradientEnd = Color(0xFFF5F5F5)
 
 // Glass morphism colors
-val GlassBackground = Color(0x20FFFFFF)
-val GlassBorder = Color(0x40FFFFFF)
+val GlassBackground = Color(0xFFF5F5F5)
+val GlassBorder = Color(0xFFE0E0E0)
 val GlassShadow = Color(0x1A000000)
 
 // Text colors on glass

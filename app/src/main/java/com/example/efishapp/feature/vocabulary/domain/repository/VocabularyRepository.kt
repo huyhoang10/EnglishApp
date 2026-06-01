@@ -10,4 +10,5 @@ interface VocabularyRepository {
     suspend fun updateVocabulary(vocabulary: Vocabulary): Result<Unit>
     suspend fun deleteVocabulary(vocabularyId: String): Result<Unit>
     suspend fun deleteAllVocabulariesInFolder(folderId: String): Result<Unit>
+    suspend fun updateFolderVocabularyCount(folderId: String): Int
 }

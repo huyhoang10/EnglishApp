@@ -19,8 +19,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -42,13 +46,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.efishapp.feature.folder.presentation.theme.GlassBackground
-import com.example.efishapp.feature.folder.presentation.theme.GlassBorder
+import com.example.efishapp.feature.vocabulary.domain.model.Vocabulary
 import com.example.efishapp.feature.vocabulary.presentation.components.CreateEditVocabularyDialog
 import com.example.efishapp.feature.vocabulary.presentation.components.VocabularyCard
 
@@ -57,6 +59,7 @@ fun VocabularyScreen(
     folderName: String,
     folderColor: Long,
     onNavigateBack: () -> Unit,
+    onVocabularyClick: (Vocabulary) -> Unit = {},
     viewModel: VocabularyViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -70,28 +73,44 @@ fun VocabularyScreen(
         }
     }
 
+    LaunchedEffect(uiState.successMessage) {
+        uiState.successMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearSuccessMessage()
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(folderColorValue, folderColorValue.copy(alpha = 0.8f))
-                )
-            )
+            .background(Color.White)
     ) {
         Scaffold(
             containerColor = Color.Transparent,
             snackbarHost = { SnackbarHost(snackbarHostState) },
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { viewModel.showCreateVocabularyDialog() },
-                    containerColor = Color.White,
-                    contentColor = folderColorValue
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Thêm từ vựng"
-                    )
+                if (uiState.isSelectionMode && uiState.selectedVocabularyIds.isNotEmpty()) {
+                    FloatingActionButton(
+                        onClick = { viewModel.deleteSelectedVocabularies() },
+                        containerColor = Color.Red,
+                        contentColor = Color.White
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Xóa đã chọn"
+                        )
+                    }
+                } else if (!uiState.isSelectionMode) {
+                    FloatingActionButton(
+                        onClick = { viewModel.showCreateVocabularyDialog() },
+                        containerColor = folderColorValue,
+                        contentColor = Color.White
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Thêm từ vựng"
+                        )
+                    }
                 }
             }
         ) { paddingValues ->
@@ -100,47 +119,84 @@ fun VocabularyScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 40.dp, start = 8.dp, end = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Quay lại",
-                            tint = Color.White
+                if (uiState.isSelectionMode) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 40.dp, start = 8.dp, end = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = { viewModel.toggleSelectionMode() }) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Hủy",
+                                tint = Color(0xFF1A1A2E)
+                            )
+                        }
+
+                        Text(
+                            text = "${uiState.selectedVocabularyIds.size} đã chọn",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF1A1A2E),
+                            modifier = Modifier.weight(1f)
                         )
+
+                        TextButton(onClick = { viewModel.selectAll() }) {
+                            Text("Chọn tất cả", color = folderColorValue)
+                        }
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 40.dp, start = 8.dp, end = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Quay lại",
+                                tint = Color(0xFF1A1A2E)
+                            )
+                        }
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = folderName,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1A1A2E)
+                            )
+                            Text(
+                                text = "${uiState.vocabularies.size} từ vựng",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFF1A1A2E).copy(alpha = 0.7f)
+                            )
+                        }
+
+                        IconButton(onClick = { viewModel.toggleSelectionMode() }) {
+                            Icon(
+                                imageVector = Icons.Default.SelectAll,
+                                contentDescription = "Chọn nhiều",
+                                tint = Color(0xFF1A1A2E)
+                            )
+                        }
                     }
 
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = folderName,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "${uiState.vocabularies.size} từ vựng",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    VocabularySearchBar(
+                        query = uiState.searchQuery,
+                        onQueryChange = { viewModel.updateSearchQuery(it) },
+                        folderColor = folderColorValue,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                VocabularySearchBar(
-                    query = uiState.searchQuery,
-                    onQueryChange = { viewModel.updateSearchQuery(it) },
-                    folderColor = folderColorValue,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 when {
                     uiState.isLoading -> {
@@ -148,7 +204,7 @@ fun VocabularyScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator(color = Color.White)
+                            CircularProgressIndicator(color = folderColorValue)
                         }
                     }
                     viewModel.getFilteredVocabularies().isEmpty() -> {
@@ -170,13 +226,19 @@ fun VocabularyScreen(
                                 VocabularyCard(
                                     vocabulary = vocabulary,
                                     folderColor = folderColorValue,
+                                    onClick = { onVocabularyClick(vocabulary) },
                                     onEdit = { viewModel.showEditVocabularyDialog(vocabulary) },
                                     onDelete = { viewModel.showDeleteConfirmation(vocabulary) },
-                                    onToggleLearned = { viewModel.toggleVocabularyLearned(vocabulary) }
+                                    onToggleLearned = { viewModel.toggleVocabularyLearned(vocabulary) },
+                                    isSelectionMode = uiState.isSelectionMode,
+                                    isSelected = uiState.selectedVocabularyIds.contains(vocabulary.id),
+                                    onToggleSelection = { viewModel.toggleVocabularySelection(vocabulary.id) }
                                 )
                             }
-                            item {
-                                Spacer(modifier = Modifier.height(80.dp))
+                            if (!uiState.isSelectionMode) {
+                                item {
+                                    Spacer(modifier = Modifier.height(80.dp))
+                                }
                             }
                         }
                     }
@@ -195,6 +257,7 @@ fun VocabularyScreen(
                     } else {
                         viewModel.createVocabulary(word, phonetic, meaning, example, exampleMeaning)
                     }
+                    viewModel.hideVocabularyDialog()
                 }
             )
         }
@@ -202,27 +265,108 @@ fun VocabularyScreen(
         if (uiState.showDeleteConfirmation && uiState.vocabularyToDelete != null) {
             AlertDialog(
                 onDismissRequest = { viewModel.hideDeleteConfirmation() },
-                title = { Text("Xóa từ vựng", color = Color.White) },
+                title = { Text("Xóa từ vựng", color = Color(0xFF1A1A2E)) },
                 text = {
                     Text(
                         "Bạn có chắc muốn xóa từ \"${uiState.vocabularyToDelete?.word}\"?",
-                        color = Color.White.copy(alpha = 0.8f)
+                        color = Color(0xFF1A1A2E).copy(alpha = 0.8f)
                     )
                 },
                 confirmButton = {
                     Button(
                         onClick = { viewModel.deleteVocabulary() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red.copy(alpha = 0.8f))
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                     ) {
                         Text("Xóa")
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { viewModel.hideDeleteConfirmation() }) {
-                        Text("Hủy", color = Color.White)
+                        Text("Hủy", color = Color(0xFF1A1A2E))
                     }
                 },
-                containerColor = Color(0xFF2D2D44)
+                containerColor = Color.White
+            )
+        }
+
+        // Dialog thông báo thành công
+        uiState.successMessage?.let { message ->
+            AlertDialog(
+                onDismissRequest = { viewModel.clearSuccessMessage() },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint = Color(0xFF4CAF50),
+                        modifier = Modifier.size(48.dp)
+                    )
+                },
+                title = {
+                    Text(
+                        "Thành công",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                text = {
+                    Text(
+                        message,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = { viewModel.clearSuccessMessage() },
+                        colors = ButtonDefaults.buttonColors(containerColor = folderColorValue)
+                    ) {
+                        Text("OK")
+                    }
+                },
+                containerColor = Color.White
+            )
+        }
+
+        // Dialog thông báo lỗi
+        uiState.error?.let { error ->
+            AlertDialog(
+                onDismissRequest = { viewModel.clearError() },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = null,
+                        tint = Color.Red,
+                        modifier = Modifier.size(48.dp)
+                    )
+                },
+                title = {
+                    Text(
+                        "Lỗi",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                text = {
+                    Text(
+                        error,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = { viewModel.clearError() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    ) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { viewModel.clearError() }) {
+                        Text("Hủy", color = Color(0xFF1A1A2E))
+                    }
+                },
+                containerColor = Color.White
             )
         }
     }
@@ -238,10 +382,10 @@ fun VocabularySearchBar(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(GlassBackground)
+            .background(Color.White)
             .border(
                 width = 1.dp,
-                color = GlassBorder,
+                color = Color(0xFFE0E0E0),
                 shape = RoundedCornerShape(16.dp)
             )
     ) {
@@ -254,7 +398,7 @@ fun VocabularySearchBar(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = Color.White.copy(alpha = 0.6f),
+                tint = Color(0xFF1A1A2E).copy(alpha = 0.5f),
                 modifier = Modifier.size(20.dp)
             )
 
@@ -264,13 +408,13 @@ fun VocabularySearchBar(
                 value = query,
                 onValueChange = onQueryChange,
                 modifier = Modifier.weight(1f),
-                textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
+                textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF1A1A2E)),
                 decorationBox = { innerTextField ->
                     if (query.isEmpty()) {
                         Text(
                             text = "Tìm kiếm từ vựng...",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White.copy(alpha = 0.4f)
+                            color = Color(0xFF1A1A2E).copy(alpha = 0.4f)
                         )
                     }
                     innerTextField()
@@ -285,7 +429,7 @@ fun VocabularySearchBar(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = "Clear",
-                        tint = Color.White.copy(alpha = 0.6f),
+                        tint = Color(0xFF1A1A2E).copy(alpha = 0.5f),
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -315,7 +459,7 @@ fun EmptyVocabularyView(
             text = if (hasSearchQuery) "Không tìm thấy từ nào" else "Chưa có từ vựng nào",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
-            color = Color.White
+            color = Color(0xFF1A1A2E)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -324,7 +468,7 @@ fun EmptyVocabularyView(
             text = if (hasSearchQuery) "Thử từ khóa khác"
             else "Bắt đầu thêm từ vựng đầu tiên\nvào thư mục này",
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.6f),
+            color = Color(0xFF1A1A2E).copy(alpha = 0.6f),
             textAlign = TextAlign.Center
         )
     }

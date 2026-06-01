@@ -147,10 +147,46 @@ class VocabularyRepositoryImpl(
         }
     }
 
+    override suspend fun updateFolderVocabularyCount(folderId: String): Int {
+        return try {
+            val snapshot = vocabulariesCollection
+                .whereEqualTo("folderId", folderId)
+                .get()
+                .await()
+            
+            val count = snapshot.size()
+            
+            firestore.collection("folders")
+                .document(folderId)
+                .update("vocabularyCount", count)
+                .await()
+            
+            count
+        } catch (e: Exception) {
+            0
+        }
+    }
+
     private fun com.google.firebase.firestore.DocumentSnapshot
             .toVocabulary(): Vocabulary? {
 
-        return toObject(Vocabulary::class.java)
-            ?.copy(id = id)
+        return try {
+            Vocabulary(
+                id = id,
+                folderId = getString("folderId") ?: "",
+                word = getString("word") ?: "",
+                phonetic = getString("phonetic") ?: "",
+                meaning = getString("meaning") ?: "",
+                example = getString("example") ?: "",
+                exampleMeaning = getString("exampleMeaning") ?: "",
+                imageUrl = getString("imageUrl") ?: "",
+                audioUrl = getString("audioUrl") ?: "",
+                isLearned = getBoolean("isLearned") ?: false,
+                createdAt = getLong("createdAt") ?: System.currentTimeMillis(),
+                updatedAt = getLong("updatedAt") ?: System.currentTimeMillis()
+            )
+        } catch (e: Exception) {
+            null
+        }
     }
 }

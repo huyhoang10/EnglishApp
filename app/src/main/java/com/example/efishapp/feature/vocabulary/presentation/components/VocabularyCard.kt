@@ -35,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -47,33 +46,32 @@ import com.example.efishapp.feature.folder.presentation.theme.GlassBackground
 fun VocabularyCard(
     vocabulary: Vocabulary,
     folderColor: Color,
+    onClick: () -> Unit = {},
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onToggleLearned: () -> Unit,
+    isSelectionMode: Boolean = false,
+    isSelected: Boolean = false,
+    onToggleSelection: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            folderColor.copy(alpha = 0.15f),
-                            GlassBackground
-                        )
-                    )
+                    color = if (isSelected) folderColor.copy(alpha = 0.1f) else Color.White
                 )
                 .border(
-                    width = 1.dp,
-                    color = folderColor.copy(alpha = 0.3f),
+                    width = if (isSelected) 2.dp else 1.dp,
+                    color = if (isSelected) folderColor else Color(0xFFE0E0E0),
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(16.dp)
@@ -87,21 +85,46 @@ fun VocabularyCard(
                         .size(48.dp)
                         .clip(CircleShape)
                         .background(
-                            if (vocabulary.isLearned) Color(0xFF4CAF50).copy(alpha = 0.2f)
-                            else folderColor.copy(alpha = 0.2f)
+                            when {
+                                isSelected -> folderColor.copy(alpha = 0.15f)
+                                vocabulary.isLearned -> Color(0xFF4CAF50).copy(alpha = 0.15f)
+                                else -> folderColor.copy(alpha = 0.15f)
+                            }
                         )
                         .border(
                             width = 2.dp,
-                            color = if (vocabulary.isLearned) Color(0xFF4CAF50) else folderColor,
+                            color = when {
+                                isSelected -> folderColor
+                                vocabulary.isLearned -> Color(0xFF4CAF50)
+                                else -> folderColor
+                            },
                             shape = CircleShape
                         )
-                        .clickable(onClick = onToggleLearned),
+                        .clickable {
+                            if (isSelectionMode && onToggleSelection != null) {
+                                onToggleSelection()
+                            } else {
+                                onToggleLearned()
+                            }
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = if (vocabulary.isLearned) Icons.Default.Check else Icons.Default.Edit,
-                        contentDescription = if (vocabulary.isLearned) "Đã học" else "Chưa học",
-                        tint = if (vocabulary.isLearned) Color(0xFF4CAF50) else folderColor,
+                        imageVector = when {
+                            isSelected -> Icons.Default.Check
+                            vocabulary.isLearned -> Icons.Default.Check
+                            else -> Icons.Default.Edit
+                        },
+                        contentDescription = when {
+                            isSelected -> "Đã chọn"
+                            vocabulary.isLearned -> "Đã học"
+                            else -> "Chưa học"
+                        },
+                        tint = when {
+                            isSelected -> folderColor
+                            vocabulary.isLearned -> Color(0xFF4CAF50)
+                            else -> folderColor
+                        },
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -115,7 +138,7 @@ fun VocabularyCard(
                         text = vocabulary.word,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Color(0xFF1A1A2E)
                     )
 
                     if (vocabulary.phonetic.isNotBlank()) {
@@ -124,7 +147,7 @@ fun VocabularyCard(
                             text = vocabulary.phonetic,
                             style = MaterialTheme.typography.bodySmall,
                             fontStyle = FontStyle.Italic,
-                            color = Color.White.copy(alpha = 0.6f)
+                            color = Color(0xFF1A1A2E).copy(alpha = 0.6f)
                         )
                     }
 
@@ -133,7 +156,7 @@ fun VocabularyCard(
                     Text(
                         text = vocabulary.meaning,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.9f)
+                        color = Color(0xFF1A1A2E).copy(alpha = 0.9f)
                     )
 
                     if (vocabulary.example.isNotBlank()) {
@@ -142,59 +165,61 @@ fun VocabularyCard(
                             text = "\"${vocabulary.example}\"",
                             style = MaterialTheme.typography.bodySmall,
                             fontStyle = FontStyle.Italic,
-                            color = Color.White.copy(alpha = 0.6f)
+                            color = Color(0xFF1A1A2E).copy(alpha = 0.6f)
                         )
                         if (vocabulary.exampleMeaning.isNotBlank()) {
                             Text(
                                 text = "= ${vocabulary.exampleMeaning}",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = Color.White.copy(alpha = 0.5f)
+                                color = Color(0xFF1A1A2E).copy(alpha = 0.5f)
                             )
                         }
                     }
                 }
 
-                Box {
-                    IconButton(
-                        onClick = { showMenu = true },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Menu",
-                            tint = Color.White.copy(alpha = 0.5f),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+                if (!isSelectionMode) {
+                    Box {
+                        IconButton(
+                            onClick = { showMenu = true },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Menu",
+                                tint = Color(0xFF1A1A2E).copy(alpha = 0.5f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
 
-                    DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Chỉnh sửa") },
-                            onClick = {
-                                showMenu = false
-                                onEdit()
-                            },
-                            leadingIcon = {
-                                Icon(Icons.Default.Edit, contentDescription = null)
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Xóa") },
-                            onClick = {
-                                showMenu = false
-                                onDelete()
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = null,
-                                    tint = Color.Red.copy(alpha = 0.7f)
-                                )
-                            }
-                        )
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Chỉnh sửa") },
+                                onClick = {
+                                    showMenu = false
+                                    onEdit()
+                                },
+                                leadingIcon = {
+                                    Icon(Icons.Default.Edit, contentDescription = null)
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Xóa") },
+                                onClick = {
+                                    showMenu = false
+                                    onDelete()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = null,
+                                        tint = Color.Red
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
