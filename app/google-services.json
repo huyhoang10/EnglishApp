@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "716504332000-lp6ktvr44juda2h3q9fsbmdmfni6e5j4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.efishapp",
+            "certificate_hash": "a4c2ae5c0dcc4fdd5e12cf49d1b46949041feb9f"
+          }
+        },
+        {
           "client_id": "716504332000-pj3ihtdi12qh1pf8goopscfvt8ecfvf7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

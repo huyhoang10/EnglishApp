@@ -9,45 +9,70 @@ import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
 import com.example.efishapp.feature.Auth.Presentation.ForgotPasswordScreen
 import com.example.efishapp.feature.Auth.Presentation.LoginScreen
 import com.example.efishapp.feature.Auth.Presentation.RegisterScreen
+import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
+import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
+import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 
 @Composable
 fun EfishNavGraph(
     authViewModel: AuthViewModel,
+    flashcardViewModel: FlashcardViewModel,
     navController: NavHostController = rememberNavController()
 ){
     NavHost(
         navController = navController,
-        startDestination = AuthScreen.LOGIN
+        startDestination = Screen.FLASHCARD
     ){
-        composable(AuthScreen.LOGIN){
+        composable(Screen.LOGIN){
             LoginScreen(
                 authViewModel,
-                onNavigateToRegister = {navController.navigate(AuthScreen.REGISTER)},
-                onNavigateToForgotPassword = {navController.navigate(AuthScreen.FORGOT_PASSWORD)},
-                onLoginSuccess = {navController.navigate(AuthScreen.HOME) {
-                    popUpTo(AuthScreen.LOGIN) {
-                        inclusive = true} // Xóa màn Login khỏi lịch sử
+                onNavigateToRegister = {navController.navigate(Screen.REGISTER)},
+                onNavigateToForgotPassword = {navController.navigate(Screen.FORGOT_PASSWORD)},
+                onLoginSuccess = {navController.navigate(Screen.HOME) {
+                    popUpTo(Screen.LOGIN) {
+                        inclusive = true}
                     }
                 }
             )
         }
-        composable(AuthScreen.REGISTER) {
+        composable(Screen.REGISTER) {
             RegisterScreen(
                 authViewModel,
-                onRegisterSuccess = {navController.navigate(AuthScreen.LOGIN)},
-                onNavigateToLogin = {navController.navigate(AuthScreen.LOGIN)}
+                onRegisterSuccess = {navController.navigate(Screen.LOGIN)},
+                onNavigateToLogin = {navController.navigate(Screen.LOGIN)}
             )
         }
-        composable(AuthScreen.FORGOT_PASSWORD) {
+        composable(Screen.FORGOT_PASSWORD) {
             ForgotPasswordScreen(
                 authViewModel,
-                onNavigateBackToLogin = {navController.navigate(AuthScreen.LOGIN)},
+                onNavigateBackToLogin = {navController.navigate(Screen.LOGIN)},
                 onSendEmailSuccess = {}
             )
         }
 
-        composable(AuthScreen.HOME) {
+        composable(Screen.HOME) {
             androidx.compose.material3.Text(text = "ĐĂNG NHẬP THÀNH CÔNG! Chào mừng vào App.")
         }
+
+        composable(Screen.FLASHCARD) {
+            FlashcardScreen(
+                flashcardViewModel,
+                onNavigateToCongratulation = { totalRemember, totalForget ->
+                    navController.navigate("congratulation_screen/$totalRemember/$totalForget")
+                }
+            )
+        }
+
+        composable("congratulation_screen/{remember}/{forget}") { backStackEntry ->
+            val remember = backStackEntry.arguments?.getString("remember")?.toInt() ?: 0
+            val forget = backStackEntry.arguments?.getString("forget")?.toInt() ?: 0
+
+            CongratulationScreen(totalRemember = remember, totalForget = forget,
+                onBackToHome = {
+                navController.navigate(
+                    Screen.HOME) }
+            )
+        }
+
     }
 }

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+
 }
 
 android {
@@ -66,4 +67,7 @@ dependencies {
 
     // icon lib
     implementation("androidx.compose.material:material-icons-extended")
+
+    // Hilt
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel-compose:1.3.0")
 }

@@ -28,10 +28,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.efishapp.feature.flashcard.presentation.FlashcardUiState
 
-/**
- * 1. Quản lý toàn bộ thông số diện mạo, kích thước và kiểu chữ của FlashcardHeader (Style Tokens).
- */
 data class FlashcardHeaderConfig(
     val spacerHeight: Dp = 12.dp,
     val pillWidth: Dp = 100.dp,
@@ -39,7 +37,6 @@ data class FlashcardHeaderConfig(
     val pillBorderWidth: Dp = 2.dp,
     val pillBackgroundColor: Color = Color(0xFFF0F4F8),
 
-    // Tổ chức các thuộc tính văn bản thành TextStyle thống nhất
     val progressTextStyle: TextStyle = TextStyle(
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold,
@@ -56,45 +53,37 @@ data class FlashcardHeaderConfig(
     val rightPillBorderColor: Color = Color(0xFFC8E6C9)  // Viền xanh nhạt
 )
 
-/**
- * 2. Thành phần Tiêu đề hiển thị số tiến độ học và các bộ đếm số lượng từ vựng.
- */
 @Composable
 fun FlashcardHeader(
-    progressText: String,
-    leftCount: String,
-    rightCount: String,
+    state: FlashcardUiState,
     modifier: Modifier = Modifier,
-    config: FlashcardHeaderConfig = FlashcardHeaderConfig() // Nhận cấu hình tập trung mặc định
+    config: FlashcardHeaderConfig = FlashcardHeaderConfig()
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Số chỉ tiến độ (ví dụ: 10/20)
         Text(
-            text = progressText,
+            text = "${state.indexWord + 1}/${state.vocabularies.size}",
             style = config.progressTextStyle,
         )
 
         Spacer(modifier = Modifier.height(config.spacerHeight))
 
-        // Hàng chứa 2 nút Pill kéo giãn ra 2 bên mép
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Nút Pill bên trái (Bộ đếm 1)
+
             PillIndicator(
-                text = leftCount,
+                text = state.countForget.toString(),
                 borderColor = config.leftPillBorderColor,
                 config = config
             )
 
-            // Nút Pill bên phải (Bộ đếm 2)
             PillIndicator(
-                text = rightCount,
+                text = state.countRemember.toString(),
                 borderColor = config.rightPillBorderColor,
                 config = config
             )
@@ -102,9 +91,6 @@ fun FlashcardHeader(
     }
 }
 
-/**
- * 3. Thành phần Composable con biểu thị nút hình viên thuốc chứa số lượng từ.
- */
 @Composable
 fun PillIndicator(
     text: String,
@@ -120,7 +106,7 @@ fun PillIndicator(
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center // CĂN GIỮA HOÀN TOÀN TẠI ĐÂY
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "$text",
