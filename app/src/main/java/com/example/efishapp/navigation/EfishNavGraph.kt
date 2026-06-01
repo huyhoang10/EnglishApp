@@ -1,6 +1,7 @@
 package com.example.efishapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,6 +10,7 @@ import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
 import com.example.efishapp.feature.Auth.Presentation.ForgotPasswordScreen
 import com.example.efishapp.feature.Auth.Presentation.LoginScreen
 import com.example.efishapp.feature.Auth.Presentation.RegisterScreen
+import com.example.efishapp.feature.dashboard.presentation.DashboardScreen
 import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
@@ -21,7 +23,7 @@ fun EfishNavGraph(
 ){
     NavHost(
         navController = navController,
-        startDestination = Screen.FLASHCARD
+        startDestination = Screen.HOME
     ){
         composable(Screen.LOGIN){
             LoginScreen(
@@ -51,7 +53,7 @@ fun EfishNavGraph(
         }
 
         composable(Screen.HOME) {
-            androidx.compose.material3.Text(text = "ĐĂNG NHẬP THÀNH CÔNG! Chào mừng vào App.")
+            DashboardScreen(Modifier)
         }
 
         composable(Screen.FLASHCARD) {
