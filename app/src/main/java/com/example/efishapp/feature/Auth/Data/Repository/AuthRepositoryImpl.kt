@@ -67,4 +67,13 @@ class AuthRepositoryImpl(private val firebaseAuth: FirebaseAuth = FirebaseAuth.g
             Result.failure(e)
         }
     }
+
+    override suspend fun deleteAccount(): Result<Unit> {
+        return try {
+            firebaseAuth.currentUser?.delete()?.await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
