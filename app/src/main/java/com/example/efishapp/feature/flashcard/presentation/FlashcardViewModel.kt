@@ -7,13 +7,19 @@ import androidx.core.app.NotificationCompat
 import com.example.efishapp.R
 import com.example.efishapp.feature.notification.alarm.ReviewReminderReceiver
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.efishapp.feature.flashcard.domain.ActionType
+import com.example.efishapp.feature.flashcard.domain.GetVocabularyReviewUseCase
+import com.example.efishapp.feature.flashcard.domain.UpdateFlashcardProgressUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.max
+
+
 
 data class FlashcardHistorySnapshot(
     val indexWord: Int,
@@ -24,24 +30,25 @@ data class FlashcardHistorySnapshot(
 
 
 @HiltViewModel
-class FlashcardViewModel @Inject constructor() : ViewModel() {
+class FlashcardViewModel @Inject constructor(
+    private val getVocabularyReviewUseCase: GetVocabularyReviewUseCase,
+    private val updateFlashcardProgressUseCase: UpdateFlashcardProgressUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FlashcardUiState())
     val uiState: StateFlow<FlashcardUiState> = _uiState.asStateFlow()
-
     private val historyStack = ArrayDeque<FlashcardHistorySnapshot>()
-
     fun onEvent(event: FlashcardUiEvent) {
         when (event) {
+            is FlashcardUiEvent.LoadVocabularies -> {
+                loadReviewVocabularies(event.userId)
+            }
             FlashcardUiEvent.OnFlipCard -> {
                 _uiState.update { it.copy(isFlipped = !it.isFlipped) }
             }
-
             FlashcardUiEvent.OnClickDetail -> {
                 _uiState.update { it.copy(isShowDetail = !it.isShowDetail) }
             }
-
-
             FlashcardUiEvent.OnClickBack -> {
                 val lastSnapshot = historyStack.removeLastOrNull()
 
@@ -67,71 +74,57 @@ class FlashcardViewModel @Inject constructor() : ViewModel() {
                     }
                 }
             }
-
-            FlashcardUiEvent.OnClickAgainAction -> processCardReview(quality = 0)
-            FlashcardUiEvent.OnClickHardAction -> processCardReview(quality = 2)
-            FlashcardUiEvent.OnClickGoodAction -> processCardReview(quality = 4)
-            FlashcardUiEvent.OnClickEasyAction -> processCardReview(quality = 5)
+            is FlashcardUiEvent.OnAnswer -> {
+                handleUserAnswer(userId = "CURRENT_USER_ID", actionType = event.actionType)
+            }
         }
     }
 
-    private fun processCardReview(quality: Int) {
-        _uiState.update { currentState ->
-            val currentIndex = currentState.indexWord
-            val currentList = currentState.vocabularies
+    private fun loadReviewVocabularies(userId: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            try {
+                val list = getVocabularyReviewUseCase(userId)
+                _uiState.update {
+                    it.copy(vocabularies = list, isLoading = false, isFinished = list.isEmpty())
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
 
-            if (currentList.isEmpty() || currentIndex !in currentList.indices) return@update currentState
+    private fun handleUserAnswer(userId: String, actionType: ActionType) {
+        val currentState = _uiState.value
+        val currentIndex = currentState.indexWord
 
-            val snapshot = FlashcardHistorySnapshot(
-                indexWord = currentIndex,
-                countForget = currentState.countForget,
-                countRemember = currentState.countRemember,
-                vocabularies = currentList
-            )
-            historyStack.addLast(snapshot)
+        if (currentIndex >= currentState.vocabularies.size) return
 
-            val currentVocab = currentList[currentIndex]
-            val updatedVocab = calculateSM2(currentVocab, quality)
-            val updatedList = currentList.toMutableList().apply { set(currentIndex, updatedVocab) }
+        val currentVocab = currentState.vocabularies[currentIndex]
 
-            val isCorrect = quality >= 3
+        viewModelScope.launch {
+            // Tác vụ 2 & 3: Tính toán SM-2 và cập nhật xuống DB/Repository bất đồng bộ
+            updateFlashcardProgressUseCase(userId, currentVocab.id, actionType)
+
+            // Cập nhật trạng thái UI cục bộ chuyển sang từ tiếp theo
+            val isCorrect = actionType != ActionType.AGAIN
             val newCountForget = if (!isCorrect) currentState.countForget + 1 else currentState.countForget
             val newCountRemember = if (isCorrect) currentState.countRemember + 1 else currentState.countRemember
 
             val nextIndex = currentIndex + 1
-            val hasFinishedNow = nextIndex >= updatedList.size
+            val hasFinishedNow = nextIndex >= currentState.vocabularies.size
 
-            currentState.copy(
-                vocabularies = updatedList,
-                indexWord = if (hasFinishedNow) currentIndex else nextIndex,
-                countForget = newCountForget,
-                countRemember = newCountRemember,
-                isFlipped = false,
-                isShowDetail = false,
-                isFinished = hasFinishedNow
-            )
+            _uiState.update {
+                it.copy(
+                    indexWord = if (hasFinishedNow) currentIndex else nextIndex,
+                    countForget = newCountForget,
+                    countRemember = newCountRemember,
+                    isFlipped = false,
+                    isShowDetail = false,
+                    isFinished = hasFinishedNow
+                )
+            }
         }
-    }
-
-    private fun calculateSM2(vocab: Vocabulary, quality: Int): Vocabulary {
-        val nextRepetitions = if (quality >= 3) vocab.repetitions + 1 else 0
-
-        val nextInterval = when (nextRepetitions) {
-            0 -> 0
-            1 -> 1
-            2 -> 6
-            else -> max(1, (vocab.interval * vocab.easinessFactor).toInt())
-        }
-
-        val qFactor = 5 - quality
-        val newEF = vocab.easinessFactor + (0.1f - qFactor * (0.08f + qFactor * 0.02f))
-        val finalEF = max(1.3f, newEF)
-
-        return vocab.copy(
-            repetitions = nextRepetitions,
-            interval = nextInterval,
-            easinessFactor = finalEF
-        )
     }
 
     fun resetNavigationFlag() {

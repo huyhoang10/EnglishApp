@@ -1,5 +1,7 @@
 package com.example.efishapp.feature.flashcard.presentation
 
+import com.example.efishapp.feature.flashcard.domain.ActionType
+
 val sampleVocabularies = listOf(
     Vocabulary(
         word = "Book",
@@ -69,21 +71,32 @@ val sampleVocabularies = listOf(
 )
 
 data class FlashcardUiState(
+    val vocabularies: List<Vocabulary> = sampleVocabularies,
     val indexWord: Int = 0,
     val countForget: Int = 0,
     val countRemember: Int = 0,
     val isFlipped: Boolean = false,
     val isShowDetail: Boolean = false,
-    val vocabularies: List<Vocabulary> = sampleVocabularies,
+    val isLoading: Boolean = false,
     val isFinished: Boolean = false
 )
 
-sealed interface FlashcardUiEvent{
+//sealed interface FlashcardUiEvent{
+//    object OnFlipCard : FlashcardUiEvent
+//    object OnClickDetail: FlashcardUiEvent
+//    object OnClickAgainAction: FlashcardUiEvent
+//    object OnClickHardAction: FlashcardUiEvent
+//    object OnClickGoodAction: FlashcardUiEvent
+//    object OnClickEasyAction: FlashcardUiEvent
+//    object OnClickBack: FlashcardUiEvent
+//    data class LoadVocabularies(val userId: String) : FlashcardUiEvent
+//
+//}
+
+sealed interface FlashcardUiEvent {
     object OnFlipCard : FlashcardUiEvent
-    object OnClickAgainAction: FlashcardUiEvent
-    object OnClickHardAction: FlashcardUiEvent
-    object OnClickGoodAction: FlashcardUiEvent
-    object OnClickEasyAction: FlashcardUiEvent
+    object OnClickDetail : FlashcardUiEvent
     object OnClickBack: FlashcardUiEvent
-    object OnClickDetail: FlashcardUiEvent
+    data class OnAnswer(val actionType: ActionType) : FlashcardUiEvent
+    data class LoadVocabularies(val userId: String) : FlashcardUiEvent
 }

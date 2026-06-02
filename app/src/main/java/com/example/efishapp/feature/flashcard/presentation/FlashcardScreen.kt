@@ -29,6 +29,7 @@ import com.example.efishapp.feature.flashcard.presentation.component.FlashcardHe
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 
 data class Vocabulary(
+    val id: String = "",
     val word: String = "",
     val pronunciation: String = "",
     val meaning: String = "",
