@@ -12,12 +12,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import com.google.firebase.auth.FirebaseAuth
 import com.example.efishapp.feature.Auth.Data.Repository.AuthRepositoryImpl
 import com.example.efishapp.feature.Auth.Domain.UseCase.ForgotPasswordUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.LoginUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.LoginWithGoogleUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.RegisterUseCase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.example.efishapp.feature.Auth.Presentation.AuthNavGraph
 import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
 import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
@@ -26,12 +30,22 @@ import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 import com.example.efishapp.feature.notification.Data.repository.DailyStudyNotificationRepositoryImpl
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
 import com.example.efishapp.navigation.EfishNavGraph
+import com.example.efishapp.feature.folder.presentation.FolderNavGraph
+import com.example.efishapp.feature.onboarding.presentation.OnboardingScreen
 import com.example.efishapp.ui.theme.EfishAppTheme
-import com.google.firebase.firestore.FirebaseFirestore
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
 
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var authViewModel: AuthViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 1. Khởi tạo tầng Data (Firebase SDK)

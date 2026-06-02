@@ -36,10 +36,15 @@ fun EfishNavGraph(
                 authViewModel,
                 onNavigateToRegister = {navController.navigate(Screen.REGISTER)},
                 onNavigateToForgotPassword = {navController.navigate(Screen.FORGOT_PASSWORD)},
-                onLoginSuccess = {
-                    // Sau khi login thành công, đi tới thiết lập hồ sơ trước khi vào Home
-                    navController.navigate(Screen.PROFILE_SETUP) {
-                        popUpTo(Screen.LOGIN) { inclusive = true }
+                onLoginSuccess = { profileExists ->
+                    if (profileExists) {
+                        navController.navigate(Screen.HOME) {
+                            popUpTo(Screen.LOGIN) { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate(Screen.PROFILE_SETUP) {
+                            popUpTo(Screen.LOGIN) { inclusive = true }
+                        }
                     }
                 }
             )
