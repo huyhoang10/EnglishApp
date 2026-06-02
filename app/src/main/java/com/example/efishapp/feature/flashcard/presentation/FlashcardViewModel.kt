@@ -1,5 +1,11 @@
 package com.example.efishapp.feature.flashcard.presentation
 
+import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
+import androidx.core.app.NotificationCompat
+import com.example.efishapp.R
+import com.example.efishapp.feature.notification.alarm.ReviewReminderReceiver
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -131,5 +137,15 @@ class FlashcardViewModel @Inject constructor() : ViewModel() {
     fun resetNavigationFlag() {
         _uiState.update { it.copy(isFinished = false) }
         historyStack.clear()
+    }
+
+    fun checkAndNotifyReview(context: Context) {
+        val count = _uiState.value.vocabularies.count { it.interval <= 0 && it.repetitions > 0 }
+        if (count > 0) {
+            val intent = Intent(context, ReviewReminderReceiver::class.java).apply {
+                putExtra(ReviewReminderReceiver.EXTRA_COUNT, count)
+            }
+            context.sendBroadcast(intent)
+        }
     }
 }

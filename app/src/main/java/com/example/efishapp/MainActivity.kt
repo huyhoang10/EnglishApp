@@ -23,6 +23,8 @@ import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.Vocabulary
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
+import com.example.efishapp.feature.notification.Data.repository.DailyStudyNotificationRepositoryImpl
+import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
 import com.example.efishapp.navigation.EfishNavGraph
 import com.example.efishapp.ui.theme.EfishAppTheme
 import com.google.firebase.firestore.FirebaseFirestore
@@ -37,6 +39,8 @@ class MainActivity : ComponentActivity() {
         val firestore = FirebaseFirestore.getInstance()
         val authRepository = AuthRepositoryImpl(firebaseAuth)
         val userProfileRepository = UserProfileRepositoryImpl(firebaseAuth, firestore)
+        val dailyStudyNotificationRepository: com.example.efishapp.feature.notification.Domain.repository.DailyStudyNotificationRepository =
+            com.example.efishapp.feature.notification.Data.repository.DailyStudyNotificationRepositoryImpl(firestore)
 
         // 2. Khởi tạo tầng Domain (Các UseCases)
         val loginUseCase = LoginUseCase(authRepository)
@@ -54,6 +58,9 @@ class MainActivity : ComponentActivity() {
         )
         val flashcardViewModel = FlashcardViewModel()
         val dashboardUiState = DashboardViewModel()
+        val profileSetupViewModel = com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel(userProfileRepository)
+        val dailyStudyReminderViewModel = DailyStudyReminderViewModel(dailyStudyNotificationRepository, firebaseAuth)
+
         enableEdgeToEdge()
         setContent {
             EfishAppTheme {
@@ -66,9 +73,13 @@ class MainActivity : ComponentActivity() {
 //                        modifier = Modifier.padding(innerPadding)
 //                    )
 //                }
-                EfishNavGraph(authViewModel = authViewModel,
+                EfishNavGraph(
+                    authViewModel = authViewModel,
                     flashcardViewModel = flashcardViewModel,
-                    dashboardViewModel = dashboardUiState)
+                    dashboardViewModel = dashboardUiState,
+                    profileSetupViewModel = profileSetupViewModel,
+                    dailyStudyReminderViewModel = dailyStudyReminderViewModel,
+                )
             }
         }
     }

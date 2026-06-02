@@ -15,12 +15,16 @@ import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
 import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
+import com.example.efishapp.feature.notification.presentation.DailyStudyReminderScreen
+import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
 
 @Composable
 fun EfishNavGraph(
     authViewModel: AuthViewModel,
     flashcardViewModel: FlashcardViewModel,
     dashboardViewModel: DashboardViewModel,
+    profileSetupViewModel: com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel,
+    dailyStudyReminderViewModel: DailyStudyReminderViewModel,
     navController: NavHostController = rememberNavController()
 ){
     NavHost(
@@ -32,9 +36,10 @@ fun EfishNavGraph(
                 authViewModel,
                 onNavigateToRegister = {navController.navigate(Screen.REGISTER)},
                 onNavigateToForgotPassword = {navController.navigate(Screen.FORGOT_PASSWORD)},
-                onLoginSuccess = {navController.navigate(Screen.HOME) {
-                    popUpTo(Screen.LOGIN) {
-                        inclusive = true}
+                onLoginSuccess = {
+                    // Sau khi login thành công, đi tới thiết lập hồ sơ trước khi vào Home
+                    navController.navigate(Screen.PROFILE_SETUP) {
+                        popUpTo(Screen.LOGIN) { inclusive = true }
                     }
                 }
             )
@@ -54,8 +59,28 @@ fun EfishNavGraph(
             )
         }
 
+        composable(Screen.PROFILE_SETUP) {
+            com.example.efishapp.feature.profile.presentation.ProfileSetupScreen(
+                viewModel = profileSetupViewModel,
+                onSetupComplete = {
+                    navController.navigate(Screen.HOME) {
+                        popUpTo(Screen.PROFILE_SETUP) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Screen.HOME) {
-            DashboardScreen(dashboardViewModel, Modifier)
+            DashboardScreen(
+                dashboardViewModel,
+                Modifier,
+                onNavigateToNotification = { navController.navigate(Screen.DAILY_STUDY_REMINDER) },
+                flashcardViewModel = flashcardViewModel
+            )
+        }
+
+        composable(Screen.DAILY_STUDY_REMINDER) {
+            DailyStudyReminderScreen(dailyStudyReminderViewModel)
         }
 
         composable(Screen.FLASHCARD) {
