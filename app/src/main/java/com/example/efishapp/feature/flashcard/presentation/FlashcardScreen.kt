@@ -38,10 +38,6 @@ data class Vocabulary(
     val collocation: String = "",
     val relatedWords: String = "",
     val note: String = "",
-
-    val repetitions: Int = 0,
-    val interval: Int = 0,
-    val easinessFactor: Float = 2.5f
 )
 
 data class FlashcardScreenConfig(

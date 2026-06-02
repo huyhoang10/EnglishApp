@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -38,6 +39,7 @@ import androidx.compose.runtime.setValue
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
+import com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel
 
 
 @AndroidEntryPoint
@@ -70,9 +72,9 @@ class MainActivity : ComponentActivity() {
             forgotPasswordUseCase = forgotPasswordUseCase,
             loginWithGoogleUseCase = loginWithGoogleUseCase
         )
-        val flashcardViewModel = FlashcardViewModel()
+        val flashcardViewModel: FlashcardViewModel by viewModels()
         val dashboardUiState = DashboardViewModel()
-        val profileSetupViewModel = com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel(userProfileRepository)
+        val profileSetupViewModel = ProfileSetupViewModel(userProfileRepository)
         val dailyStudyReminderViewModel = DailyStudyReminderViewModel(dailyStudyNotificationRepository, firebaseAuth)
 
         enableEdgeToEdge()

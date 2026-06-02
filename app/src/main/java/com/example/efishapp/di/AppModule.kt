@@ -1,5 +1,7 @@
 package com.example.efishapp.di
 
+import com.example.efishapp.feature.flashcard.data.repository.FlashcardRepositoryImpl
+import com.example.efishapp.feature.flashcard.domain.FlashcardRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -16,7 +18,16 @@ object AppModule {
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
+
     @Provides
     @Singleton
-    fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+    fun provideFirebaseFirestore(): FirebaseFirestore {
+        return FirebaseFirestore.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFlashcardRepository(impl: FlashcardRepositoryImpl): FlashcardRepository {
+        return impl
+    }
 }
