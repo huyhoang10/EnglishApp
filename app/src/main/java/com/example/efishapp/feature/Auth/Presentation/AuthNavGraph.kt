@@ -15,7 +15,7 @@ object AuthScreen {
 @Composable
 fun AuthNavGraph(
     viewModel: AuthViewModel,
-    onAuthSuccess: () -> Unit,
+    onAuthSuccess: (Boolean) -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
     NavHost(
@@ -35,7 +35,7 @@ fun AuthNavGraph(
             RegisterScreen(
                 viewModel = viewModel,
                 onNavigateToLogin = { navController.popBackStack() },
-                onRegisterSuccess = onAuthSuccess
+                onRegisterSuccess = { onAuthSuccess(false) } // Mới đăng ký thì coi như chưa có hồ sơ
             )
         }
 

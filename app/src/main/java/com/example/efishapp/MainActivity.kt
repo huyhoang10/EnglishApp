@@ -27,6 +27,8 @@ import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.Vocabulary
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
+import com.example.efishapp.feature.notification.Data.repository.DailyStudyNotificationRepositoryImpl
+import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
 import com.example.efishapp.navigation.EfishNavGraph
 import com.example.efishapp.feature.folder.presentation.FolderNavGraph
 import com.example.efishapp.feature.onboarding.presentation.OnboardingScreen
@@ -51,6 +53,8 @@ class MainActivity : ComponentActivity() {
         val firestore = FirebaseFirestore.getInstance()
         val authRepository = AuthRepositoryImpl(firebaseAuth)
         val userProfileRepository = UserProfileRepositoryImpl(firebaseAuth, firestore)
+        val dailyStudyNotificationRepository: com.example.efishapp.feature.notification.Domain.repository.DailyStudyNotificationRepository =
+            com.example.efishapp.feature.notification.Data.repository.DailyStudyNotificationRepositoryImpl(firestore)
 
         // 2. Khởi tạo tầng Domain (Các UseCases)
         val loginUseCase = LoginUseCase(authRepository)
@@ -68,36 +72,13 @@ class MainActivity : ComponentActivity() {
         )
         val flashcardViewModel = FlashcardViewModel()
         val dashboardUiState = DashboardViewModel()
+        val profileSetupViewModel = com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel(userProfileRepository)
+        val dailyStudyReminderViewModel = DailyStudyReminderViewModel(dailyStudyNotificationRepository, firebaseAuth)
+
         enableEdgeToEdge()
         setContent {
             EfishAppTheme {
-//                var showOnboarding by remember { mutableStateOf(true) }
-//                var showAuth by remember { mutableStateOf(false) }
-//                var showFolder by remember { mutableStateOf(false) }
-//
-//                when {
-//                    showOnboarding -> {
-//                        OnboardingScreen(
-//                            onNavigateToAuth = {
-//                                showOnboarding = false
-//                                showAuth = false
-//                                showFolder = true
-//                            }
-//                        )
-//                    }
-//                    showAuth -> {
-//                        AuthNavGraph(
-//                            viewModel = authViewModel,
-//                            onAuthSuccess = {
-//                                showAuth = false
-//                                showFolder = true
-//                            }
-//                        )
-//                    }
-//                    showFolder -> {
-//                        FolderNavGraph()
-//                    }
-//                }
+
 
 //                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 //                    // 2. Bây giờ bạn có thể truyền innerPadding và vocabularys vào đây mà không bị lỗi
@@ -106,9 +87,13 @@ class MainActivity : ComponentActivity() {
 //                        modifier = Modifier.padding(innerPadding)
 //                    )
 //                }
-//                EfishNavGraph(authViewModel = authViewModel,
-//                    flashcardViewModel = flashcardViewModel,
-//                    dashboardViewModel = dashboardUiState)
+                EfishNavGraph(
+                    authViewModel = authViewModel,
+                    flashcardViewModel = flashcardViewModel,
+                    dashboardViewModel = dashboardUiState,
+                    profileSetupViewModel = profileSetupViewModel,
+                    dailyStudyReminderViewModel = dailyStudyReminderViewModel,
+                )
             }
         }
     }

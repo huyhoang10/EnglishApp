@@ -35,14 +35,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+
 @Composable
 fun LoginScreen(
     viewModel: AuthViewModel,
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     // Thu thập trạng thái từ ViewModel
     val uiState by viewModel.uiState.collectAsState()
@@ -87,8 +91,11 @@ fun LoginScreen(
     LaunchedEffect(uiState) {
         if (uiState is AuthUiState.Success) {
             println("Login Success detected in UI") // Debug log
-            onLoginSuccess()
-            viewModel.resetUiState() // Đưa State về Idle sau khi hoàn thành chuyển màn
+            scope.launch {
+                val exists = viewModel.checkProfileExists()
+                onLoginSuccess(exists)
+                viewModel.resetUiState() // Đưa State về Idle sau khi hoàn thành chuyển màn
+            }
         }
     }
 
