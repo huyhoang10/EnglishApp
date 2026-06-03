@@ -28,9 +28,9 @@ fun DashboardScreen(
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        flashcardViewModel.checkAndNotifyReview(context)
-    }
+//    LaunchedEffect(Unit) {
+//        flashcardViewModel.checkAndNotifyReview(context)
+//    }
 
     val scrollState = rememberScrollState()
     Scaffold(

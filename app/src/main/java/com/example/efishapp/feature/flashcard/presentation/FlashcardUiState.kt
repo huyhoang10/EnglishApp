@@ -12,9 +12,7 @@ val sampleVocabularies = listOf(
         collocation = "write a book",
         relatedWords = "magazine",
         note = "Có thể dùng như một động từ với nghĩa là 'đặt chỗ'.",
-        repetitions = 0,
-        interval = 0,
-        easinessFactor = 2.5f
+
     ),
     Vocabulary(
         word = "Apparent",
@@ -25,9 +23,7 @@ val sampleVocabularies = listOf(
         collocation = "become apparent",
         relatedWords = "obvious, clear",
         note = "Trạng từ thường dùng là 'apparently' (nghe nói là, hình như).",
-        repetitions = 0,
-        interval = 0,
-        easinessFactor = 2.5f
+
     ),
     Vocabulary(
         word = "Collaborate",
@@ -38,9 +34,7 @@ val sampleVocabularies = listOf(
         collocation = "collaborate with someone",
         relatedWords = "cooperate, team up",
         note = "Danh từ của nó là 'collaboration'.",
-        repetitions = 0,
-        interval = 0,
-        easinessFactor = 2.5f
+
     ),
     Vocabulary(
         word = "Diligent",
@@ -51,9 +45,7 @@ val sampleVocabularies = listOf(
         collocation = "diligent effort",
         relatedWords = "hard-working, studious",
         note = "Trái nghĩa với 'lazy'.",
-        repetitions = 0,
-        interval = 0,
-        easinessFactor = 2.5f
+
     ),
     Vocabulary(
         word = "Evaluate",
@@ -64,9 +56,7 @@ val sampleVocabularies = listOf(
         collocation = "carefully evaluate",
         relatedWords = "assess, appraise",
         note = "Danh từ thường gặp là 'evaluation'.",
-        repetitions = 0,
-        interval = 0,
-        easinessFactor = 2.5f
+
     )
 )
 

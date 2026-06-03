@@ -4,13 +4,16 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.SavedStateHandle
 import com.example.efishapp.R
 import com.example.efishapp.feature.notification.alarm.ReviewReminderReceiver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.example.efishapp.feature.flashcard.domain.ActionType
 import com.example.efishapp.feature.flashcard.domain.GetVocabularyReviewUseCase
 import com.example.efishapp.feature.flashcard.domain.UpdateFlashcardProgressUseCase
+import com.example.efishapp.navigation.FlashcardScreenRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,9 +34,13 @@ data class FlashcardHistorySnapshot(
 
 @HiltViewModel
 class FlashcardViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val getVocabularyReviewUseCase: GetVocabularyReviewUseCase,
     private val updateFlashcardProgressUseCase: UpdateFlashcardProgressUseCase
 ) : ViewModel() {
+
+    val routeArgs = savedStateHandle.toRoute<FlashcardScreenRoute>()
+    val flashcardSetId: String = routeArgs.flashcardSetId
 
     private val _uiState = MutableStateFlow(FlashcardUiState())
     val uiState: StateFlow<FlashcardUiState> = _uiState.asStateFlow()
@@ -132,13 +139,13 @@ class FlashcardViewModel @Inject constructor(
         historyStack.clear()
     }
 
-    fun checkAndNotifyReview(context: Context) {
-        val count = _uiState.value.vocabularies.count { it.interval <= 0 && it.repetitions > 0 }
-        if (count > 0) {
-            val intent = Intent(context, ReviewReminderReceiver::class.java).apply {
-                putExtra(ReviewReminderReceiver.EXTRA_COUNT, count)
-            }
-            context.sendBroadcast(intent)
-        }
-    }
+//    fun checkAndNotifyReview(context: Context) {
+//        val count = _uiState.value.vocabularies.count { it.interval <= 0 && it.repetitions > 0 }
+//        if (count > 0) {
+//            val intent = Intent(context, ReviewReminderReceiver::class.java).apply {
+//                putExtra(ReviewReminderReceiver.EXTRA_COUNT, count)
+//            }
+//            context.sendBroadcast(intent)
+//        }
+//    }
 }

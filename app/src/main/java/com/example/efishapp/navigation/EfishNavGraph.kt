@@ -2,6 +2,7 @@ package com.example.efishapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,6 +14,7 @@ import com.example.efishapp.feature.Auth.Presentation.RegisterScreen
 import com.example.efishapp.feature.dashboard.presentation.DashboardScreen
 import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
 import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
+import com.example.efishapp.feature.flashcard.presentation.CongratulationViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderScreen
@@ -88,25 +90,24 @@ fun EfishNavGraph(
             DailyStudyReminderScreen(dailyStudyReminderViewModel)
         }
 
-        composable(Screen.FLASHCARD) {
+
+        composable<FlashcardScreenRoute> {
+            val viewModel: FlashcardViewModel = viewModel()
             FlashcardScreen(
-                flashcardViewModel,
+                viewModel,
                 onNavigateToCongratulation = { totalRemember, totalForget ->
-                    navController.navigate("congratulation_screen/$totalRemember/$totalForget")
+                    navController.navigate(CongratulationScreenRoute(totalRemember,totalForget))
                 }
             )
         }
 
-        composable("congratulation_screen/{remember}/{forget}") { backStackEntry ->
-            val remember = backStackEntry.arguments?.getString("remember")?.toInt() ?: 0
-            val forget = backStackEntry.arguments?.getString("forget")?.toInt() ?: 0
-
-            CongratulationScreen(totalRemember = remember, totalForget = forget,
+        composable <CongratulationScreenRoute> {
+            val viewModel: CongratulationViewModel = viewModel()
+            CongratulationScreen(
+                viewModel,
                 onBackToHome = {
-                navController.navigate(
-                    Screen.HOME) }
+                }
             )
         }
-
     }
 }

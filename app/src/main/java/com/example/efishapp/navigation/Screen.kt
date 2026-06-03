@@ -1,5 +1,7 @@
 package com.example.efishapp.navigation
 
+import kotlinx.serialization.Serializable
+
 object Screen {
     const val LOGIN = "login"
     const val REGISTER = "register"
@@ -11,3 +13,13 @@ object Screen {
 
 }
 
+@Serializable
+data class FlashcardScreenRoute(
+    val flashcardSetId: String
+)
+
+@Serializable
+data class CongratulationScreenRoute(
+    val totalRemember: Int,
+    val totalForget: Int,
+)

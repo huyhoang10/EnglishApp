@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.feature.flashcard.domain.ActionType
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardActionButtons
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardBottomNavigation
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardContentCard
@@ -48,54 +49,125 @@ data class FlashcardScreenConfig(
 
 @Composable
 fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
-                    onNavigateToCongratulation: (totalRemember: Int, totalForget: Int) -> Unit,
-                    modifier: Modifier = Modifier,
-                    config: FlashcardScreenConfig = FlashcardScreenConfig()) {
+                    onNavigateToCongratulation: (totalRemember: Int, totalForget: Int) -> Unit) {
 
     val state by viewModel.uiState.collectAsState()
 
     LaunchedEffect(state.isFinished) {
         if (state.isFinished) {
             onNavigateToCongratulation(state.countRemember, state.countForget)
-
             viewModel.resetNavigationFlag()
         }
     }
 
     Scaffold(
         bottomBar = {
-            FlashcardBottomNavigation(onEvent = {event -> viewModel.onEvent(event)}) }
+            FlashcardBottomNavigation(onClickBack = { viewModel.onEvent(FlashcardUiEvent.OnClickBack) },
+                onClickDetail = { viewModel.onEvent(FlashcardUiEvent.OnClickDetail) }) }
     ) {
-        innerPadding ->
+        innerPadding -> FlashcardContent(
+                indexWord = state.indexWord,
+                state.vocabularies.size,
+                countForget = state.countForget,
+                countRemember = state.countRemember,
+                vocabulary = state.vocabularies[state.indexWord],
+                isFlipped = state.isFlipped,
+                isShowDetail = state.isShowDetail,
+                onClickFlipCard = { viewModel.onEvent(FlashcardUiEvent.OnFlipCard) },
+                onClickAgain = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.AGAIN)) },
+                onClickHard = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.HARD)) },
+                onClickGood = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.GOOD)) },
+                onClickEasy = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.EASY)) },
+                modifier = Modifier.padding(innerPadding)
+            )
+
+    }
+}
+
+@Composable
+fun FlashcardContent(
+    indexWord: Int,
+    numVocabulary: Int,
+    countForget: Int,
+    countRemember: Int,
+    vocabulary: Vocabulary,
+    isFlipped: Boolean,
+    isShowDetail: Boolean,
+    onClickFlipCard: () -> Unit,
+    onClickAgain: () -> Unit,
+    onClickHard: () -> Unit,
+    onClickGood: () -> Unit,
+    onClickEasy: () -> Unit,
+    modifier: Modifier = Modifier,
+    config: FlashcardScreenConfig = FlashcardScreenConfig()
+) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .background(config.backgroundColor)
-                .padding(innerPadding)
+                .padding()
                 .padding(horizontal = config.horizontalPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(config.spaceHeight))
 
             FlashcardHeader(
-                state
+                indexWord,
+                numVocabulary,
+                countForget,
+                countRemember,
             )
 
             Spacer(modifier = Modifier.height(config.spaceHeight))
 
             FlashcardContentCard(
-                state,
-                onEvent = {event -> viewModel.onEvent(event)},
+                vocabulary,
+                isFlipped,
+                isShowDetail,
+                onClickFlipCard,
                 modifier = Modifier.weight(1f))
 
             Spacer(modifier = Modifier.height(config.spaceHeight))
-            FlashcardActionButtons(onEvent = {event -> viewModel.onEvent(event)})
+            FlashcardActionButtons(
+                onClickAgain,
+                onClickHard,
+                onClickGood,
+                onClickEasy,
+            )
             Spacer(modifier = Modifier.height(config.spaceHeight))
         }
-    }
 }
 
 
 
-
-
+@Preview(
+    showBackground = true,
+    showSystemUi = true
+)
+@Composable
+private fun FlashcardContentPreview() {
+    FlashcardContent(
+        indexWord = 1,
+        numVocabulary = 20,
+        countForget = 3,
+        countRemember = 5,
+        vocabulary = Vocabulary(
+            id = "1",
+            word = "apple",
+            pronunciation = "/ˈæp.əl/",
+            meaning = "quả táo",
+            description = "A round fruit with red, green, or yellow skin.",
+            example = "I eat an apple every morning.",
+            collocation = "apple pie",
+            relatedWords = "fruit, orange, banana",
+            note = "Common vocabulary for beginners."
+        ),
+        isFlipped = true,
+        isShowDetail = true,
+        onClickFlipCard = {},
+        onClickAgain = {},
+        onClickHard = {},
+        onClickGood = {},
+        onClickEasy = {}
+    )
+}
