@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,17 +56,20 @@ data class FlashcardContentCardConfig(
     )
 )
 
+
 @Composable
 fun FlashcardContentCard(
-    state : FlashcardUiState,
-    onEvent: (FlashcardUiEvent) -> Unit,
-    modifier: Modifier,
+    vocabulary: Vocabulary = Vocabulary(),
+    isFlipped: Boolean = false,
+    isShowDetail: Boolean = false,
+    onFlipCard:() -> Unit = {},
+    modifier: Modifier = Modifier,
     config: FlashcardContentCardConfig = FlashcardContentCardConfig()
 ) {
-    val vocabulary: Vocabulary = state.vocabularies[state.indexWord]
+
 
     val cardRotation by animateFloatAsState(
-        targetValue = if (state.isFlipped) 180f else 0f,
+        targetValue = if (isFlipped) 180f else 0f,
         animationSpec = tween(durationMillis = config.animationDurationMillis),
         label = "CardRotationAnimation"
     )
@@ -73,7 +77,7 @@ fun FlashcardContentCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onEvent(FlashcardUiEvent.OnFlipCard) }
+            .clickable { onFlipCard }
             .graphicsLayer {
                 this.rotationY = cardRotation
                 cameraDistance = config.cameraDistanceDensity * density
@@ -103,7 +107,7 @@ fun FlashcardContentCard(
                         modifier = Modifier.graphicsLayer { rotationY = 180f }
                     )
                 }
-                if (state.isShowDetail) {
+                if (isShowDetail) {
                     DetailCard(vocabulary)
                 }
             } else {
@@ -118,4 +122,18 @@ fun FlashcardContentCard(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FlashcardContentCardPreview() {
+    FlashcardContentCard(
+        vocabulary = Vocabulary(
+            word = "Apple",
+            meaning = "Táo"
+        ),
+        isFlipped = false,
+        isShowDetail = false,
+        onFlipCard = {}
+    )
 }

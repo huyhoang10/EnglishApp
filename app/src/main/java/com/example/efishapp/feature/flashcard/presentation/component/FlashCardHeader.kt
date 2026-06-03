@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,7 +56,10 @@ data class FlashcardHeaderConfig(
 
 @Composable
 fun FlashcardHeader(
-    state: FlashcardUiState,
+    indexWord: Int,
+    numVocabulary: Int,
+    countForget: Int,
+    countRemember: Int,
     modifier: Modifier = Modifier,
     config: FlashcardHeaderConfig = FlashcardHeaderConfig()
 ) {
@@ -64,7 +68,7 @@ fun FlashcardHeader(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "${state.indexWord + 1}/${state.vocabularies.size}",
+            text = "${indexWord + 1}/${numVocabulary}",
             style = config.progressTextStyle,
         )
 
@@ -77,13 +81,13 @@ fun FlashcardHeader(
         ) {
 
             PillIndicator(
-                text = state.countForget.toString(),
+                text = countForget.toString(),
                 borderColor = config.leftPillBorderColor,
                 config = config
             )
 
             PillIndicator(
-                text = state.countRemember.toString(),
+                text = countRemember.toString(),
                 borderColor = config.rightPillBorderColor,
                 config = config
             )
@@ -114,4 +118,14 @@ fun PillIndicator(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun FlascardHearderPreview(){
+    FlashcardHeader(
+        indexWord=5,
+        numVocabulary=20,
+        countForget=2,
+        countRemember=3)
 }
