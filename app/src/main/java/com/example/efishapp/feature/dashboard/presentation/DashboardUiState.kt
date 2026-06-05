@@ -15,8 +15,8 @@ val mockWeeklyVocabulary = listOf(
 )
 data class DashboardUiState (
     val userName: String = "",
-    val streak: Int = 0,
-    val numVocabularyReview: Int = 0,
+    val streak: Long = 0,
+    val totalVocabLeaned: Long = 0,
     val weeklyLearningStats: List<DailyVocabTracker> = mockWeeklyVocabulary,
     val monthlyLearningStat: MonthlyStudyTracker = MonthlyStudyTracker()
 )

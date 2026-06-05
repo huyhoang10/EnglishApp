@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.efishapp.core.ui.component.AppBottomNavigationBar
 import com.example.efishapp.core.ui.component.ScreenTab
@@ -19,7 +18,6 @@ import com.example.efishapp.feature.dashboard.presentation.component.MonthlyStat
 import com.example.efishapp.feature.dashboard.presentation.component.ReviewCard
 import com.example.efishapp.feature.dashboard.presentation.component.StreakCard
 import com.example.efishapp.feature.dashboard.presentation.component.WeeklyVocabularyChart
-import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 
 @Composable
 fun DashboardScreen(
@@ -29,10 +27,9 @@ fun DashboardScreen(
     onNavigateToNotification: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-//    val context = LocalContext.current
+
 
     LaunchedEffect(Unit) {
-//        flashcardViewModel.checkAndNotifyReview(context)
         viewModel.LoadingDashboard()
     }
 
@@ -45,7 +42,7 @@ fun DashboardScreen(
         paddingValues -> DashboarContent(
             state.userName,
             state.streak,
-            state.numVocabularyReview,
+            state.totalVocabLeaned,
             state.weeklyLearningStats,
             state.monthlyLearningStat,
             onNavigateToUserProfile,
@@ -60,8 +57,8 @@ fun DashboardScreen(
 @Composable
 fun DashboarContent(
     userName: String,
-    streak: Int,
-    numVocabularyReview: Int,
+    streak: Long,
+    totalVocabLearned: Long,
     weeklyLearningStats: List<DailyVocabTracker>,
     monthlyLearningStat: MonthlyStudyTracker,
     onNavigateToUserProfile: () -> Unit,
@@ -75,7 +72,7 @@ fun DashboarContent(
         GreetingCard(userName, onUserProfileClick = onNavigateToUserProfile,onNotificationClick = onNavigateToNotification)
         Row() {
             StreakCard(streak, modifier = Modifier.weight(1f))
-            ReviewCard(numVocabularyReview, modifier = Modifier.weight(1f))
+            ReviewCard(totalVocabLearned, modifier = Modifier.weight(1f))
         }
 
         WeeklyVocabularyChart(weeklyLearningStats)

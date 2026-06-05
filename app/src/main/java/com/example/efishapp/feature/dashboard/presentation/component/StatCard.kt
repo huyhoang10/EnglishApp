@@ -44,7 +44,7 @@ data class StatCardStyleConfig(
 // 2. Định nghĩa nội dung thay đổi linh hoạt cho từng loại dữ liệu khác nhau
 data class StatCardData(
     val title: String,
-    val value: Int,
+    val value: Long,
     @DrawableRes val iconRes: Int,
     val contentDescription: String? = null
 )
@@ -95,7 +95,7 @@ fun StatCard(
 }
 @Composable
 fun StreakCard(
-    streak: Int = 0,
+    streak: Long = 0,
     modifier: Modifier = Modifier
 ){
     StatCard(
@@ -106,7 +106,7 @@ fun StreakCard(
 
 @Composable
 fun ReviewCard(
-    numVocabularyReview: Int = 0,
+    numVocabularyReview: Long = 0,
     modifier: Modifier = Modifier
 ){
     StatCard(
