@@ -17,20 +17,27 @@ import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
+import com.example.efishapp.feature.profile.presentation.ProfileScreen
+import com.example.efishapp.feature.profile.presentation.ProfileViewModel
+import com.example.efishapp.feature.profile.presentation.ProfileSetupScreen
+import com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel
+import com.example.efishapp.feature.notification.presentation.ReviewReminderScreen
 
 @Composable
 fun EfishNavGraph(
     authViewModel: AuthViewModel,
     flashcardViewModel: FlashcardViewModel,
     dashboardViewModel: DashboardViewModel,
-    profileSetupViewModel: com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel,
+    profileViewModel: ProfileViewModel,
+    profileSetupViewModel: ProfileSetupViewModel,
     dailyStudyReminderViewModel: DailyStudyReminderViewModel,
     navController: NavHostController = rememberNavController()
 ){
     NavHost(
         navController = navController,
-        startDestination = Screen.LOGIN
+        startDestination = Screen.DUE_WORDS_REMINDER
     ){
+
         composable(Screen.LOGIN){
             LoginScreen(
                 authViewModel,
@@ -65,7 +72,7 @@ fun EfishNavGraph(
         }
 
         composable(Screen.PROFILE_SETUP) {
-            com.example.efishapp.feature.profile.presentation.ProfileSetupScreen(
+            ProfileSetupScreen(
                 viewModel = profileSetupViewModel,
                 onSetupComplete = {
                     navController.navigate(Screen.HOME) {
@@ -75,17 +82,31 @@ fun EfishNavGraph(
             )
         }
 
-        composable(Screen.HOME) {
-            DashboardScreen(
-                dashboardViewModel,
-                Modifier,
-                onNavigateToNotification = { navController.navigate(Screen.DAILY_STUDY_REMINDER) },
-                flashcardViewModel = flashcardViewModel
+        composable(Screen.PROFILE) {
+            ProfileScreen(
+                viewModel = profileViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onDeleteSuccess = {
+                    navController.navigate(Screen.HOME) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             )
+        }
+
+        composable(Screen.HOME) {
+            DashboardScreen(dashboardViewModel, Modifier)
         }
 
         composable(Screen.DAILY_STUDY_REMINDER) {
             DailyStudyReminderScreen(dailyStudyReminderViewModel)
+        }
+
+        composable(Screen.DUE_WORDS_REMINDER) {
+            ReviewReminderScreen(
+                flashcardViewModel = flashcardViewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
 
         composable(Screen.FLASHCARD) {

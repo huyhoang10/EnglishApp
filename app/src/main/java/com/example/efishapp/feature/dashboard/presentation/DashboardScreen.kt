@@ -7,8 +7,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import com.example.efishapp.core.ui.component.AppBottomNavigationBar
 import com.example.efishapp.core.ui.component.ScreenTab
 import com.example.efishapp.feature.dashboard.presentation.component.DailyLearningStats
@@ -21,16 +19,8 @@ import com.example.efishapp.feature.dashboard.presentation.component.WeeklyVocab
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel,
-    modifier: Modifier,
-    onNavigateToNotification: () -> Unit,
-    flashcardViewModel: com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
-) {
+    modifier: Modifier) {
     val state by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        flashcardViewModel.checkAndNotifyReview(context)
-    }
 
     val scrollState = rememberScrollState()
     Scaffold(
@@ -45,7 +35,7 @@ fun DashboardScreen(
                 .padding(paddingValues)
                 .verticalScroll(scrollState)
         ) {
-            GreetingCard("Hoang", onNotificationClick = onNavigateToNotification)
+            GreetingCard("Hoang")
             Row() {
                 StreakCard(state, modifier = Modifier.weight(1f))
                 ReviewCard(state, modifier = Modifier.weight(1f))
@@ -56,12 +46,3 @@ fun DashboardScreen(
         }
     }
 }
-
-
-
-
-
-
-
-
-

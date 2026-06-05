@@ -138,14 +138,4 @@ class FlashcardViewModel @Inject constructor() : ViewModel() {
         _uiState.update { it.copy(isFinished = false) }
         historyStack.clear()
     }
-
-    fun checkAndNotifyReview(context: Context) {
-        val count = _uiState.value.vocabularies.count { it.interval <= 0 && it.repetitions > 0 }
-        if (count > 0) {
-            val intent = Intent(context, ReviewReminderReceiver::class.java).apply {
-                putExtra(ReviewReminderReceiver.EXTRA_COUNT, count)
-            }
-            context.sendBroadcast(intent)
-        }
-    }
 }

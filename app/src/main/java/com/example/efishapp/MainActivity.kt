@@ -38,7 +38,8 @@ import androidx.compose.runtime.setValue
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
-
+import com.example.efishapp.feature.profile.domain.usecase.GetProfileUseCase
+import com.example.efishapp.feature.profile.domain.usecase.UpdateProfileUseCase
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -72,6 +73,11 @@ class MainActivity : ComponentActivity() {
         )
         val flashcardViewModel = FlashcardViewModel()
         val dashboardUiState = DashboardViewModel()
+        val profileViewModel = com.example.efishapp.feature.profile.presentation.ProfileViewModel(
+            getProfileUseCase = GetProfileUseCase(userProfileRepository),
+            updateProfileUseCase = UpdateProfileUseCase(userProfileRepository),
+            repository = userProfileRepository
+        )
         val profileSetupViewModel = com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel(userProfileRepository)
         val dailyStudyReminderViewModel = DailyStudyReminderViewModel(dailyStudyNotificationRepository, firebaseAuth)
 
@@ -91,8 +97,9 @@ class MainActivity : ComponentActivity() {
                     authViewModel = authViewModel,
                     flashcardViewModel = flashcardViewModel,
                     dashboardViewModel = dashboardUiState,
+                    profileViewModel = profileViewModel,
                     profileSetupViewModel = profileSetupViewModel,
-                    dailyStudyReminderViewModel = dailyStudyReminderViewModel,
+                    dailyStudyReminderViewModel = dailyStudyReminderViewModel
                 )
             }
         }
