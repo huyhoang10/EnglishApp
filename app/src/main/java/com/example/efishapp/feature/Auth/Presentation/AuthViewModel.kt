@@ -9,20 +9,38 @@ import com.example.efishapp.feature.Auth.Domain.UseCase.RegisterUseCase
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
-    private val loginWithGoogleUseCase: LoginWithGoogleUseCase
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
+    private val firestore: FirebaseFirestore, // KHÔNG dùng = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth             // KHÔNG dùng = FirebaseAuth.getInstance()
 ) : ViewModel() {
     // StateFlow quản lý trạng thái UI, Giao diện (Compose) sẽ lắng nghe biến này
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
+    suspend fun checkProfileExists(): Boolean {
+        val uid = auth.currentUser?.uid ?: return false
+        return try {
+            val document = firestore.collection("users").document(uid).get().await()
+            document.exists() && !document.getString("fullName").isNullOrBlank()
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     /**
      * Xử lý Đăng nhập bằng Email & Mật khẩu

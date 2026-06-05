@@ -3,10 +3,12 @@ package com.example.efishapp.feature.profile.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.efishapp.feature.profile.domain.repository.UserProfileRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class ProfileSetupUiState(
     val fullName: String = "",
@@ -19,7 +21,8 @@ data class ProfileSetupUiState(
     val error: String? = null
 )
 
-class ProfileSetupViewModel(
+@HiltViewModel
+class ProfileSetupViewModel @Inject constructor(
     private val repository: UserProfileRepository
 ) : ViewModel() {
 

@@ -7,20 +7,34 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.efishapp.core.ui.component.AppBottomNavigationBar
 import com.example.efishapp.core.ui.component.ScreenTab
-import com.example.efishapp.feature.dashboard.presentation.component.DailyLearningStats
+import com.example.efishapp.feature.dashboard.domain.DailyVocabTracker
+import com.example.efishapp.feature.dashboard.domain.MonthlyStudyTracker
 import com.example.efishapp.feature.dashboard.presentation.component.GreetingCard
 import com.example.efishapp.feature.dashboard.presentation.component.MonthlyStatsScreen
 import com.example.efishapp.feature.dashboard.presentation.component.ReviewCard
 import com.example.efishapp.feature.dashboard.presentation.component.StreakCard
 import com.example.efishapp.feature.dashboard.presentation.component.WeeklyVocabularyChart
+import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardViewModel,
-    modifier: Modifier) {
+    viewModel: DashboardViewModel = hiltViewModel(),
+    modifier: Modifier,
+    onNavigateToUserProfile: () -> Unit,
+    onNavigateToNotification: () -> Unit,
+) {
     val state by viewModel.uiState.collectAsState()
+//    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+//        flashcardViewModel.checkAndNotifyReview(context)
+        viewModel.LoadingDashboard()
+    }
 
     val scrollState = rememberScrollState()
     Scaffold(
@@ -28,28 +42,46 @@ fun DashboardScreen(
         bottomBar = {AppBottomNavigationBar(ScreenTab.HOME,{})}
     ) {
 
-        paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues)
-                .verticalScroll(scrollState)
-        ) {
-            GreetingCard("Hoang")
-            Row() {
-                StreakCard(state, modifier = Modifier.weight(1f))
-                ReviewCard(state, modifier = Modifier.weight(1f))
-            }
-
-            WeeklyVocabularyChart(state)
-            MonthlyStatsScreen(state)
-        }
+        paddingValues -> DashboarContent(
+            state.userName,
+            state.streak,
+            state.numVocabularyReview,
+            state.weeklyLearningStats,
+            state.monthlyLearningStat,
+            onNavigateToUserProfile,
+            onNavigateToNotification,
+            Modifier.padding(paddingValues).verticalScroll(scrollState)
+        )
     }
 }
 
 
 
+@Composable
+fun DashboarContent(
+    userName: String,
+    streak: Int,
+    numVocabularyReview: Int,
+    weeklyLearningStats: List<DailyVocabTracker>,
+    monthlyLearningStat: MonthlyStudyTracker,
+    onNavigateToUserProfile: () -> Unit,
+    onNavigateToNotification: () -> Unit,
+    modifier: Modifier = Modifier
+){
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        GreetingCard(userName, onUserProfileClick = onNavigateToUserProfile,onNotificationClick = onNavigateToNotification)
+        Row() {
+            StreakCard(streak, modifier = Modifier.weight(1f))
+            ReviewCard(numVocabularyReview, modifier = Modifier.weight(1f))
+        }
 
+        WeeklyVocabularyChart(weeklyLearningStats)
+        MonthlyStatsScreen(monthlyLearningStat)
+    }
+}
 
 
 

@@ -2,6 +2,8 @@ package com.example.efishapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,33 +15,44 @@ import com.example.efishapp.feature.Auth.Presentation.RegisterScreen
 import com.example.efishapp.feature.dashboard.presentation.DashboardScreen
 import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
 import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
+import com.example.efishapp.feature.flashcard.presentation.CongratulationViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
+import com.example.efishapp.feature.notification.presentation.DailyStudyReminderScreen
+import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
+import com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel
 
 @Composable
 fun EfishNavGraph(
-    authViewModel: AuthViewModel,
-    flashcardViewModel: FlashcardViewModel,
-    dashboardViewModel: DashboardViewModel,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    modifier: Modifier = Modifier
 ){
     NavHost(
         navController = navController,
-        startDestination = Screen.LOGIN
+        startDestination = Screen.HOME,
+        modifier = modifier
     ){
         composable(Screen.LOGIN){
+            val authViewModel: AuthViewModel = hiltViewModel()
             LoginScreen(
                 authViewModel,
                 onNavigateToRegister = {navController.navigate(Screen.REGISTER)},
                 onNavigateToForgotPassword = {navController.navigate(Screen.FORGOT_PASSWORD)},
-                onLoginSuccess = {navController.navigate(Screen.HOME) {
-                    popUpTo(Screen.LOGIN) {
-                        inclusive = true}
+                onLoginSuccess = { profileExists ->
+                    if (profileExists) {
+                        navController.navigate(Screen.HOME) {
+                            popUpTo(Screen.LOGIN) { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate(Screen.PROFILE_SETUP) {
+                            popUpTo(Screen.LOGIN) { inclusive = true }
+                        }
                     }
                 }
             )
         }
         composable(Screen.REGISTER) {
+            val authViewModel: AuthViewModel = hiltViewModel()
             RegisterScreen(
                 authViewModel,
                 onRegisterSuccess = {navController.navigate(Screen.LOGIN)},
@@ -47,6 +60,7 @@ fun EfishNavGraph(
             )
         }
         composable(Screen.FORGOT_PASSWORD) {
+            val authViewModel: AuthViewModel = hiltViewModel()
             ForgotPasswordScreen(
                 authViewModel,
                 onNavigateBackToLogin = {navController.navigate(Screen.LOGIN)},
@@ -54,29 +68,51 @@ fun EfishNavGraph(
             )
         }
 
-        composable(Screen.HOME) {
-            DashboardScreen(dashboardViewModel, Modifier)
-        }
-
-        composable(Screen.FLASHCARD) {
-            FlashcardScreen(
-                flashcardViewModel,
-                onNavigateToCongratulation = { totalRemember, totalForget ->
-                    navController.navigate("congratulation_screen/$totalRemember/$totalForget")
+        composable(Screen.PROFILE_SETUP) {
+            val profileViewModel: ProfileSetupViewModel = hiltViewModel()
+            com.example.efishapp.feature.profile.presentation.ProfileSetupScreen(
+                viewModel = profileViewModel,
+                onSetupComplete = {
+                    navController.navigate(Screen.HOME) {
+                        popUpTo(Screen.PROFILE_SETUP) { inclusive = true }
+                    }
                 }
             )
         }
 
-        composable("congratulation_screen/{remember}/{forget}") { backStackEntry ->
-            val remember = backStackEntry.arguments?.getString("remember")?.toInt() ?: 0
-            val forget = backStackEntry.arguments?.getString("forget")?.toInt() ?: 0
-
-            CongratulationScreen(totalRemember = remember, totalForget = forget,
-                onBackToHome = {
-                navController.navigate(
-                    Screen.HOME) }
+        composable(Screen.HOME) {
+            val dashboardViewModel: DashboardViewModel = hiltViewModel()
+            DashboardScreen(
+                dashboardViewModel,
+                Modifier,
+                onNavigateToUserProfile = { navController.navigate(Screen.PROFILE_SETUP) },
+                onNavigateToNotification = { navController.navigate(Screen.DAILY_STUDY_REMINDER) },
             )
         }
 
+        composable(Screen.DAILY_STUDY_REMINDER) {
+            val dailyStudyReminderViewModel: DailyStudyReminderViewModel = hiltViewModel()
+            DailyStudyReminderScreen(dailyStudyReminderViewModel)
+        }
+
+
+        composable<FlashcardScreenRoute> {
+            val flashcardViewModel: FlashcardViewModel = hiltViewModel()
+            FlashcardScreen(
+                flashcardViewModel,
+                onNavigateToCongratulation = { totalRemember, totalForget ->
+                    navController.navigate(CongratulationScreenRoute(totalRemember,totalForget))
+                }
+            )
+        }
+
+        composable <CongratulationScreenRoute> {
+            val congratulationViewModel: CongratulationViewModel = hiltViewModel()
+            CongratulationScreen(
+                congratulationViewModel,
+                onBackToHome = {
+                }
+            )
+        }
     }
 }

@@ -29,20 +29,13 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.efishapp.core.ui.typography.ChartTypography
-import com.example.efishapp.feature.dashboard.presentation.DashboardUiState
+import com.example.efishapp.feature.dashboard.domain.MonthlyStudyTracker
 
-data class MonthlyAccuracyStats(
-    val correctWords: Int,
-    val forgottenWords: Int,
-    val monthName: String = "Tháng này"
-) {
-    val totalWords: Int = correctWords + forgottenWords
-}
 
 @Composable
-fun MonthlyStatsScreen(state: DashboardUiState) {
+fun MonthlyStatsScreen(monthlyLearningStat: MonthlyStudyTracker) {
     Column(modifier = Modifier.fillMaxSize()) {
-        MonthlyAccuracyChart(stats = state.monthlyLearningStat)
+        MonthlyAccuracyChart(monthlyStudyTracker = monthlyLearningStat)
     }
 }
 
@@ -56,7 +49,7 @@ data class PieChartConfig(
 
 @Composable
 fun MonthlyAccuracyChart(
-    stats: MonthlyAccuracyStats,
+    monthlyStudyTracker: MonthlyStudyTracker,
     config: PieChartConfig = PieChartConfig() // Sử dụng cấu hình tập trung từ ngoài
 ) {
     Card(
@@ -69,7 +62,7 @@ fun MonthlyAccuracyChart(
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(text = "Độ chính xác từ vựng", style = ChartTypography.title)
-            Text(text = "Tháng ${stats.monthName}", style = ChartTypography.legend)
+            Text(text = "Tháng ${monthlyStudyTracker.month}", style = ChartTypography.legend)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -81,12 +74,12 @@ fun MonthlyAccuracyChart(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     StatItem(
                         label = "Chính xác",
-                        value = stats.correctWords.toString(),
+                        value = monthlyStudyTracker.correctVocabCount.toString(),
                         color = config.correctColor
                     )
                     StatItem(
                         label = "Quên/Sai",
-                        value = stats.forgottenWords.toString(),
+                        value = monthlyStudyTracker.wrongVocabCount.toString(),
                         color = config.forgottenColor
                     )
                 }
@@ -97,9 +90,9 @@ fun MonthlyAccuracyChart(
                 ) {
                     Canvas(modifier = Modifier.size(config.canvasSize)) {
                         val strokeWidthPx = config.strokeWidth.toPx()
-                        val total = stats.totalWords.toFloat()
+                        val total = monthlyStudyTracker.totalWords.toFloat()
 
-                        val correctAngle = if (total > 0) (stats.correctWords / total) * 360f else 0f
+                        val correctAngle = if (total > 0) (monthlyStudyTracker.correctVocabCount / total) * 360f else 0f
                         val forgottenAngle = 360f - correctAngle
 
                         drawArc(
@@ -122,7 +115,7 @@ fun MonthlyAccuracyChart(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("Tổng", fontSize = 12.sp, color = Color.Gray)
                         Text(
-                            text = "${stats.totalWords}",
+                            text = "${monthlyStudyTracker.totalWords}",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = Color.Black
