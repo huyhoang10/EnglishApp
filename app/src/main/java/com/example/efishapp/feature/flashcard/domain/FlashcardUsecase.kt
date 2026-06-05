@@ -30,7 +30,7 @@ class UpdateFlashcardProgressUseCase @Inject constructor(
         actionType: ActionType
     ) {
         val quality = actionType.quality
-        val currentProgress: FlashcardProgress? = repository.getFlashcardProgress(userId, vocabularyId)
+        val currentProgress: VocabularyReview? = repository.getFlashcardProgress(userId, vocabularyId)
 
         // Nếu chưa từng học (null), lấy giá trị mặc định ban đầu
         val oldRepetitions = currentProgress?.repetitions ?: 0
@@ -62,8 +62,7 @@ class UpdateFlashcardProgressUseCase @Inject constructor(
         val nextReviewDate = calendar.time
 
         // Tạo object tiến độ mới để cập nhật xuống DB
-        val updatedProgress = FlashcardProgress(
-            userId = userId,
+        val updatedProgress = VocabularyReview(
             vocabularyId = vocabularyId,
             repetitions = nextRepetitions,
             easinessFactor = finalEF,
@@ -72,6 +71,6 @@ class UpdateFlashcardProgressUseCase @Inject constructor(
         )
 
         // Cập nhật thông qua Repository
-        repository.updateFlashcardProgress(updatedProgress)
+        repository.updateFlashcardProgress(userId,updatedProgress)
     }
 }

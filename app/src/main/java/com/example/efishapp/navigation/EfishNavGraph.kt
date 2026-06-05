@@ -31,7 +31,7 @@ fun EfishNavGraph(
 ){
     NavHost(
         navController = navController,
-        startDestination = Screen.LOGIN
+        startDestination = Screen.HOME
     ){
         composable(Screen.LOGIN){
             LoginScreen(
@@ -81,6 +81,7 @@ fun EfishNavGraph(
             DashboardScreen(
                 dashboardViewModel,
                 Modifier,
+                onNavigateToUserProfile = { navController.navigate(Screen.PROFILE_SETUP) },
                 onNavigateToNotification = { navController.navigate(Screen.DAILY_STUDY_REMINDER) },
                 flashcardViewModel = flashcardViewModel
             )

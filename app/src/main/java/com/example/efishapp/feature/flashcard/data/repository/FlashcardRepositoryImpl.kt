@@ -1,6 +1,6 @@
 package com.example.efishapp.feature.flashcard.data.repository
 
-import com.example.efishapp.feature.flashcard.domain.FlashcardProgress
+import com.example.efishapp.feature.flashcard.domain.VocabularyReview
 import com.example.efishapp.feature.flashcard.domain.FlashcardRepository
 import com.example.efishapp.feature.flashcard.presentation.Vocabulary
 import com.google.firebase.firestore.FirebaseFirestore
@@ -57,7 +57,7 @@ class FlashcardRepositoryImpl @Inject constructor(
         return reviewVocabularies
     }
 
-    override suspend fun getFlashcardProgress(userId: String, vocabularyId: String): FlashcardProgress {
+    override suspend fun getFlashcardProgress(userId: String, vocabularyId: String): VocabularyReview {
         return try {
             val documentSnapshot = firestore.collection("flashcards")
                 .document(userId)
@@ -68,27 +68,27 @@ class FlashcardRepositoryImpl @Inject constructor(
 
             if (documentSnapshot.exists()) {
                 // Map từ document Firestore sang Object Kotlin
-                documentSnapshot.toObject(FlashcardProgress::class.java)
-                    ?: FlashcardProgress(userId = userId, vocabularyId = vocabularyId)
+                documentSnapshot.toObject(VocabularyReview::class.java)
+                    ?: VocabularyReview(vocabularyId = vocabularyId)
             } else {
                 // Nếu chưa từng học từ này, trả về object mặc định ban đầu
-                FlashcardProgress(userId = userId, vocabularyId = vocabularyId)
+                VocabularyReview(vocabularyId = vocabularyId)
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            FlashcardProgress(userId = userId, vocabularyId = vocabularyId)
+            VocabularyReview(vocabularyId = vocabularyId)
         }
     }
 
-    override suspend fun updateFlashcardProgress(flashcardProgress: FlashcardProgress) {
+    override suspend fun updateFlashcardProgress(userId: String, vocabularyReview: VocabularyReview) {
         try {
             // Lưu dữ liệu tiến độ vào sub-collection theo cấu trúc rõ ràng:
             // flashcards -> {userId} -> progress -> {vocabularyId}
             firestore.collection("flashcards")
-                .document(flashcardProgress.userId)
+                .document(userId)
                 .collection("progress")
-                .document(flashcardProgress.vocabularyId)
-                .set(flashcardProgress) // Ghi đè hoặc tạo mới nếu chưa tồn tại
+                .document(vocabularyReview.vocabularyId)
+                .set(vocabularyReview) // Ghi đè hoặc tạo mới nếu chưa tồn tại
                 .await()
         } catch (e: Exception) {
             e.printStackTrace()

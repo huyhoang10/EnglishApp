@@ -28,17 +28,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.efishapp.core.ui.typography.ChartTypography
-import com.example.efishapp.feature.dashboard.presentation.DashboardUiState
+import com.example.efishapp.feature.dashboard.domain.DailyVocabTracker
 import kotlin.math.ceil
 
 
-data class DailyLearningStats(
-    val dayOfWeek: String,
-    val reviewCount: Int,
-    val newCount: Int
-) {
-    val total: Int get() = reviewCount + newCount
-}
 
 data class BarChartConfig(
     val chartHeight: Dp = 220.dp,
@@ -54,7 +47,7 @@ data class BarChartConfig(
 
 @Composable
 fun WeeklyVocabularyChart(
-    state: DashboardUiState,
+    weeklyLearningStats: List<DailyVocabTracker>,
     modifier: Modifier = Modifier,
     config: BarChartConfig = BarChartConfig() // Nhận cấu hình từ ngoài vào thông qua data class
 ) {
@@ -68,7 +61,7 @@ fun WeeklyVocabularyChart(
     ) {
         val textMeasurer = rememberTextMeasurer()
 
-        val rawMax = state.weeklyLearningStats.maxOfOrNull { it.total }?.toFloat() ?: 1f
+        val rawMax = weeklyLearningStats.maxOfOrNull { it.total }?.toFloat() ?: 1f
         val maxAxisValue = (ceil(rawMax / 10f) * 10f).coerceAtLeast(10f)
 
         Column(
@@ -141,21 +134,21 @@ fun WeeklyVocabularyChart(
                 )
 
                 // --- VẼ CÁC CỘT XẾP CHỒNG & NHÃN TRỤC X ---
-                val barCount = state.weeklyLearningStats.size
+                val barCount = weeklyLearningStats.size
                 val barWidth = chartWidth / (barCount * config.barWidthRatio)
                 val spacing = (chartWidth - (barWidth * barCount)) / (barCount + 1)
 
-                state.weeklyLearningStats.forEachIndexed { index, data ->
+                weeklyLearningStats.forEachIndexed { index, data ->
                     val xOffset = paddingLeftPx + spacing + index * (barWidth + spacing)
 
                     val totalHeight = (data.total.toFloat() / maxAxisValue) * chartHeight
-                    val reviewHeight = (data.reviewCount.toFloat() / maxAxisValue) * chartHeight
-                    val newHeight = (data.newCount.toFloat() / maxAxisValue) * chartHeight
+                    val reviewHeight = (data.reviewVocabCount.toFloat() / maxAxisValue) * chartHeight
+                    val newHeight = (data.newVocabCount.toFloat() / maxAxisValue) * chartHeight
 
                     val baseLineY = paddingTopPx + chartHeight
 
                     // Tầng 1 (Review)
-                    if (data.reviewCount > 0) {
+                    if (data.reviewVocabCount > 0) {
                         val reviewTop = baseLineY - reviewHeight
                         drawRoundRect(
                             color = config.reviewColor,
@@ -166,7 +159,7 @@ fun WeeklyVocabularyChart(
                     }
 
                     // Tầng 2 (New)
-                    if (data.newCount > 0) {
+                    if (data.newVocabCount > 0) {
                         val newTop = baseLineY - totalHeight
                         drawRoundRect(
                             color = config.newColor,
@@ -178,7 +171,7 @@ fun WeeklyVocabularyChart(
 
                     // Nhãn trục X
                     val xLabelResult = textMeasurer.measure(
-                        text = data.dayOfWeek,
+                        text = data.dayOfWeek.toString(),
                         style = ChartTypography.axisLable
                     )
                     val labelX = xOffset + (barWidth - xLabelResult.size.width) / 2f
@@ -186,7 +179,7 @@ fun WeeklyVocabularyChart(
 
                     drawText(
                         textMeasurer = textMeasurer,
-                        text = data.dayOfWeek,
+                        text = data.dayOfWeek.toString(),
                         topLeft = Offset(labelX, labelY)
                     )
                 }
