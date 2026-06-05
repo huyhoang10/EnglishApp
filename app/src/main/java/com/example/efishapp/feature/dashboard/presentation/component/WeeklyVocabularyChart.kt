@@ -31,11 +31,9 @@ import com.example.efishapp.core.ui.typography.ChartTypography
 import com.example.efishapp.feature.dashboard.domain.DailyVocabTracker
 import kotlin.math.ceil
 
-
-
 data class BarChartConfig(
     val chartHeight: Dp = 220.dp,
-    val paddingLeft: Dp = 15.dp,
+    val paddingLeft: Dp = 25.dp,
     val paddingBottom: Dp = 30.dp,
     val paddingTop: Dp = 10.dp,
     val barWidthRatio: Float = 1.6f,
@@ -49,7 +47,7 @@ data class BarChartConfig(
 fun WeeklyVocabularyChart(
     weeklyLearningStats: List<DailyVocabTracker>,
     modifier: Modifier = Modifier,
-    config: BarChartConfig = BarChartConfig() // Nhận cấu hình từ ngoài vào thông qua data class
+    config: BarChartConfig = BarChartConfig()
 ) {
     Card(
         modifier = Modifier
@@ -61,7 +59,7 @@ fun WeeklyVocabularyChart(
     ) {
         val textMeasurer = rememberTextMeasurer()
 
-        val rawMax = weeklyLearningStats.maxOfOrNull { it.total }?.toFloat() ?: 1f
+        val rawMax = weeklyLearningStats.maxOfOrNull { it.total }?.toFloat() ?: 10f
         val maxAxisValue = (ceil(rawMax / 10f) * 10f).coerceAtLeast(10f)
 
         Column(
@@ -81,7 +79,6 @@ fun WeeklyVocabularyChart(
                     .fillMaxWidth()
                     .height(config.chartHeight)
             ) {
-                // Đổi đổi đơn vị các thông số từ Dp sang Px thông qua config
                 val paddingLeftPx = config.paddingLeft.toPx()
                 val paddingBottomPx = config.paddingBottom.toPx()
                 val paddingTopPx = config.paddingTop.toPx()
@@ -89,7 +86,6 @@ fun WeeklyVocabularyChart(
                 val chartWidth = size.width - paddingLeftPx
                 val chartHeight = size.height - paddingBottomPx - paddingTopPx
 
-                // --- VẼ TRỤC Y & CÁC ĐƯỜNG LƯỚI NGANG ---
                 for (i in 0..config.yStepCount) {
                     val ratio = i.toFloat() / config.yStepCount
                     val yPos = paddingTopPx + chartHeight * (1 - ratio)
@@ -119,7 +115,6 @@ fun WeeklyVocabularyChart(
                     }
                 }
 
-                // --- VẼ TRỤC TOẠ ĐỘ CHÍNH ---
                 drawLine(
                     color = config.axisColor,
                     start = Offset(paddingLeftPx, paddingTopPx + chartHeight),
@@ -133,55 +128,54 @@ fun WeeklyVocabularyChart(
                     strokeWidth = 1.5.dp.toPx()
                 )
 
-                // --- VẼ CÁC CỘT XẾP CHỒNG & NHÃN TRỤC X ---
                 val barCount = weeklyLearningStats.size
-                val barWidth = chartWidth / (barCount * config.barWidthRatio)
-                val spacing = (chartWidth - (barWidth * barCount)) / (barCount + 1)
+                if (barCount > 0) {
+                    val barWidth = chartWidth / (barCount * config.barWidthRatio)
+                    val spacing = (chartWidth - (barWidth * barCount)) / (barCount + 1)
 
-                weeklyLearningStats.forEachIndexed { index, data ->
-                    val xOffset = paddingLeftPx + spacing + index * (barWidth + spacing)
+                    weeklyLearningStats.forEachIndexed { index, data ->
+                        val xOffset = paddingLeftPx + spacing + index * (barWidth + spacing)
 
-                    val totalHeight = (data.total.toFloat() / maxAxisValue) * chartHeight
-                    val reviewHeight = (data.reviewVocabCount.toFloat() / maxAxisValue) * chartHeight
-                    val newHeight = (data.newVocabCount.toFloat() / maxAxisValue) * chartHeight
+                        val totalHeight = (data.total.toFloat() / maxAxisValue) * chartHeight
+                        val reviewHeight = (data.reviewVocabCount.toFloat() / maxAxisValue) * chartHeight
+                        val newHeight = (data.newVocabCount.toFloat() / maxAxisValue) * chartHeight
 
-                    val baseLineY = paddingTopPx + chartHeight
+                        val baseLineY = paddingTopPx + chartHeight
 
-                    // Tầng 1 (Review)
-                    if (data.reviewVocabCount > 0) {
-                        val reviewTop = baseLineY - reviewHeight
-                        drawRoundRect(
-                            color = config.reviewColor,
-                            topLeft = Offset(xOffset, reviewTop),
-                            size = Size(barWidth, reviewHeight),
-                            cornerRadius = CornerRadius(4f, 4f)
+                        if (data.reviewVocabCount > 0) {
+                            val reviewTop = baseLineY - reviewHeight
+                            drawRoundRect(
+                                color = config.reviewColor,
+                                topLeft = Offset(xOffset, reviewTop),
+                                size = Size(barWidth, reviewHeight),
+                                cornerRadius = CornerRadius(4f, 4f)
+                            )
+                        }
+
+                        if (data.newVocabCount > 0) {
+                            val newTop = baseLineY - totalHeight
+                            drawRoundRect(
+                                color = config.newColor,
+                                topLeft = Offset(xOffset, newTop),
+                                size = Size(barWidth, newHeight),
+                                cornerRadius = CornerRadius(4f, 4f)
+                            )
+                        }
+
+                        val dayLabel = data.dayOfWeek.name
+                        val xLabelResult = textMeasurer.measure(
+                            text = dayLabel,
+                            style = ChartTypography.axisLable
+                        )
+                        val labelX = xOffset + (barWidth - xLabelResult.size.width) / 2f
+                        val labelY = baseLineY + 6.dp.toPx()
+
+                        drawText(
+                            textMeasurer = textMeasurer,
+                            text = dayLabel,
+                            topLeft = Offset(labelX, labelY)
                         )
                     }
-
-                    // Tầng 2 (New)
-                    if (data.newVocabCount > 0) {
-                        val newTop = baseLineY - totalHeight
-                        drawRoundRect(
-                            color = config.newColor,
-                            topLeft = Offset(xOffset, newTop),
-                            size = Size(barWidth, newHeight),
-                            cornerRadius = CornerRadius(8f, 8f)
-                        )
-                    }
-
-                    // Nhãn trục X
-                    val xLabelResult = textMeasurer.measure(
-                        text = data.dayOfWeek.toString(),
-                        style = ChartTypography.axisLable
-                    )
-                    val labelX = xOffset + (barWidth - xLabelResult.size.width) / 2f
-                    val labelY = baseLineY + 6.dp.toPx()
-
-                    drawText(
-                        textMeasurer = textMeasurer,
-                        text = data.dayOfWeek.toString(),
-                        topLeft = Offset(labelX, labelY)
-                    )
                 }
             }
 

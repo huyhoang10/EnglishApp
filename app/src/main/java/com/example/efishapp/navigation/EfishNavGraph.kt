@@ -29,7 +29,7 @@ fun EfishNavGraph(
 ){
     NavHost(
         navController = navController,
-        startDestination = Screen.HOME,
+        startDestination = Screen.LOGIN,
         modifier = modifier
     ){
         composable(Screen.LOGIN){

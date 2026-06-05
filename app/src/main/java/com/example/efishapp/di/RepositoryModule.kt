@@ -3,8 +3,10 @@ package com.example.efishapp.di
 import com.example.efishapp.feature.Auth.Data.Repository.AuthRepositoryImpl
 import com.example.efishapp.feature.Auth.Domain.Repository.AuthRepository
 import com.example.efishapp.feature.dashboard.data.repository.MonthlyTrackerRepositoryImpl
+import com.example.efishapp.feature.dashboard.data.repository.UserAnalyticsRepositoryImpl
 import com.example.efishapp.feature.dashboard.data.repository.WeeklyTrackerRepositoryImpl
-import com.example.efishapp.feature.dashboard.domain.MonthTrackerReposity
+import com.example.efishapp.feature.dashboard.domain.MonthTrackerRepository
+import com.example.efishapp.feature.dashboard.domain.UserAnalyticsRepository
 import com.example.efishapp.feature.dashboard.domain.WeeklyTrackerRepository
 
 import com.example.efishapp.feature.notification.Data.repository.DailyStudyNotificationRepositoryImpl
@@ -26,14 +28,6 @@ abstract class RepositoryModule {
     @Singleton
     abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 
-//    @Binds
-//    @Singleton
-//    abstract fun bindFolderRepository(impl: FolderRepositoryImpl): FolderRepository
-//
-//    @Binds
-//    @Singleton
-//    abstract fun bindVocabularyRepository(impl: VocabularyRepositoryImpl): VocabularyRepository
-
     @Binds
     @Singleton
     abstract fun bindUserProfileRepository(impl: UserProfileRepositoryImpl): UserProfileRepository
@@ -48,5 +42,9 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindMonthlyTrackerRepository(impl: MonthlyTrackerRepositoryImpl): MonthTrackerReposity
+    abstract fun bindMonthlyTrackerRepository(impl: MonthlyTrackerRepositoryImpl): MonthTrackerRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserAnalyticsRepository(impl: UserAnalyticsRepositoryImpl): UserAnalyticsRepository
 }
