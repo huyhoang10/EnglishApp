@@ -9,7 +9,7 @@ import com.example.efishapp.feature.dashboard.domain.MonthTrackerReposity
 import com.example.efishapp.feature.dashboard.domain.WeeklyTrackerRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 class DashboardViewModel @Inject constructor(
     val weeklyTrackerRepository: WeeklyTrackerRepository,
     val monthTrackerReposity: MonthTrackerReposity,
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firebaseAuth: FirebaseAuth
 ): ViewModel(){
 
     private val _uiState = MutableStateFlow(DashboardUiState())

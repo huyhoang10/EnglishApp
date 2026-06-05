@@ -9,7 +9,11 @@ import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 
-class UserProfileRepositoryImpl(
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class UserProfileRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) : UserProfileRepository {

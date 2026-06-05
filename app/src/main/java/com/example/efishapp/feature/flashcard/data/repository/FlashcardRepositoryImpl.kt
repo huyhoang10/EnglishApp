@@ -1,8 +1,8 @@
 package com.example.efishapp.feature.flashcard.data.repository
 
-import com.example.efishapp.feature.flashcard.domain.VocabularyReview
+import com.example.efishapp.feature.flashcard.domain.model.VocabularyReview
 import com.example.efishapp.feature.flashcard.domain.FlashcardRepository
-import com.example.efishapp.feature.flashcard.presentation.Vocabulary
+import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import java.util.Date

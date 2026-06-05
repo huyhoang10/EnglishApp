@@ -23,23 +23,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.efishapp.feature.flashcard.domain.ActionType
+import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardActionButtons
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardBottomNavigation
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardContentCard
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardHeader
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
-
-data class Vocabulary(
-    val id: String = "",
-    val word: String = "",
-    val pronunciation: String = "",
-    val meaning: String = "",
-    val description: String = "",
-    val example: String = "",
-    val collocation: String = "",
-    val relatedWords: String = "",
-    val note: String = "",
-)
 
 data class FlashcardScreenConfig(
     val backgroundColor: Color = Color(0xFFF7F9FA),

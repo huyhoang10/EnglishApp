@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.efishapp.feature.flashcard.presentation.FlashcardUiEvent
 import com.example.efishapp.feature.flashcard.presentation.FlashcardUiState
-import com.example.efishapp.feature.flashcard.presentation.Vocabulary
+import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 
 data class FlashcardContentCardConfig(
     val cornerRadius: Dp = 24.dp,

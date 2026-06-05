@@ -1,6 +1,7 @@
 package com.example.efishapp.feature.flashcard.domain
 
-import com.example.efishapp.feature.flashcard.presentation.Vocabulary
+import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
+import com.example.efishapp.feature.flashcard.domain.model.VocabularyReview
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject

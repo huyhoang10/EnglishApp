@@ -7,9 +7,11 @@ import com.example.efishapp.feature.notification.alarm.DailyStudyAlarmScheduler
 import com.example.efishapp.feature.notification.Domain.model.DailyStudyNotification
 import com.example.efishapp.feature.notification.Domain.repository.DailyStudyNotificationRepository
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class DailyReminderUiState(
     val loading: Boolean = false,
@@ -21,9 +23,10 @@ data class DailyReminderUiState(
     val info: String? = null
 )
 
-class DailyStudyReminderViewModel(
+@HiltViewModel
+class DailyStudyReminderViewModel @Inject constructor(
     private val repo: DailyStudyNotificationRepository,
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val auth: FirebaseAuth
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DailyReminderUiState())

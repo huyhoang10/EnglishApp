@@ -2,6 +2,7 @@ package com.example.efishapp.feature.flashcard.presentation
 
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.navigation.toRoute
 import com.example.efishapp.navigation.CongratulationScreenRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,7 @@ sealed interface CongratulationUiEvent {
 @HiltViewModel
 class CongratulationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
-){
+) : ViewModel() {
     val routeArgs = savedStateHandle.toRoute<CongratulationScreenRoute>()
     val totalForget: Int = routeArgs.totalForget
     val totalRemember: Int = routeArgs.totalRemember

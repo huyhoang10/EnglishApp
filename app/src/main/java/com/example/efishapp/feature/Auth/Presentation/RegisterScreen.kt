@@ -24,13 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.efishapp.core.designsystem.ErrorDialog
 import com.example.efishapp.core.designsystem.LoadingDialog
 import com.example.efishapp.feature.Auth.Presentation.components.AuthTextField
 
 @Composable
 fun RegisterScreen(
-    viewModel: AuthViewModel,
+    viewModel: AuthViewModel = hiltViewModel(),
     onNavigateToLogin: () -> Unit,
     onRegisterSuccess: () -> Unit
 ) {

@@ -7,6 +7,7 @@ import androidx.navigation.toRoute
 import com.example.efishapp.feature.flashcard.domain.ActionType
 import com.example.efishapp.feature.flashcard.domain.GetVocabularyReviewUseCase
 import com.example.efishapp.feature.flashcard.domain.UpdateFlashcardProgressUseCase
+import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 import com.example.efishapp.navigation.FlashcardScreenRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

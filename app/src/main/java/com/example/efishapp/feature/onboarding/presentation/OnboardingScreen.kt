@@ -32,10 +32,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.efishapp.R
-import com.example.efishapp.feature.folder.presentation.theme.GlassBackground
-import com.example.efishapp.feature.folder.presentation.theme.GlassBorder
-import com.example.efishapp.feature.folder.presentation.theme.GradientEnd
-import com.example.efishapp.feature.folder.presentation.theme.GradientStart
 import kotlinx.coroutines.launch
 
 @Composable
@@ -45,6 +41,8 @@ fun OnboardingScreen(
 ) {
     val pagerState = rememberPagerState(pageCount = { 3 })
     val coroutineScope = rememberCoroutineScope()
+    val GradientStart = Color(0xFFFFFFFF)
+    val GradientEnd = Color(0xFFF5F5F5)
 
     val pages = listOf(
         OnboardingPage(

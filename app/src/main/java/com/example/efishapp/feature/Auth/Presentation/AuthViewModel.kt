@@ -25,8 +25,8 @@ class AuthViewModel @Inject constructor(
     private val registerUseCase: RegisterUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
     private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firestore: FirebaseFirestore, // KHÔNG dùng = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth             // KHÔNG dùng = FirebaseAuth.getInstance()
 ) : ViewModel() {
     // StateFlow quản lý trạng thái UI, Giao diện (Compose) sẽ lắng nghe biến này
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)

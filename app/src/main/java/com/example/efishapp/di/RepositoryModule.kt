@@ -2,37 +2,51 @@ package com.example.efishapp.di
 
 import com.example.efishapp.feature.Auth.Data.Repository.AuthRepositoryImpl
 import com.example.efishapp.feature.Auth.Domain.Repository.AuthRepository
-import com.example.efishapp.feature.folder.data.repository.FolderRepositoryImpl
-import com.example.efishapp.feature.folder.domain.repository.FolderRepository
-import com.example.efishapp.feature.vocabulary.data.repository.VocabularyRepositoryImpl
-import com.example.efishapp.feature.vocabulary.domain.repository.VocabularyRepository
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.efishapp.feature.dashboard.data.repository.MonthlyTrackerRepositoryImpl
+import com.example.efishapp.feature.dashboard.data.repository.WeeklyTrackerRepositoryImpl
+import com.example.efishapp.feature.dashboard.domain.MonthTrackerReposity
+import com.example.efishapp.feature.dashboard.domain.WeeklyTrackerRepository
+
+import com.example.efishapp.feature.notification.Data.repository.DailyStudyNotificationRepositoryImpl
+import com.example.efishapp.feature.notification.Domain.repository.DailyStudyNotificationRepository
+import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
+import com.example.efishapp.feature.profile.domain.repository.UserProfileRepository
+
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+abstract class RepositoryModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideAuthRepository(firebaseAuth: FirebaseAuth): AuthRepository {
-        return AuthRepositoryImpl(firebaseAuth)
-    }
+    abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 
-    @Provides
-    @Singleton
-    fun provideFolderRepository(firestore: FirebaseFirestore): FolderRepository {
-        return FolderRepositoryImpl(firestore)
-    }
+//    @Binds
+//    @Singleton
+//    abstract fun bindFolderRepository(impl: FolderRepositoryImpl): FolderRepository
+//
+//    @Binds
+//    @Singleton
+//    abstract fun bindVocabularyRepository(impl: VocabularyRepositoryImpl): VocabularyRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideVocabularyRepository(firestore: FirebaseFirestore): VocabularyRepository {
-        return VocabularyRepositoryImpl(firestore)
-    }
+    abstract fun bindUserProfileRepository(impl: UserProfileRepositoryImpl): UserProfileRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDailyStudyNotificationRepository(impl: DailyStudyNotificationRepositoryImpl): DailyStudyNotificationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindWeeklyTrackerRepository(impl: WeeklyTrackerRepositoryImpl): WeeklyTrackerRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMonthlyTrackerRepository(impl: MonthlyTrackerRepositoryImpl): MonthTrackerReposity
 }

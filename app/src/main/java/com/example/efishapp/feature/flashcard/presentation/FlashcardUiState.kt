@@ -1,6 +1,7 @@
 package com.example.efishapp.feature.flashcard.presentation
 
 import com.example.efishapp.feature.flashcard.domain.ActionType
+import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 
 val sampleVocabularies = listOf(
     Vocabulary(
@@ -13,7 +14,7 @@ val sampleVocabularies = listOf(
         relatedWords = "magazine",
         note = "Có thể dùng như một động từ với nghĩa là 'đặt chỗ'.",
 
-    ),
+        ),
     Vocabulary(
         word = "Apparent",
         pronunciation = "/əˈpær.ənt/",

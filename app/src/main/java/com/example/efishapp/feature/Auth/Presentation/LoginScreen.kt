@@ -36,11 +36,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.launch
+
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel,
+    // Sử dụng hiltViewModel() làm giá trị mặc định
+    viewModel: AuthViewModel = hiltViewModel(),
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onLoginSuccess: (Boolean) -> Unit

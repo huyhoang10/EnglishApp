@@ -5,10 +5,14 @@ import com.example.efishapp.feature.dashboard.domain.MonthTrackerReposity
 import com.example.efishapp.feature.dashboard.domain.MonthlyStudyTracker
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class MonthlyTrackerRepositoryImpl(): MonthTrackerReposity{
+@Singleton
+class MonthlyTrackerRepositoryImpl @Inject constructor(
+    private val db: FirebaseFirestore
+): MonthTrackerReposity{
     override suspend fun getMonthStats(userId: String): MonthlyStudyTracker {
-        val db = FirebaseFirestore.getInstance()
 
         // 1. Lấy tháng hiện tại (Ví dụ đang là tháng 6 -> "jun")
         val currentMonth = getCurrentMonthKey()
