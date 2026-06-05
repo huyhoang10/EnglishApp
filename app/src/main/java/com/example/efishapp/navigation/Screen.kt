@@ -13,9 +13,14 @@ object Screen {
 
 }
 
+//@Serializable
+//data class DashboardScreenRoute(
+//    val
+//)
+
 @Serializable
 data class FlashcardScreenRoute(
-    val flashcardSetId: String
+    val folderId: String
 )
 
 @Serializable

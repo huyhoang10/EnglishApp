@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.efishapp.core.ui.component.AppBottomNavigationBar
 import com.example.efishapp.core.ui.component.ScreenTab
 import com.example.efishapp.feature.dashboard.domain.DailyVocabTracker
@@ -18,21 +19,22 @@ import com.example.efishapp.feature.dashboard.presentation.component.MonthlyStat
 import com.example.efishapp.feature.dashboard.presentation.component.ReviewCard
 import com.example.efishapp.feature.dashboard.presentation.component.StreakCard
 import com.example.efishapp.feature.dashboard.presentation.component.WeeklyVocabularyChart
+import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardViewModel,
+    viewModel: DashboardViewModel = hiltViewModel(),
     modifier: Modifier,
     onNavigateToUserProfile: () -> Unit,
     onNavigateToNotification: () -> Unit,
-    flashcardViewModel: com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 ) {
     val state by viewModel.uiState.collectAsState()
 //    val context = LocalContext.current
 
-//    LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
 //        flashcardViewModel.checkAndNotifyReview(context)
-//    }
+        viewModel.LoadingDashboard()
+    }
 
     val scrollState = rememberScrollState()
     Scaffold(

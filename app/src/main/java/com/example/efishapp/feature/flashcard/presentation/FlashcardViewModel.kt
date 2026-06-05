@@ -1,12 +1,6 @@
 package com.example.efishapp.feature.flashcard.presentation
 
-import android.app.NotificationManager
-import android.content.Context
-import android.content.Intent
-import androidx.core.app.NotificationCompat
 import androidx.lifecycle.SavedStateHandle
-import com.example.efishapp.R
-import com.example.efishapp.feature.notification.alarm.ReviewReminderReceiver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
@@ -40,7 +34,7 @@ class FlashcardViewModel @Inject constructor(
 ) : ViewModel() {
 
     val routeArgs = savedStateHandle.toRoute<FlashcardScreenRoute>()
-    val flashcardSetId: String = routeArgs.flashcardSetId
+    val flashcardSetId: String = routeArgs.folderId
 
     private val _uiState = MutableStateFlow(FlashcardUiState())
     val uiState: StateFlow<FlashcardUiState> = _uiState.asStateFlow()

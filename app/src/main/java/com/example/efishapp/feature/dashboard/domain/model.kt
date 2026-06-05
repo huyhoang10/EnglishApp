@@ -27,10 +27,10 @@ data class DailyVocabTracker(
 data class MonthlyStudyTracker(
     val userId: String = "",
     val year: Int = 2026,
-    val correctVocabCount: Int = 0,
-    val wrongVocabCount: Int = 0,
+    val correctVocabCount: Long = 0,
+    val wrongVocabCount: Long = 0,
     val month: Int = 6,
 ) {
-    val totalWords: Int = correctVocabCount + wrongVocabCount
+    val totalWords: Long = correctVocabCount + wrongVocabCount
 }
 
