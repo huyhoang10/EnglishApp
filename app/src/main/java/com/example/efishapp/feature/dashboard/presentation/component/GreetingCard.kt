@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -19,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -39,9 +42,10 @@ data class GreetingCardConfig(
 @Composable
 fun GreetingCard(
     name: String,
+    onUserProfileClick: () -> Unit,
+    onNotificationClick: () -> Unit,
+    config: GreetingCardConfig = GreetingCardConfig(), // Nhận cấu hình tập trung
     modifier: Modifier = Modifier,
-    onNotificationClick: () -> Unit = {},
-    config: GreetingCardConfig = GreetingCardConfig() // Nhận cấu hình tập trung
 ) {
     Card(
         modifier = modifier
@@ -58,20 +62,29 @@ fun GreetingCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween // Đẩy text sang trái, icon sang phải
         ) {
+            IconButton(onClick = onUserProfileClick) {
+                Icon(
+                    imageVector = Icons.Filled.AccountCircle, // Sử dụng vector mẫu của Material Design
+                    contentDescription = "Notifications",
+                    modifier = Modifier.size(config.iconSize),
+                    tint = config.iconColor
+                )
+            }
             // Phần 1: Nội dung chữ bên trái
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+
             ) {
                 Text(
                     text = "Hi, $name!",
                     fontSize = config.welcomeFontSize,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = Color.Black,
+
                 )
                 Text(
                     text = "Have a good day",
                     fontSize = config.subtitleFontSize,
-                    color = Color.Gray
+                    color = Color.Gray,
                 )
             }
 
@@ -86,4 +99,10 @@ fun GreetingCard(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun GreetingCardPreview(){
+    GreetingCard("Hoàng",{},{} )
 }

@@ -4,8 +4,11 @@ import com.example.efishapp.feature.notification.Domain.model.DailyStudyNotifica
 import com.example.efishapp.feature.notification.Domain.repository.DailyStudyNotificationRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class DailyStudyNotificationRepositoryImpl(
+@Singleton
+class DailyStudyNotificationRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : DailyStudyNotificationRepository {
 

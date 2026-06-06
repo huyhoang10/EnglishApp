@@ -1,5 +1,7 @@
 package com.example.efishapp.navigation
 
+import kotlinx.serialization.Serializable
+
 object Screen {
     const val LOGIN = "login"
     const val REGISTER = "register"
@@ -12,3 +14,19 @@ object Screen {
     const val DUE_WORDS_REMINDER = "due_words_reminder"
 
 }
+
+//@Serializable
+//data class DashboardScreenRoute(
+//    val
+//)
+
+@Serializable
+data class FlashcardScreenRoute(
+    val folderId: String
+)
+
+@Serializable
+data class CongratulationScreenRoute(
+    val totalRemember: Int,
+    val totalForget: Int,
+)

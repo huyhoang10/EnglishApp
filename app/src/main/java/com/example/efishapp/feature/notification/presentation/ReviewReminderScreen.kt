@@ -11,19 +11,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewReminderScreen(
-    flashcardViewModel: FlashcardViewModel,
+    viewModel: ReviewReminderViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
-    val flashcardState by flashcardViewModel.uiState.collectAsState()
-    val reviewManager = remember { ReviewReminderManager() }
-    val dueWords = remember(flashcardState.vocabularies) {
-        reviewManager.getDueWords(flashcardState.vocabularies)
-    }
+    val uiState by viewModel.uiState.collectAsState()
+    val dueWords = uiState.vocabularies
 
     Scaffold(
         topBar = {
@@ -37,7 +34,7 @@ fun ReviewReminderScreen(
             )
         }
     ) { paddingValues ->
-        if (dueWords.isEmpty()) {
+        if (dueWords.isEmpty() && !uiState.isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -45,6 +42,13 @@ fun ReviewReminderScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text("Hôm nay bạn không có từ nào cần ôn!")
+            }
+        } else if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         } else {
             Column(

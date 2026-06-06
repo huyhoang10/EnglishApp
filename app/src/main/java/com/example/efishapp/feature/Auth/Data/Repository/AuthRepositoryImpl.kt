@@ -5,7 +5,13 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.example.efishapp.feature.Auth.Domain.Repository.AuthRepository
 import kotlinx.coroutines.tasks.await
-class AuthRepositoryImpl(private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()): AuthRepository {
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class AuthRepositoryImpl @Inject constructor(
+    private val firebaseAuth: FirebaseAuth
+): AuthRepository {
     override suspend fun loginWithEmail(email: String, password: String): Result<Unit> {
         return try {
             val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()

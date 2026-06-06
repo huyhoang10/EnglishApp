@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.efishapp.R
 import com.example.efishapp.feature.dashboard.presentation.DashboardUiState
 
@@ -43,7 +44,7 @@ data class StatCardStyleConfig(
 // 2. Định nghĩa nội dung thay đổi linh hoạt cho từng loại dữ liệu khác nhau
 data class StatCardData(
     val title: String,
-    val value: Int,
+    val value: Long,
     @DrawableRes val iconRes: Int,
     val contentDescription: String? = null
 )
@@ -92,25 +93,24 @@ fun StatCard(
         }
     }
 }
-
 @Composable
 fun StreakCard(
-    state: DashboardUiState,
+    streak: Long = 0,
     modifier: Modifier = Modifier
 ){
     StatCard(
-        data = StatCardData(title = "Streak", value = state.streak, iconRes = R.drawable.streakicon),
+        data = StatCardData(title = "Streak", value = streak, iconRes = R.drawable.streakicon),
         modifier = modifier
     )
 }
 
 @Composable
 fun ReviewCard(
-    state: DashboardUiState,
+    numVocabularyReview: Long = 0,
     modifier: Modifier = Modifier
 ){
     StatCard(
-        data = StatCardData(title = "Review", value = state.numVocabularyReview, iconRes = R.drawable.reviewicon), // Bạn nhớ đổi R.drawable.review_icon tương ứng nhé
+        data = StatCardData(title = "Review", value = numVocabularyReview, iconRes = R.drawable.reviewicon), // Bạn nhớ đổi R.drawable.review_icon tương ứng nhé
         modifier = modifier
     )
 }

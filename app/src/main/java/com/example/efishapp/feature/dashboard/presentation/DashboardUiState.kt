@@ -1,22 +1,23 @@
 package com.example.efishapp.feature.dashboard.presentation
 
-import com.example.efishapp.feature.dashboard.presentation.component.DailyLearningStats
-import com.example.efishapp.feature.dashboard.presentation.component.MonthlyAccuracyStats
-import com.example.efishapp.feature.flashcard.presentation.Vocabulary
+import com.example.efishapp.feature.dashboard.domain.DailyVocabTracker
+import com.example.efishapp.feature.dashboard.domain.DayOfWeek
+import com.example.efishapp.feature.dashboard.domain.MonthlyStudyTracker
 
 val mockWeeklyVocabulary = listOf(
-    DailyLearningStats(dayOfWeek = "T2", reviewCount = 15, newCount = 5),
-    DailyLearningStats(dayOfWeek = "T3", reviewCount = 22, newCount = 12),
-    DailyLearningStats(dayOfWeek = "T4", reviewCount = 10, newCount = 8),
-    DailyLearningStats(dayOfWeek = "T5", reviewCount = 18, newCount = 15),
-    DailyLearningStats(dayOfWeek = "T6", reviewCount = 28, newCount = 20),
-    DailyLearningStats(dayOfWeek = "T7", reviewCount = 12, newCount = 6),
-    DailyLearningStats(dayOfWeek = "CN", reviewCount = 35, newCount = 25)
+    DailyVocabTracker(dayOfWeek = DayOfWeek.Mon, reviewVocabCount = 15, newVocabCount = 5),
+    DailyVocabTracker(dayOfWeek = DayOfWeek.Tue, reviewVocabCount = 15, newVocabCount = 5),
+    DailyVocabTracker(dayOfWeek = DayOfWeek.Wed, reviewVocabCount = 15, newVocabCount = 5),
+    DailyVocabTracker(dayOfWeek = DayOfWeek.Thu, reviewVocabCount = 15, newVocabCount = 5),
+    DailyVocabTracker(dayOfWeek = DayOfWeek.Fri, reviewVocabCount = 15, newVocabCount = 5),
+    DailyVocabTracker(dayOfWeek = DayOfWeek.Sat, reviewVocabCount = 15, newVocabCount = 5),
+    DailyVocabTracker(dayOfWeek = DayOfWeek.Sun, reviewVocabCount = 15, newVocabCount = 5)
 )
 data class DashboardUiState (
-    val streak: Int = 0,
-    val numVocabularyReview: Int = 0,
-    val weeklyLearningStats: List<DailyLearningStats> = mockWeeklyVocabulary,
-    val monthlyLearningStat: MonthlyAccuracyStats = MonthlyAccuracyStats(0,0,"5")
+    val userName: String = "",
+    val streak: Long = 0,
+    val totalVocabLeaned: Long = 0,
+    val weeklyLearningStats: List<DailyVocabTracker> = mockWeeklyVocabulary,
+    val monthlyLearningStat: MonthlyStudyTracker = MonthlyStudyTracker()
 )
 
