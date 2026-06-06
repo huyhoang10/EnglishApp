@@ -18,6 +18,7 @@ import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
 import com.example.efishapp.feature.flashcard.presentation.CongratulationViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
+import com.example.efishapp.feature.mainscreen.MainScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
 import com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel
@@ -80,13 +81,21 @@ fun EfishNavGraph(
             )
         }
 
+//        composable(Screen.HOME) {
+//            val dashboardViewModel: DashboardViewModel = hiltViewModel()
+//            DashboardScreen(
+//                dashboardViewModel,
+//                Modifier,
+//                onNavigateToUserProfile = { navController.navigate(Screen.PROFILE_SETUP) },
+//                onNavigateToNotification = { navController.navigate(Screen.DAILY_STUDY_REMINDER) },
+//            )
+//        }
+
         composable(Screen.HOME) {
-            val dashboardViewModel: DashboardViewModel = hiltViewModel()
-            DashboardScreen(
-                dashboardViewModel,
-                Modifier,
+            // Thay đổi tại đây để nạp giao diện Container tổng
+            MainScreen(
                 onNavigateToUserProfile = { navController.navigate(Screen.PROFILE_SETUP) },
-                onNavigateToNotification = { navController.navigate(Screen.DAILY_STUDY_REMINDER) },
+                onNavigateToNotification = { navController.navigate(Screen.DAILY_STUDY_REMINDER) }
             )
         }
 
