@@ -3,7 +3,6 @@ package com.example.efishapp.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,7 +19,12 @@ import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
+import com.example.efishapp.feature.profile.presentation.ProfileScreen
+import com.example.efishapp.feature.profile.presentation.ProfileSetupScreen
 import com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel
+import com.example.efishapp.feature.profile.presentation.ProfileViewModel
+import com.example.efishapp.feature.notification.presentation.ReviewReminderScreen
+import com.example.efishapp.feature.notification.presentation.ReviewReminderViewModel
 
 @Composable
 fun EfishNavGraph(
@@ -69,12 +73,25 @@ fun EfishNavGraph(
         }
 
         composable(Screen.PROFILE_SETUP) {
-            val profileViewModel: ProfileSetupViewModel = hiltViewModel()
-            com.example.efishapp.feature.profile.presentation.ProfileSetupScreen(
-                viewModel = profileViewModel,
+            val profileSetupViewModel: ProfileSetupViewModel = hiltViewModel()
+            ProfileSetupScreen(
+                viewModel = profileSetupViewModel,
                 onSetupComplete = {
                     navController.navigate(Screen.HOME) {
                         popUpTo(Screen.PROFILE_SETUP) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.PROFILE) {
+            val profileViewModel: ProfileViewModel = hiltViewModel()
+            ProfileScreen(
+                viewModel = profileViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onDeleteSuccess = {
+                    navController.navigate(Screen.HOME) {
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )
@@ -85,8 +102,8 @@ fun EfishNavGraph(
             DashboardScreen(
                 dashboardViewModel,
                 Modifier,
-                onNavigateToUserProfile = { navController.navigate(Screen.PROFILE_SETUP) },
-                onNavigateToNotification = { navController.navigate(Screen.DAILY_STUDY_REMINDER) },
+                onNavigateToUserProfile = { navController.navigate(Screen.PROFILE) },
+                onNavigateToNotification = { navController.navigate(Screen.DUE_WORDS_REMINDER) },
             )
         }
 
@@ -95,7 +112,13 @@ fun EfishNavGraph(
             DailyStudyReminderScreen(dailyStudyReminderViewModel)
         }
 
-
+        composable(Screen.DUE_WORDS_REMINDER) {
+            val reviewReminderViewModel: ReviewReminderViewModel = hiltViewModel()
+            ReviewReminderScreen(
+                viewModel = reviewReminderViewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
         composable<FlashcardScreenRoute> {
             val flashcardViewModel: FlashcardViewModel = hiltViewModel()
             FlashcardScreen(
@@ -111,6 +134,9 @@ fun EfishNavGraph(
             CongratulationScreen(
                 congratulationViewModel,
                 onBackToHome = {
+                    navController.navigate(Screen.HOME) {
+                        popUpTo(Screen.HOME) { inclusive = true }
+                    }
                 }
             )
         }

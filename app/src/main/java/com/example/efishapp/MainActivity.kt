@@ -11,6 +11,10 @@ import androidx.compose.ui.Modifier
 import com.example.efishapp.core.designsystem.EfishAppTheme
 import com.example.efishapp.navigation.EfishNavGraph
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
+import com.example.efishapp.feature.profile.domain.usecase.GetProfileUseCase
+import com.example.efishapp.feature.profile.domain.usecase.UpdateProfileUseCase
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
