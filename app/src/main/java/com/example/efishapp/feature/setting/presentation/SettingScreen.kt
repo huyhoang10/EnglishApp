@@ -18,6 +18,7 @@ import com.example.efishapp.feature.setting.domain.model.AppTheme
 @Composable
 fun SettingScreen(
     viewModel: SettingViewModel,
+    onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -29,6 +30,7 @@ fun SettingScreen(
             val newTheme = if (isDark) AppTheme.DARK else AppTheme.LIGHT
             viewModel.onThemeSelected(newTheme)
         },
+        onLogoutClick = onLogoutClick,
         modifier = modifier
     )
 }
@@ -38,6 +40,7 @@ fun SettingScreen(
 fun SettingContent(
     uiState: SettingUiState,
     onThemeChanged: (Boolean) -> Unit,
+    onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Biến kiểm tra xem theme hiện tại có phải là DARK hay không để gạt nút Switch
@@ -88,6 +91,15 @@ fun SettingContent(
                     onCheckedChange = { isChecked -> onThemeChanged(isChecked) }
                 )
             }
+        }
+        Button(
+            onClick = onLogoutClick, // Khi bấm nút, bắn sự kiện ra ngoài luôn
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error // Màu đỏ cảnh báo
+            )
+        ) {
+            Text(text = "Đăng xuất tài khoản")
         }
     }
 }

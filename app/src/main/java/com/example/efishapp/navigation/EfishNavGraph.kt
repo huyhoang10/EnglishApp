@@ -1,9 +1,9 @@
 package com.example.efishapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -40,6 +40,9 @@ fun EfishNavGraph(
     ){
         composable(Screen.LOGIN){
             val authViewModel: AuthViewModel = hiltViewModel()
+            LaunchedEffect(Unit) {
+                authViewModel.clearUserSession()
+            }
             LoginScreen(
                 authViewModel,
                 onNavigateToRegister = {navController.navigate(Screen.REGISTER)},
@@ -100,12 +103,16 @@ fun EfishNavGraph(
         }
 
         composable(Screen.HOME) {
-            // Thay đổi tại đây để nạp giao diện Container tổng
             MainScreen(
                 onNavigateToUserProfile = { navController.navigate(Screen.PROFILE) },
-                onNavigateToNotification = { navController.navigate(Screen.DUE_WORDS_REMINDER) }
-            )
-        }
+                onNavigateToNotification = { navController.navigate(Screen.DUE_WORDS_REMINDER) },
+                onLogoutSuccess = {
+                    navController.navigate(Screen.LOGIN) {
+                        popUpTo(Screen.HOME) { inclusive = true }
+                    }
+                } // Đóng lambda của onLogoutSuccess đúng chỗ
+            ) // Đóng hàm MainScreen đúng chỗ
+        } // Đóng composable(Screen.HOME) đúng chỗ
 
         composable(Screen.DAILY_STUDY_REMINDER) {
             val dailyStudyReminderViewModel: DailyStudyReminderViewModel = hiltViewModel()
@@ -119,6 +126,7 @@ fun EfishNavGraph(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
+
         composable<FlashcardScreenRoute> {
             val flashcardViewModel: FlashcardViewModel = hiltViewModel()
             FlashcardScreen(

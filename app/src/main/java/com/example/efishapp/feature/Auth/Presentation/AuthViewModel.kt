@@ -2,6 +2,7 @@ package com.example.efishapp.feature.Auth.Presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.efishapp.feature.Auth.Domain.UseCase.ClearSessionUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.ForgotPasswordUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.LoginUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.LoginWithGoogleUseCase
@@ -25,10 +26,11 @@ class AuthViewModel @Inject constructor(
     private val registerUseCase: RegisterUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
     private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
-    private val firestore: FirebaseFirestore, // KHÔNG dùng = FirebaseFirestore.getInstance()
-    private val auth: FirebaseAuth             // KHÔNG dùng = FirebaseAuth.getInstance()
+    private val firestore: FirebaseFirestore,
+    private val auth: FirebaseAuth,
+    private val clearSessionUseCase: ClearSessionUseCase
 ) : ViewModel() {
-    // StateFlow quản lý trạng thái UI, Giao diện (Compose) sẽ lắng nghe biến này
+
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
@@ -86,9 +88,21 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Xóa sạch phiên đăng nhập (Đăng xuất khỏi Firebase)
+     */
+    fun clearUserSession() {
+        viewModelScope.launch {
+            clearSessionUseCase()
+            // Reset uiState về Idle để chuẩn bị cho lượt đăng nhập tiếp theo không bị dính trạng thái cũ
+            resetUiState()
+        }
+    }
+
     fun resetUiState() {
         _uiState.value = AuthUiState.Idle
     }
+
     // dịch lỗi Firebase sang Tiếng Việt
     private fun handleResult(result: Result<Unit>): AuthUiState {
         return result.fold(

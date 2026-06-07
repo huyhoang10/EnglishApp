@@ -82,4 +82,15 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+    override suspend fun clearSession(): Result<Unit> {
+        return try {
+            // Lệnh chuẩn của Firebase để xóa token, cookie và đăng xuất hoàn toàn
+            firebaseAuth.signOut()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
 }

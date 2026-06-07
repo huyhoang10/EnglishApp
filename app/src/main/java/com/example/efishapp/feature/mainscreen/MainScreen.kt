@@ -20,6 +20,7 @@ import com.example.efishapp.feature.setting.presentation.SettingViewModel
 fun MainScreen(
     onNavigateToUserProfile: () -> Unit,
     onNavigateToNotification: () -> Unit,
+    onLogoutSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentTab by remember { mutableStateOf(ScreenTab.HOME) }
@@ -52,7 +53,8 @@ fun MainScreen(
                 val settingViewModel: SettingViewModel = hiltViewModel()
                 SettingScreen(
                     viewModel = settingViewModel,
-                    modifier = contentModifier
+                    modifier = contentModifier,
+                    onLogoutClick = onLogoutSuccess
                 )
             }
 
