@@ -75,7 +75,11 @@ fun EfishNavGraph(
             ForgotPasswordScreen(
                 authViewModel,
                 onNavigateBackToLogin = {navController.navigate(Screen.LOGIN)},
-                onSendEmailSuccess = {}
+                onSendEmailSuccess = {
+                    navController.navigate(Screen.LOGIN) {
+                        popUpTo(Screen.FORGOT_PASSWORD) { inclusive = true }
+                    }
+                }
             )
         }
 
