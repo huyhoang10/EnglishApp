@@ -2,6 +2,7 @@ package com.example.efishapp.feature.Auth.Presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.efishapp.feature.Auth.Domain.UseCase.CheckLoginStatusUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.ClearSessionUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.ForgotPasswordUseCase
 import com.example.efishapp.feature.Auth.Domain.UseCase.LoginUseCase
@@ -28,7 +29,8 @@ class AuthViewModel @Inject constructor(
     private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth,
-    private val clearSessionUseCase: ClearSessionUseCase
+    private val clearSessionUseCase: ClearSessionUseCase,
+    private val checkLoginStatusUseCase: CheckLoginStatusUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
@@ -103,7 +105,14 @@ class AuthViewModel @Inject constructor(
         _uiState.value = AuthUiState.Idle
     }
 
-    // dịch lỗi Firebase sang Tiếng Việt
+    /**
+     * Xác định màn hình xuất phát dựa trên trạng thái đăng nhập
+     */
+    fun getStartDestination(): String {
+        val isLoggedIn = checkLoginStatusUseCase()
+        return if (isLoggedIn) "home" else "login"
+    }
+
     private fun handleResult(result: Result<Unit>): AuthUiState {
         return result.fold(
             onSuccess = { AuthUiState.Success },

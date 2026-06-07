@@ -96,7 +96,7 @@ fun ForgotPasswordScreen(
 
         // Nút quay lại màn hình đăng nhập
         Text(
-            text = "Quay lại Đăng nhập",
+            text = "Quay lại đăng nhập",
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier

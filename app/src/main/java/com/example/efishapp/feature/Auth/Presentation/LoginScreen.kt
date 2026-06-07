@@ -110,7 +110,7 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Chào Mừng Trở Lại",
+            text = "EfishApp",
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
@@ -169,7 +169,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Nút Đăng nhập bằng Google thương hiệu (ĐÃ ĐƯỢC KÍCH HOẠT LOGIC)
+        // Nút Đăng nhập bằng Google thương hiệu
         GoogleSignInButton(
             onClick = {
                 // Kích hoạt hiển thị màn hình chọn tài khoản Google của Android

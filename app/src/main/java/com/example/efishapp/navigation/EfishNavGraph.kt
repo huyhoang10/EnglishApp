@@ -33,9 +33,11 @@ fun EfishNavGraph(
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ){
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val startDestination = authViewModel.getStartDestination()
     NavHost(
         navController = navController,
-        startDestination = Screen.LOGIN,
+        startDestination = startDestination,
         modifier = modifier
     ){
         composable(Screen.LOGIN){
