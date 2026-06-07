@@ -3,6 +3,7 @@ package com.example.efishapp.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,6 +18,7 @@ import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
 import com.example.efishapp.feature.flashcard.presentation.CongratulationViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
+import com.example.efishapp.feature.mainscreen.MainScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
 import com.example.efishapp.feature.profile.presentation.ProfileScreen
@@ -98,12 +100,10 @@ fun EfishNavGraph(
         }
 
         composable(Screen.HOME) {
-            val dashboardViewModel: DashboardViewModel = hiltViewModel()
-            DashboardScreen(
-                dashboardViewModel,
-                Modifier,
+            // Thay đổi tại đây để nạp giao diện Container tổng
+            MainScreen(
                 onNavigateToUserProfile = { navController.navigate(Screen.PROFILE) },
-                onNavigateToNotification = { navController.navigate(Screen.DUE_WORDS_REMINDER) },
+                onNavigateToNotification = { navController.navigate(Screen.DUE_WORDS_REMINDER) }
             )
         }
 
