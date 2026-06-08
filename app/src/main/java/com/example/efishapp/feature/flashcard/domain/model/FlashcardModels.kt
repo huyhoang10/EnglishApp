@@ -5,6 +5,7 @@ import java.util.Date
 
 data class VocabularyReview(
     val vocabularyId: String = "",
+    val learnAt: String = "",
     val repetitions: Int = 0,
     val easinessFactor: Float = 2.5f,
     val intervalDays: Int = 1,

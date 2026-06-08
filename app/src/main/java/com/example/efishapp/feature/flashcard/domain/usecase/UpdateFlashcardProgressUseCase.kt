@@ -45,6 +45,7 @@ class UpdateFlashcardProgressUseCase @Inject constructor(
         val finalEF = max(1.3f, newEF)
 
         // 4. Tính toán ngày cần ôn tập tiếp theo
+
         val calendar = Calendar.getInstance()
         calendar.time = Date() // Ngày hôm nay
         calendar.add(Calendar.DAY_OF_YEAR, nextIntervalDays)
@@ -52,10 +53,14 @@ class UpdateFlashcardProgressUseCase @Inject constructor(
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
         val nextReviewDate = sdf.format(calendar.time)
 
+        // 5. learnAt
+        val todayStr = sdf.format(Date())
+
 
         // Tạo object tiến độ mới để cập nhật xuống DB
         val updatedProgress = VocabularyReview(
             vocabularyId = vocabularyId,
+            learnAt = todayStr,
             repetitions = nextRepetitions,
             easinessFactor = finalEF,
             intervalDays = nextIntervalDays,

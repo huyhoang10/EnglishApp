@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.efishapp.feature.dashboard.domain.usecase.GetMonthStatsUseCase
 import com.example.efishapp.feature.dashboard.domain.usecase.GetWeeklyStatsUseCase
-import com.example.efishapp.feature.dashboard.domain.usecase.SyncStreakAndActivityUseCase
+import com.example.efishapp.feature.dashboard.domain.usecase.UpdateStreakAndActivityUseCase
 
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 class DashboardViewModel @Inject constructor(
     private val getWeeklyStatsUseCase: GetWeeklyStatsUseCase,
     private val getMonthStatsUseCase: GetMonthStatsUseCase,
-    private val syncStreakAndActivityUseCase: SyncStreakAndActivityUseCase,
+    private val updateStreakAndActivityUseCase: UpdateStreakAndActivityUseCase,
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
@@ -32,7 +32,7 @@ class DashboardViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val (analytics, name) = syncStreakAndActivityUseCase(userId)
+                val (analytics, name) = updateStreakAndActivityUseCase(userId)
                 _uiState.update {
                     it.copy(
                         userName = name,

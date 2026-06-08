@@ -7,10 +7,12 @@ import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
 
-class SyncStreakAndActivityUseCase @Inject constructor(
+class UpdateStreakAndActivityUseCase @Inject constructor(
     private val repository: UserAnalyticsRepository
 ) {
     suspend operator fun invoke(userId: String): Pair<UserAnalytics, String> {
+        val totalVocabulary = repository.getTotalWords(userId)
+        repository.updateTotalWords(userId,totalVocabulary)
         val userName = repository.getUserName(userId)
         val currentAnalytics = repository.getUserAnalytics(userId)
             ?: repository.initializeUserAnalytics(userId)

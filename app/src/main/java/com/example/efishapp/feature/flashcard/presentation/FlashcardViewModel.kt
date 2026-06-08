@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.efishapp.feature.dashboard.domain.usecase.UpdateMonthlyAccuracyUseCase
+import com.example.efishapp.feature.dashboard.domain.usecase.UpdateStreakAndActivityUseCase
 import com.example.efishapp.feature.dashboard.domain.usecase.UpdateWeeklyStatsUseCase
 import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.usecase.FlashcardSessionResult
@@ -45,6 +47,8 @@ class FlashcardViewModel @Inject constructor(
     private val getVocabularyFromFolder: GetVocabularyFromFolder,
     private val getVocabularyReviewUseCase: GetVocabularyReviewUseCase,
     private val updateWeeklyStatsUseCase: UpdateWeeklyStatsUseCase,
+    private val updateMonthlyAccuracyUseCase: UpdateMonthlyAccuracyUseCase,
+    private val updateStreakAndActivityUseCase: UpdateStreakAndActivityUseCase,
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
@@ -215,30 +219,37 @@ class FlashcardViewModel @Inject constructor(
     fun resetNavigationFlag() {
         _uiState.update { it.copy(isFinished = false) }
         _uiState.update { it.copy(isEmpty = false) }
+        _uiState.update { it.copy(isLoading = true) }
         historyStack.clear()
     }
 
-suspend fun updateUserReview() {
-    if (userActionStack.isEmpty()) return
-    try {
-        val tasks = userActionStack.map { actionSnapshot ->
-            viewModelScope.async {
-                if (actionSnapshot.vocabId.isNotEmpty()) {
-                    updateFlashcardProgressUseCase(
-                        userId = "DuwZLdACmcWoYCqFPhbPdeKy7Mk1",
-                        vocabularyId = actionSnapshot.vocabId,
-                        actionType = actionSnapshot.actionType
-                    )
+    suspend fun updateUserReview() {
+        if (userActionStack.isEmpty()) return
+        try {
+            val tasks = userActionStack.map { actionSnapshot ->
+                viewModelScope.async {
+                    if (actionSnapshot.vocabId.isNotEmpty()) {
+                        updateFlashcardProgressUseCase(
+                            userId = userId,
+                            vocabularyId = actionSnapshot.vocabId,
+                            actionType = actionSnapshot.actionType
+                        )
+                    }
                 }
             }
+            tasks.awaitAll()
+        } catch (e: Exception) {
+            Log.e("updateUserReview", "Error ${e.message}", e)
         }
-
-        updateWeeklyStatsUseCase(userId)
-        tasks.awaitAll()
-        userActionStack.clear()
-    } catch (e: Exception) {
-        Log.e("updateUserReview", "Error ${e.message}", e)
     }
-}
+
+    suspend fun loadIsFinish(){
+        updateUserReview()
+        updateWeeklyStatsUseCase(userId)
+        updateMonthlyAccuracyUseCase(userId)
+        updateStreakAndActivityUseCase(userId)
+        userActionStack.clear()
+        resetNavigationFlag()
+    }
 
 }
