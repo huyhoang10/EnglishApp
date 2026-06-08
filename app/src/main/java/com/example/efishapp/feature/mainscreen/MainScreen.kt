@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,7 +33,7 @@ fun MainScreen(
     onNavigateToFolderDetail: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var currentTab by remember { mutableStateOf(ScreenTab.HOME) }
+    var currentTab by rememberSaveable { mutableStateOf(ScreenTab.HOME) }
     BackHandler(enabled = currentTab != ScreenTab.HOME) {
         currentTab = ScreenTab.HOME
     }
