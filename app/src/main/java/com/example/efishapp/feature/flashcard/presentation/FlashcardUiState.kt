@@ -1,6 +1,6 @@
 package com.example.efishapp.feature.flashcard.presentation
 
-import com.example.efishapp.feature.flashcard.domain.ActionType
+import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 
 val sampleVocabularies = listOf(

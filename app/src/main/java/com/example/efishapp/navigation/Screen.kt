@@ -20,7 +20,7 @@ object Screen {
 
 @Serializable
 data class FlashcardScreenRoute(
-    val folderId: String
+    val folderId: String?
 )
 
 @Serializable

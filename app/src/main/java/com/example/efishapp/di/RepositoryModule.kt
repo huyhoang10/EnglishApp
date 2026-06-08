@@ -1,5 +1,6 @@
 package com.example.efishapp.di
 
+import com.example.efishapp.database.AppDatabase
 import com.example.efishapp.feature.Auth.Data.Repository.AuthRepositoryImpl
 import com.example.efishapp.feature.Auth.Domain.Repository.AuthRepository
 import com.example.efishapp.feature.dashboard.data.repository.MonthlyTrackerRepositoryImpl
@@ -8,6 +9,11 @@ import com.example.efishapp.feature.dashboard.data.repository.WeeklyTrackerRepos
 import com.example.efishapp.feature.dashboard.domain.MonthTrackerRepository
 import com.example.efishapp.feature.dashboard.domain.UserAnalyticsRepository
 import com.example.efishapp.feature.dashboard.domain.WeeklyTrackerRepository
+import com.example.efishapp.feature.flashcard.data.FlashcardSessionDao
+import com.example.efishapp.feature.flashcard.data.repository.FlashcardLocalRepositoryImpl
+import com.example.efishapp.feature.flashcard.data.repository.FlashcardRepositoryImpl
+import com.example.efishapp.feature.flashcard.domain.repository.FlashcardLocalRepository
+import com.example.efishapp.feature.flashcard.domain.repository.FlashcardRepository
 
 import com.example.efishapp.feature.notification.Data.repository.DailyStudyNotificationRepositoryImpl
 import com.example.efishapp.feature.notification.Domain.repository.DailyStudyNotificationRepository
@@ -16,6 +22,7 @@ import com.example.efishapp.feature.profile.domain.repository.UserProfileReposit
 
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
@@ -47,4 +54,13 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindUserAnalyticsRepository(impl: UserAnalyticsRepositoryImpl): UserAnalyticsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFlashcardRepository(impl: FlashcardRepositoryImpl): FlashcardRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFlashcardLocalRepository(impl: FlashcardLocalRepositoryImpl): FlashcardLocalRepository
+
 }
