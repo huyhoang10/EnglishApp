@@ -29,7 +29,7 @@ fun MainScreen(
     onNavigateToNotification: () -> Unit,
     onNavigateToReview: () -> Unit,
     onLogoutSuccess: () -> Unit,
-    onNavigateToFolderDetail: (String) -> Unit,
+    onNavigateToFolderDetail: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentTab by remember { mutableStateOf(ScreenTab.HOME) }

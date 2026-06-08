@@ -59,17 +59,23 @@ class FlashcardViewModel @Inject constructor(
     private val userAnswers = mutableMapOf<String, ActionType>()
 
     init {
-        if(folderId != null){
-            loadVocabularyFromFolder(folderId)
-        }
-        else{
-            loadVocabularyReview()
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            try {
+                if(folderId != null){
+                    loadVocabularyFromFolder(folderId)
+                }
+                else{
+                    loadVocabularyReview()
+                }
+                _uiState.update { it.copy(isLoading = false) }
+            }
+            catch (e: Exception){
+                _uiState.update { it.copy(isError = true)}
+                Log.d("Exception:", "Load Vocabulary Fail")
+            }
         }
 
-        if(_uiState.value.vocabularies.isEmpty()){
-            _uiState.update { it.copy(isEmpty = true)}
-            Log.d("DeBugEmty",_uiState.value.toString())
-        }
     }
 
     private fun loadVocabularyReview() = viewModelScope.launch {
@@ -85,6 +91,7 @@ class FlashcardViewModel @Inject constructor(
                     indexWord = result.currentIndex,
                     countForget = result.countForget,
                     countRemember = result.countRemember,
+                    isEmpty = result.vocabularies.isEmpty(),
                     isLoading = false
                 ) }
             }
@@ -94,6 +101,7 @@ class FlashcardViewModel @Inject constructor(
                     indexWord = 0,
                     countForget = 0,
                     countRemember = 0,
+                    isEmpty = result.vocabularies.isEmpty(),
                     isLoading = false
                 ) }
             }
@@ -106,7 +114,12 @@ class FlashcardViewModel @Inject constructor(
             try {
                 val list = getVocabularyFromFolder(folderId)
                 _uiState.update {
-                    it.copy(vocabularies = list, isLoading = false, isFinished = list.isEmpty())
+                    it.copy(
+                        vocabularies = list,
+                        isLoading = false,
+                        isEmpty = list.isEmpty(),
+                        isFinished = false
+                    )
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false) }
@@ -207,7 +220,6 @@ class FlashcardViewModel @Inject constructor(
 
 suspend fun updateUserReview() {
     if (userActionStack.isEmpty()) return
-
     try {
         val tasks = userActionStack.map { actionSnapshot ->
             viewModelScope.async {
@@ -229,13 +241,4 @@ suspend fun updateUserReview() {
     }
 }
 
-//    fun checkAndNotifyReview(context: Context) {
-//        val count = _uiState.value.vocabularies.count { it.interval <= 0 && it.repetitions > 0 }
-//        if (count > 0) {
-//            val intent = Intent(context, ReviewReminderReceiver::class.java).apply {
-//                putExtra(ReviewReminderReceiver.EXTRA_COUNT, count)
-//            }
-//            context.sendBroadcast(intent)
-//        }
-//    }
 }

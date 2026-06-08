@@ -1,8 +1,13 @@
 package com.example.efishapp.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -10,6 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.efishapp.core.util.OnDeviceTTSHelper
 import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
 import com.example.efishapp.feature.Auth.Presentation.ForgotPasswordScreen
@@ -22,7 +28,7 @@ import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
 import com.example.efishapp.feature.flashcard.presentation.CongratulationViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
-import com.example.efishapp.feature.flashcard.presentation.component.EmptyReviewScreen
+import com.example.efishapp.feature.flashcard.presentation.EmptyReviewScreen
 import com.example.efishapp.feature.mainscreen.MainScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
@@ -32,6 +38,8 @@ import com.example.efishapp.feature.profile.presentation.ProfileSetupViewModel
 import com.example.efishapp.feature.profile.presentation.ProfileViewModel
 import com.example.efishapp.feature.notification.presentation.ReviewReminderScreen
 import com.example.efishapp.feature.notification.presentation.ReviewReminderViewModel
+import com.example.efishapp.feature.vocabulary.presentation.VocabularyScreen
+import com.example.efishapp.feature.vocabulary.presentation.VocabularyViewModel
 
 @Composable
 fun EfishNavGraph(
@@ -123,7 +131,9 @@ fun EfishNavGraph(
                     }
                 },
                 onNavigateToReview = {navController.navigate(FlashcardScreenRoute(null))},
-                onNavigateToFolderDetail = {navController.navigate(Screen.FOLDER) }
+                onNavigateToFolderDetail = { folderId, folderName ->
+                    navController.navigate(VocabularyScreenRoute(folderId, folderName))
+                }
             )
         }
 
@@ -142,9 +152,18 @@ fun EfishNavGraph(
 
         composable(Screen.FOLDER) {
             FolderScreen(
-                onNavigateToFolderDetail = { folderId ->
-                    navController.navigate(FlashcardScreenRoute(folderId))
+                onNavigateToFolderDetail = { folderId, folderName ->
+                    navController.navigate(VocabularyScreenRoute(folderId, folderName))
                 }
+            )
+        }
+
+        composable<VocabularyScreenRoute> {
+            val vocabularyViewModel: VocabularyViewModel = hiltViewModel()
+
+            VocabularyScreen(
+                viewModel = vocabularyViewModel,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
@@ -152,11 +171,29 @@ fun EfishNavGraph(
         composable<FlashcardScreenRoute> {
             val flashcardViewModel: FlashcardViewModel = hiltViewModel()
             val context = LocalContext.current
+            var isTtsReady by remember { mutableStateOf(false) }
 
-            val onDeviceTTSHelper = remember { OnDeviceTTSHelper(context) }
+            val onDeviceTTSHelper = remember {
+                object : OnDeviceTTSHelper(context) {
+                    override fun onInit(status: Int) {
+                        if (status == android.speech.tts.TextToSpeech.SUCCESS) {
+                            isTtsReady = true
+                        }
+                    }
+                }
+            }
+            DisposableEffect(Unit) {
+                onDispose { onDeviceTTSHelper.shutdown() }
+            }
+
             FlashcardScreen(
                 flashcardViewModel,
-                {word -> onDeviceTTSHelper.speak(word)},
+                isTtsReady = isTtsReady,
+                onClickSpeech = { word ->
+                    if (onDeviceTTSHelper.isReady) {
+                        onDeviceTTSHelper.speak(word)
+                    }
+                },
                 onNavigateToCongratulation = { totalRemember, totalForget ->
                     navController.navigate(CongratulationScreenRoute(totalRemember,totalForget))
                 },
@@ -178,12 +215,14 @@ fun EfishNavGraph(
 
         composable(Screen.EMPTY_VOCABULARY) {
             EmptyReviewScreen(
-                {
-                    navController.navigate(Screen.HOME){
-                        popUpTo(Screen.HOME) { inclusive = true }
-                    }
-                }
+//                {
+//                    navController.navigate(Screen.HOME){
+//                        popUpTo(Screen.FOLDER) { inclusive = true }
+//                    }
+//                }
+                { navController.navigate(Screen.HOME) }
             )
         }
+
     }
 }

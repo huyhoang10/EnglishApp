@@ -14,13 +14,18 @@ object Screen {
 
     const val EMPTY_VOCABULARY = "empty_vocabulary"
     const val FOLDER = "folder"
-
-
+    const val VOCABULARY = "vocabulary"
 }
 
 @Serializable
 data class FlashcardScreenRoute(
     val folderId: String?
+)
+
+@Serializable
+data class VocabularyScreenRoute(
+    val folderId: String,
+    val folderName: String
 )
 
 @Serializable
