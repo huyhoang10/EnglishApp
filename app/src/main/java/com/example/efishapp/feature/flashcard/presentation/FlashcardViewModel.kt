@@ -10,7 +10,7 @@ import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.usecase.FlashcardSessionResult
 import com.example.efishapp.feature.flashcard.domain.usecase.GetVocabularyReviewUseCase
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
-import com.example.efishapp.feature.flashcard.domain.usecase.GetVocabularyFromFolder
+import com.example.efishapp.feature.flashcard.domain.usecase.GetVocabularyFromFolderUsecase
 import com.example.efishapp.feature.flashcard.domain.usecase.UpdateFlashcardProgressUseCase
 import com.example.efishapp.navigation.FlashcardScreenRoute
 import com.google.firebase.auth.FirebaseAuth
@@ -42,7 +42,7 @@ data class UserActionSnapshot(
 class FlashcardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val updateFlashcardProgressUseCase: UpdateFlashcardProgressUseCase,
-    private val getVocabularyFromFolder: GetVocabularyFromFolder,
+    private val getVocabularyFromFolderUsecase: GetVocabularyFromFolderUsecase,
     private val getVocabularyReviewUseCase: GetVocabularyReviewUseCase,
     private val updateWeeklyStatsUseCase: UpdateWeeklyStatsUseCase,
     private val firebaseAuth: FirebaseAuth
@@ -58,29 +58,93 @@ class FlashcardViewModel @Inject constructor(
     private val userActionStack = ArrayDeque<UserActionSnapshot>()
     private val userAnswers = mutableMapOf<String, ActionType>()
 
-    init {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            try {
-                if(folderId != null){
-                    loadVocabularyFromFolder(folderId)
-                }
-                else{
-                    loadVocabularyReview()
-                }
-                _uiState.update { it.copy(isLoading = false) }
+//    init {
+//        viewModelScope.launch {
+//            _uiState.update { it.copy(isLoading = true) }
+//            try {
+//                if(folderId != null){
+//                    loadVocabularyFromFolder(folderId)
+//                }
+//                else{
+//                    loadVocabularyReview()
+//                }
+//            }
+//            catch (e: Exception){
+//                _uiState.update { it.copy(isError = true)}
+//                Log.d("Exception:", "Load Vocabulary Fail")
+//            }
+//        //}
+//
+//    }
+//
+//    private fun loadVocabularyReview()= viewModelScope.launch {
+//        _uiState.update { it.copy(isLoading = true) }
+//
+//        // Gọi UseCase xử lý phân luồng logic giữa Room và Firestore
+//        when (val result = getVocabularyReviewUseCase(userId)) {
+//            is FlashcardSessionResult.ContinueSession -> {
+//                // TÌNH HUỐNG HỌC DỞ: Khôi phục lại toàn bộ dữ liệu từ Room Local lên UI
+//                userAnswers.putAll(result.savedAnswers)
+//                _uiState.update { it.copy(
+//                    vocabularies = result.vocabularies,
+//                    indexWord = result.currentIndex,
+//                    countForget = result.countForget,
+//                    countRemember = result.countRemember,
+//                    isEmpty = result.vocabularies.isEmpty(),
+//                    isLoading = false
+//                ) }
+//            }
+//            is FlashcardSessionResult.NewSession -> {
+//                _uiState.update { it.copy(
+//                    vocabularies = result.vocabularies,
+//                    indexWord = 0,
+//                    countForget = 0,
+//                    countRemember = 0,
+//                    isEmpty = result.vocabularies.isEmpty(),
+//                    isLoading = false
+//                ) }
+//            }
+//        }
+//    }
+//
+//    private fun loadVocabularyFromFolder(folderId: String) {
+//        viewModelScope.launch {
+//            _uiState.update { it.copy(isLoading = true) }
+//            try {
+//                val list = getVocabularyFromFolderUsecase(folderId)
+//                _uiState.update {
+//                    it.copy(
+//                        vocabularies = list,
+//                        isLoading = false,
+//                        isEmpty = list.isEmpty(),
+//                        isFinished = false
+//                    )
+//                }
+//            } catch (e: Exception) {
+//                _uiState.update { it.copy(isLoading = false) }
+//            }
+//        }
+//    }
+init {
+    viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true, isError = false) }
+        try {
+            if (folderId != null) {
+                // Đợi hàm suspend này chạy xong xuôi
+                loadVocabularyFromFolder(folderId)
+            } else {
+                // Đợi hàm suspend này chạy xong xuôi
+                loadVocabularyReview()
             }
-            catch (e: Exception){
-                _uiState.update { it.copy(isError = true)}
-                Log.d("Exception:", "Load Vocabulary Fail")
-            }
+        } catch (e: Exception) {
+            Log.e("VocabularyViewModel", "Load Vocabulary Fail: ${e.message}", e)
+            _uiState.update { it.copy(isError = true, isLoading = false) }
         }
-
     }
+}
 
-    private fun loadVocabularyReview() = viewModelScope.launch {
-        _uiState.update { it.copy(isLoading = true) }
-
+    // Chuyển thành suspend fun để chạy tuần tự theo luồng của hàm gọi nó
+    private suspend fun loadVocabularyReview() {
         // Gọi UseCase xử lý phân luồng logic giữa Room và Firestore
         when (val result = getVocabularyReviewUseCase(userId)) {
             is FlashcardSessionResult.ContinueSession -> {
@@ -92,7 +156,7 @@ class FlashcardViewModel @Inject constructor(
                     countForget = result.countForget,
                     countRemember = result.countRemember,
                     isEmpty = result.vocabularies.isEmpty(),
-                    isLoading = false
+                    isLoading = false // Tắt loading sau khi cập nhật trạng thái thành công
                 ) }
             }
             is FlashcardSessionResult.NewSession -> {
@@ -102,38 +166,33 @@ class FlashcardViewModel @Inject constructor(
                     countForget = 0,
                     countRemember = 0,
                     isEmpty = result.vocabularies.isEmpty(),
-                    isLoading = false
+                    isLoading = false // Tắt loading sau khi cập nhật trạng thái thành công
                 ) }
             }
         }
     }
 
-    private fun loadVocabularyFromFolder(folderId: String) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            try {
-                val list = getVocabularyFromFolder(folderId)
-                _uiState.update {
-                    it.copy(
-                        vocabularies = list,
-                        isLoading = false,
-                        isEmpty = list.isEmpty(),
-                        isFinished = false
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false) }
-            }
+    // Chuyển thành suspend fun, loại bỏ hoàn toàn viewModelScope.launch thừa ở đây
+    private suspend fun loadVocabularyFromFolder(folderId: String) {
+        // Gọi UseCase lấy dữ liệu bất đồng bộ từ Repo
+        val list = getVocabularyFromFolderUsecase(folderId)
+
+        _uiState.update {
+            it.copy(
+                vocabularies = list,
+                isEmpty = list.isEmpty(),
+                isFinished = false,
+                isLoading = false // Tắt loading ngay tại đây khi dữ liệu đã nạp xong
+            )
         }
     }
 
-
     fun onEvent(event: FlashcardUiEvent) {
         when (event) {
-            is FlashcardUiEvent.LoadVocabularies -> {
-                loadVocabularyFromFolder(event.userId)
-            }
-            FlashcardUiEvent.OnFlipCard -> {
+//            is FlashcardUiEvent.LoadVocabularies -> {
+//                loadVocabularyFromFolder(event.userId)
+//            }
+            is FlashcardUiEvent.OnFlipCard -> {
                 _uiState.update { it.copy(isFlipped = !it.isFlipped) }
             }
             FlashcardUiEvent.OnClickDetail -> {
@@ -168,6 +227,9 @@ class FlashcardViewModel @Inject constructor(
                 val actionType = event.actionType
                 handleUserAnswer(actionType = actionType)
             }
+            else -> {
+
+            }
         }
     }
 
@@ -187,7 +249,7 @@ class FlashcardViewModel @Inject constructor(
         ))
 
         userActionStack.add(UserActionSnapshot(
-            vocabId = currentState.vocabularies[currentState.indexWord].id,
+            vocabId = currentState.vocabularies[currentState.indexWord].documentId,
             actionType = actionType
         ))
 

@@ -4,7 +4,7 @@ import com.example.efishapp.feature.flashcard.domain.repository.FlashcardReposit
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 import javax.inject.Inject
 
-class GetVocabularyFromFolder @Inject constructor(
+class GetVocabularyFromFolderUsecase @Inject constructor(
     private val repository: FlashcardRepository
 ) {
     suspend operator fun invoke(folderId: String): List<Vocabulary> {

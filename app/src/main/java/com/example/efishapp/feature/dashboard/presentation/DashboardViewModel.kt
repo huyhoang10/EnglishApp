@@ -31,13 +31,15 @@ class DashboardViewModel @Inject constructor(
         val userId: String = firebaseAuth.currentUser?.uid.toString()
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             try {
                 val (analytics, name) = syncStreakAndActivityUseCase(userId)
                 _uiState.update {
                     it.copy(
                         userName = name,
                         streak = analytics.streak,
-                        totalVocabLeaned = analytics.totalVocabLearned
+                        totalVocabLeaned = analytics.totalVocabLearned,
+                        isLoading = false
                     )
                 }
                 Log.d("Dashboard", "Successfully Synchronized Profile & Analytics")
