@@ -1,5 +1,6 @@
 package com.example.efishapp.feature.mainscreen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -24,7 +25,9 @@ fun MainScreen(
     modifier: Modifier = Modifier
 ) {
     var currentTab by remember { mutableStateOf(ScreenTab.HOME) }
-
+    BackHandler(enabled = currentTab != ScreenTab.HOME) {
+        currentTab = ScreenTab.HOME
+    }
     Scaffold(
         modifier = modifier,
         bottomBar = {
