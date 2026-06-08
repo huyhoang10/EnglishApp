@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,6 +20,7 @@ import com.example.efishapp.feature.setting.domain.model.AppTheme
 fun SettingScreen(
     viewModel: SettingViewModel,
     onLogoutClick: () -> Unit,
+    onNavigateToDailyReminder: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -31,6 +33,7 @@ fun SettingScreen(
             viewModel.onThemeSelected(newTheme)
         },
         onLogoutClick = onLogoutClick,
+        onNavigateToDailyReminder = onNavigateToDailyReminder,
         modifier = modifier
     )
 }
@@ -41,6 +44,7 @@ fun SettingContent(
     uiState: SettingUiState,
     onThemeChanged: (Boolean) -> Unit,
     onLogoutClick: () -> Unit,
+    onNavigateToDailyReminder: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Biến kiểm tra xem theme hiện tại có phải là DARK hay không để gạt nút Switch
@@ -93,6 +97,43 @@ fun SettingContent(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Card Cài đặt thông báo
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToDailyReminder() }
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "Cài đặt thông báo",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = "Thông báo học tập", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = "Thiết lập thời gian nhắc nhở hàng ngày",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         Button(
             onClick = { showLogoutDialog = true }, // Khi bấm nút, bắn sự kiện ra ngoài luôn
             modifier = Modifier.fillMaxWidth(),

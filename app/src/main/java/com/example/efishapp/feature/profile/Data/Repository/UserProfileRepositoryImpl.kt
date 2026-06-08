@@ -60,7 +60,7 @@ class UserProfileRepositoryImpl @Inject constructor(
         level: String?
     ): Result<Unit> {
         return try {
-            val user = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
+            val user = auth.currentUser ?: return Result.failure(Exception("Người dùng chưa đăng nhập"))
 
             // Đồng bộ fullName vào displayName của Auth luôn
             if (fullName != null) {
@@ -103,7 +103,7 @@ class UserProfileRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteUserProfile(): Result<Unit> {
-        val user = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
+        val user = auth.currentUser ?: return Result.failure(Exception("Người dùng chưa đăng nhập"))
         return try {
             withTimeout(5000) {
                 firestore.collection("users").document(user.uid).delete().await()
@@ -115,7 +115,7 @@ class UserProfileRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteFirebaseAuth(): Result<Unit> {
-        val user = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
+        val user = auth.currentUser ?: return Result.failure(Exception("Người dùng chưa đăng nhập"))
         return try {
             user.delete().await()
             Result.success(Unit)

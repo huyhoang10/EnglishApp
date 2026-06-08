@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,9 +114,14 @@ fun ProfileScreen(
 
                     OutlinedTextField(
                         value = uiState.editedDateOfBirth,
-                        onValueChange = { viewModel.onDateOfBirthChange(it) },
-                        label = { Text("Date of Birth") },
-                        modifier = Modifier.fillMaxWidth()
+                        onValueChange = { input ->
+                            if (input.all { it.isDigit() || it == '/' || it == '-' }) {
+                                viewModel.onDateOfBirthChange(input)
+                            }
+                        },
+                        label = { Text("Date of Birth (DD/MM/YYYY)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
 
                     // Gender Selection

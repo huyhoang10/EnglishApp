@@ -3,6 +3,7 @@ package com.example.efishapp.feature.profile.presentation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Notifications
@@ -10,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,13 +60,18 @@ fun ProfileSetupScreen(
 
             OutlinedTextField(
                 value = uiState.dateOfBirth,
-                onValueChange = { viewModel.onDateOfBirthChange(it) },
+                onValueChange = { input ->
+                    if (input.all { it.isDigit() || it == '/' || it == '-' }) {
+                        viewModel.onDateOfBirthChange(input)
+                    }
+                },
                 label = { Text("Ngày sinh (DD/MM/YYYY)") },
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
                     Icon(Icons.Default.DateRange, contentDescription = null)
                 },
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
             // Gender Selection

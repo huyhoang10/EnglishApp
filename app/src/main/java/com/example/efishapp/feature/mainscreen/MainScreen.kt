@@ -28,6 +28,7 @@ import com.example.efishapp.navigation.CongratulationScreenRoute
 fun MainScreen(
     onNavigateToUserProfile: () -> Unit,
     onNavigateToNotification: () -> Unit,
+    onNavigateToDailyStudyReminder: () -> Unit,
     onNavigateToReview: () -> Unit,
     onLogoutSuccess: () -> Unit,
     onNavigateToFolderDetail: (String, String) -> Unit,
@@ -66,7 +67,8 @@ fun MainScreen(
                 SettingScreen(
                     viewModel = settingViewModel,
                     modifier = contentModifier,
-                    onLogoutClick = onLogoutSuccess
+                    onLogoutClick = onLogoutSuccess,
+                    onNavigateToDailyReminder = onNavigateToDailyStudyReminder
                 )
             }
 

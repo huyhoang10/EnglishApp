@@ -116,7 +116,7 @@ fun EfishNavGraph(
                 viewModel = profileViewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onDeleteSuccess = {
-                    navController.navigate(Screen.HOME) {
+                    navController.navigate(Screen.LOGIN) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
@@ -127,6 +127,7 @@ fun EfishNavGraph(
             MainScreen(
                 onNavigateToUserProfile = { navController.navigate(Screen.PROFILE) },
                 onNavigateToNotification = { navController.navigate(Screen.DUE_WORDS_REMINDER) },
+                onNavigateToDailyStudyReminder = { navController.navigate(Screen.DAILY_STUDY_REMINDER) },
                 onLogoutSuccess = {
                     navController.navigate(Screen.LOGIN) {
                         popUpTo(Screen.HOME) { inclusive = true }
