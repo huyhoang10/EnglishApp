@@ -12,6 +12,8 @@ object Screen {
     const val DAILY_STUDY_REMINDER = "daily_study_reminder"
     const val DUE_WORDS_REMINDER = "due_words_reminder"
 
+    const val FOLDER = "folder"
+
 
 }
 

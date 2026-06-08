@@ -14,6 +14,7 @@ import com.example.efishapp.feature.Auth.Presentation.LoginScreen
 import com.example.efishapp.feature.Auth.Presentation.RegisterScreen
 import com.example.efishapp.feature.dashboard.presentation.DashboardScreen
 import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
+import com.example.efishapp.feature.folder.presentation.FolderScreen
 import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
 import com.example.efishapp.feature.flashcard.presentation.CongratulationViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
@@ -100,10 +101,10 @@ fun EfishNavGraph(
         }
 
         composable(Screen.HOME) {
-            // Thay đổi tại đây để nạp giao diện Container tổng
             MainScreen(
                 onNavigateToUserProfile = { navController.navigate(Screen.PROFILE) },
-                onNavigateToNotification = { navController.navigate(Screen.DUE_WORDS_REMINDER) }
+                onNavigateToNotification = { navController.navigate(Screen.DUE_WORDS_REMINDER) },
+                onNavigateToFolderDetail = {navController.navigate(Screen.FOLDER) }
             )
         }
 
@@ -119,6 +120,15 @@ fun EfishNavGraph(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
+
+        composable(Screen.FOLDER) {
+            FolderScreen(
+                onNavigateToFolderDetail = { folderId ->
+                    navController.navigate(FlashcardScreenRoute(folderId))
+                }
+            )
+        }
+
         composable<FlashcardScreenRoute> {
             val flashcardViewModel: FlashcardViewModel = hiltViewModel()
             FlashcardScreen(

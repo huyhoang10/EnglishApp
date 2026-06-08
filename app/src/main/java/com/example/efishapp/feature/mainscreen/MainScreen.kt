@@ -13,6 +13,7 @@ import com.example.efishapp.core.ui.component.AppBottomNavigationBar
 import com.example.efishapp.core.ui.component.ScreenTab
 import com.example.efishapp.feature.dashboard.presentation.DashboardScreen
 import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
+import com.example.efishapp.feature.folder.presentation.FolderScreen
 import com.example.efishapp.feature.setting.presentation.SettingScreen
 import com.example.efishapp.feature.setting.presentation.SettingViewModel
 
@@ -20,6 +21,7 @@ import com.example.efishapp.feature.setting.presentation.SettingViewModel
 fun MainScreen(
     onNavigateToUserProfile: () -> Unit,
     onNavigateToNotification: () -> Unit,
+    onNavigateToFolderDetail: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentTab by remember { mutableStateOf(ScreenTab.HOME) }
@@ -57,7 +59,11 @@ fun MainScreen(
             }
 
             // Vùng chờ cho các thành viên khác cắm màn hình Folder, Review, Game vào
-            ScreenTab.MY_FOLDER -> { /* Gọi màn hình Folder */ }
+            ScreenTab.MY_FOLDER -> {
+                FolderScreen(
+                    onNavigateToFolderDetail = onNavigateToFolderDetail
+                )
+            }
             ScreenTab.REVIEW -> { /* Gọi màn hình Review */ }
             ScreenTab.GAME -> { /* Gọi màn hình Game */ }
         }

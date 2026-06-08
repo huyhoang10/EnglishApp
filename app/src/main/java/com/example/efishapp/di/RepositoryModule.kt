@@ -14,6 +14,8 @@ import com.example.efishapp.feature.notification.Domain.repository.DailyStudyNot
 import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
 import com.example.efishapp.feature.profile.domain.repository.UserProfileRepository
 
+import com.example.efishapp.feature.folder.data.repository.FolderRepositoryImpl
+import com.example.efishapp.feature.folder.domain.FolderRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -23,6 +25,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindFolderRepository(impl: FolderRepositoryImpl): FolderRepository
 
     @Binds
     @Singleton
