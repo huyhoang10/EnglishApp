@@ -170,7 +170,9 @@ fun EfishNavGraph(
 
             VocabularyScreen(
                 viewModel = vocabularyViewModel,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onFlashcardScreen = {folderId ->
+                    navController.navigate(FlashcardScreenRoute(folderId))}
             )
         }
 

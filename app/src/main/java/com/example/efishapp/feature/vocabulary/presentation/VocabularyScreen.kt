@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -58,6 +60,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun VocabularyScreen(
     onNavigateBack: () -> Unit,
+    onFlashcardScreen: (String) -> Unit,
     viewModel: VocabularyViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -86,8 +89,19 @@ fun VocabularyScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Quay lai")
                     }
                 },
+
                 actions = {
                     if (uiState.vocabularies.isNotEmpty()) {
+                        TextButton(
+                            onClick = { onFlashcardScreen(viewModel.folderId) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow, // Hoặc bất kỳ icon nào bạn muốn
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = 4.dp)
+                            )
+                            Text(text = "Học")
+                        }
                         IconButton(onClick = { showExportDialog = true }) {
                             Icon(Icons.Default.Share, contentDescription = "Export từ vựng")
                         }

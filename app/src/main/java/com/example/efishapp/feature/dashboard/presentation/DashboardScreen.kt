@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.core.designsystem.LoadingDialog
 import com.example.efishapp.core.ui.component.AppBottomNavigationBar
 import com.example.efishapp.core.ui.component.ScreenTab
 import com.example.efishapp.feature.dashboard.domain.DailyVocabTracker
@@ -35,22 +36,30 @@ fun DashboardScreen(
         viewModel.LoadingDashboard()
     }
 
-    val scrollState = rememberScrollState()
+    when {
+        state.isLoading -> {
+            LoadingDialog()
+        }
+        else ->{
+            val scrollState = rememberScrollState()
 
-    // XÓA BỎ HOÀN TOÀN SCAFFOLD VÀ BOTTOMBAR Ở ĐÂY
-    DashboarContent(
-        userName = state.userName,
-        streak = state.streak,
-        totalVocabLearned = state.totalVocabLeaned,
-        weeklyLearningStats = state.weeklyLearningStats,
-        monthlyLearningStat = state.monthlyLearningStat,
-        onNavigateToUserProfile = onNavigateToUserProfile,
-        onNavigateToNotification = onNavigateToNotification,
-        // Dùng modifier được truyền từ MainScreen xuống để tránh đè lên thanh bar tổng
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-    )
+            // XÓA BỎ HOÀN TOÀN SCAFFOLD VÀ BOTTOMBAR Ở ĐÂY
+            DashboarContent(
+                userName = state.userName,
+                streak = state.streak,
+                totalVocabLearned = state.totalVocabLeaned,
+                weeklyLearningStats = state.weeklyLearningStats,
+                monthlyLearningStat = state.monthlyLearningStat,
+                onNavigateToUserProfile = onNavigateToUserProfile,
+                onNavigateToNotification = onNavigateToNotification,
+                // Dùng modifier được truyền từ MainScreen xuống để tránh đè lên thanh bar tổng
+                modifier = modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+            )
+        }
+    }
+
 }
 
 

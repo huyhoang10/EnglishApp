@@ -6,7 +6,6 @@ data class VocabularyUiState(
     val vocabularies: List<Vocabulary> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-
     val addDialog: AddVocabularyDialogState = AddVocabularyDialogState(),
     val editDialog: EditVocabularyDialogState = EditVocabularyDialogState(),
     val deleteDialog: DeleteVocabularyDialogState = DeleteVocabularyDialogState()

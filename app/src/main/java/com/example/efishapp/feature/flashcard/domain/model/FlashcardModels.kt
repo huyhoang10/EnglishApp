@@ -1,7 +1,6 @@
 package com.example.efishapp.feature.flashcard.domain.model
 
 import com.google.firebase.firestore.DocumentId
-import java.util.Date
 
 data class VocabularyReview(
     val vocabularyId: String = "",
@@ -13,6 +12,7 @@ data class VocabularyReview(
 
 data class Vocabulary(
     @DocumentId
+    val documentId: String = "",
     val id: String = "",
     val word: String = "",
     val pronunciation: String = "",
