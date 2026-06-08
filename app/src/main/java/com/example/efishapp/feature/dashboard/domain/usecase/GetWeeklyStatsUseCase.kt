@@ -13,16 +13,16 @@ class GetWeeklyStatsUseCase @Inject constructor(
         val currentStats = repository.getWeeklyStats(userId)
             ?: repository.initializeWeeklyStats(userId)
 
-        val calendar = Calendar.getInstance(Locale.getDefault())
-        val isMonday = calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
-
-        if (isMonday) {
-            val hasDataInCurrentWeek = currentStats.any { it.newVocabCount > 0 || it.reviewVocabCount > 0 }
-            if (hasDataInCurrentWeek) {
-                repository.resetAndBackupWeeklyStats(userId, currentStats)
-                return repository.initializeWeeklyStats(userId)
-            }
-        }
+//        val calendar = Calendar.getInstance(Locale.getDefault())
+//        val isMonday = calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+//
+//        if (isMonday) {
+//            val hasDataInCurrentWeek = currentStats.any { it.newVocabCount > 0 || it.reviewVocabCount > 0 }
+//            if (hasDataInCurrentWeek) {
+//                repository.resetAndBackupWeeklyStats(userId, currentStats)
+//                //return repository.initializeWeeklyStats(userId)
+//            }
+//        }
         return currentStats
     }
 }

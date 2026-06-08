@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.efishapp.feature.dashboard.domain.usecase.UpdateWeeklyStatsUseCase
 import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.usecase.FlashcardSessionResult
 import com.example.efishapp.feature.flashcard.domain.usecase.GetVocabularyReviewUseCase
@@ -43,6 +44,7 @@ class FlashcardViewModel @Inject constructor(
     private val updateFlashcardProgressUseCase: UpdateFlashcardProgressUseCase,
     private val getVocabularyFromFolder: GetVocabularyFromFolder,
     private val getVocabularyReviewUseCase: GetVocabularyReviewUseCase,
+    private val updateWeeklyStatsUseCase: UpdateWeeklyStatsUseCase,
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
@@ -207,7 +209,6 @@ suspend fun updateUserReview() {
     if (userActionStack.isEmpty()) return
 
     try {
-        // Gộp 14 request chạy song song cùng lúc
         val tasks = userActionStack.map { actionSnapshot ->
             viewModelScope.async {
                 if (actionSnapshot.vocabId.isNotEmpty()) {
@@ -219,8 +220,10 @@ suspend fun updateUserReview() {
                 }
             }
         }
-        tasks.awaitAll() // Đợi toàn bộ 14 từ lên server thành công
-        userActionStack.clear() // Xóa sạch stack sau khi hoàn thành
+
+        updateWeeklyStatsUseCase(userId)
+        tasks.awaitAll()
+        userActionStack.clear()
     } catch (e: Exception) {
         Log.e("updateUserReview", "Error ${e.message}", e)
     }
