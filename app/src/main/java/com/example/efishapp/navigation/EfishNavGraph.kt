@@ -43,11 +43,13 @@ import com.example.efishapp.feature.vocabulary.presentation.VocabularyViewModel
 
 @Composable
 fun EfishNavGraph(
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ){
     val authViewModel: AuthViewModel = hiltViewModel()
-    val startDestination = Screen.LOGIN//authViewModel.getStartDestination()
+    val startDestination = androidx.compose.runtime.saveable.rememberSaveable {
+        authViewModel.getStartDestination()
+    }
     NavHost(
         navController = navController,
         startDestination = startDestination,

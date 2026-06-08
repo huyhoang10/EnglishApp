@@ -32,8 +32,9 @@ class MainActivity : ComponentActivity() {
             val settingViewModel: SettingViewModel = hiltViewModel()
             val uiState by settingViewModel.uiState.collectAsState()
             val isDarkMode = uiState.currentTheme == AppTheme.DARK
+            val navController = androidx.navigation.compose.rememberNavController()
             EfishAppTheme(darkTheme = isDarkMode) {
-                EfishNavGraph()
+                EfishNavGraph(navController = navController)
             }
         }
     }
