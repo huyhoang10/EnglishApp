@@ -96,15 +96,11 @@ class AuthViewModel @Inject constructor(
             _uiState.value = AuthUiState.Loading
 
             try {
-                // 1. Kiểm tra các phương thức đăng nhập đã tồn tại của email này
                 val signInMethods = auth.fetchSignInMethodsForEmail(email).await().signInMethods ?: emptyList()
 
-                // 2. Nếu email này ĐÃ ĐƯỢC đăng ký bằng Mật khẩu (password) trước đó
-                if (signInMethods.contains("password")) {
-                    // Chuyển sang trạng thái chờ xác nhận từ người dùng chứ không đăng nhập thẳng
+                if (signInMethods.contains("password") && !signInMethods.contains("google.com")) {
                     _uiState.value = AuthUiState.NeedAccountLinkingConfirmation(idToken)
                 } else {
-                    // Nếu chưa có hoặc chỉ có Google, tiến hành đăng nhập thẳng như cũ
                     executeGoogleLogin(idToken)
                 }
             } catch (e: Exception) {
@@ -153,13 +149,18 @@ class AuthViewModel @Inject constructor(
      * Hàm tập trung xử lý và chuyển đổi Exception từ Firebase thành thông báo thân thiện
      */
     private fun handleFailure(exception: Throwable): AuthUiState {
-        val friendlyMessage = when (exception) {
-            is IllegalArgumentException -> exception.message ?: "Dữ liệu không hợp lệ."
-            is FirebaseAuthInvalidUserException -> "Tài khoản email này không tồn tại."
-            is FirebaseAuthInvalidCredentialsException -> "Mật khẩu không chính xác hoặc email sai định dạng."
-            is FirebaseAuthUserCollisionException -> "Email này đã được đăng ký thông qua tài khoản Google. " +
-                    "Vui lòng quay lại màn hình đăng nhập và chọn 'Đăng nhập bằng Google'"
-            else -> exception.localizedMessage ?: "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau."
+        val friendlyMessage = when (exception.message) {
+            // 🌟 Bắt 2 mã lỗi tự định nghĩa từ tầng Repository truyền lên
+            "GOOGLE_COLLISION" -> "Email này đã được đăng ký thông qua tài khoản Google. Vui lòng quay lại màn hình đăng nhập và chọn 'Đăng nhập bằng Google'."
+            "PASSWORD_COLLISION" -> "Tài khoản email này đã tồn tại trên hệ thống. Vui lòng quay lại màn hình Đăng nhập."
+
+            // Các mã lỗi hệ thống mặc định của Firebase giữ nguyên
+            else -> when (exception) {
+                is IllegalArgumentException -> exception.message ?: "Dữ liệu không hợp lệ."
+                is FirebaseAuthInvalidUserException -> "Tài khoản email này không tồn tại."
+                is FirebaseAuthInvalidCredentialsException -> "Mật khẩu không chính xác hoặc email sai định dạng."
+                else -> exception.localizedMessage ?: "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau."
+            }
         }
         return AuthUiState.Error(friendlyMessage)
     }

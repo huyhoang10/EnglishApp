@@ -174,8 +174,10 @@ fun LoginScreen(
         // Nút Đăng nhập bằng Google thương hiệu
         GoogleSignInButton(
             onClick = {
-                val signInIntent = googleSignInClient.signInIntent
-                googleSignInLauncher.launch(signInIntent)
+                googleSignInClient.signOut().addOnCompleteListener {
+                    val signInIntent = googleSignInClient.signInIntent
+                    googleSignInLauncher.launch(signInIntent)
+                }
             },
             modifier = Modifier.fillMaxWidth()
         )

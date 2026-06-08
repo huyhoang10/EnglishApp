@@ -1,12 +1,14 @@
 package com.example.efishapp.feature.flashcard.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +41,7 @@ data class FlashcardScreenConfig(
 
 @Composable
 fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
+                    isTtsReady: Boolean = true,
                     onClickSpeech: (String) -> Unit,
                     onNavigateToCongratulation: (totalRemember: Int, totalForget: Int) -> Unit,
                     onNavigateNotifyEmpty: () -> Unit) {
@@ -79,6 +82,7 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
                     isFlipped = state.isFlipped,
                     isShowDetail = state.isShowDetail,
                     onClickFlipCard = { viewModel.onEvent(FlashcardUiEvent.OnFlipCard) },
+                    isTtsReady = isTtsReady,
                     onClickSpeech = onClickSpeech,
                     onClickAgain = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.AGAIN)) },
                     onClickHard = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.HARD)) },
@@ -87,7 +91,19 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
                     modifier = Modifier.padding(innerPadding)
                 )
             }
+//            else {
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .padding(innerPadding),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    CircularProgressIndicator()
+//                }
+//            }
         }
+
+
     }
 }
 
@@ -101,6 +117,7 @@ fun FlashcardContent(
     isFlipped: Boolean,
     isShowDetail: Boolean,
     onClickFlipCard: () -> Unit,
+    isTtsReady: Boolean,
     onClickSpeech: (String) -> Unit,
     onClickAgain: () -> Unit,
     onClickHard: () -> Unit,
@@ -133,6 +150,7 @@ fun FlashcardContent(
                 isFlipped,
                 isShowDetail,
                 onClickFlipCard,
+                isTtsReady,
                 onClickSpeech,
                 modifier = Modifier.weight(1f))
 
@@ -173,6 +191,7 @@ private fun FlashcardContentPreview() {
         ),
         isFlipped = false,
         isShowDetail = true,
+        isTtsReady = true,
         onClickFlipCard = {},
         onClickSpeech = {word ->{}},
         onClickAgain = {},

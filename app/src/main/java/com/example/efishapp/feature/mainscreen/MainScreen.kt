@@ -1,5 +1,6 @@
 package com.example.efishapp.feature.mainscreen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ import com.example.efishapp.feature.dashboard.presentation.DashboardScreen
 import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
+import com.example.efishapp.feature.folder.presentation.FolderScreen
 import com.example.efishapp.feature.setting.presentation.SettingScreen
 import com.example.efishapp.feature.setting.presentation.SettingViewModel
 import com.example.efishapp.navigation.CongratulationScreenRoute
@@ -27,10 +29,13 @@ fun MainScreen(
     onNavigateToNotification: () -> Unit,
     onNavigateToReview: () -> Unit,
     onLogoutSuccess: () -> Unit,
+    onNavigateToFolderDetail: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentTab by remember { mutableStateOf(ScreenTab.HOME) }
-
+    BackHandler(enabled = currentTab != ScreenTab.HOME) {
+        currentTab = ScreenTab.HOME
+    }
     Scaffold(
         modifier = modifier,
         bottomBar = {
@@ -64,9 +69,14 @@ fun MainScreen(
                 )
             }
 
-            // Vùng chờ cho các thành viên khác cắm màn hình Folder, Review, Game vào
-            ScreenTab.MY_FOLDER -> { /* Gọi màn hình Folder */ }
+
             ScreenTab.REVIEW -> {onNavigateToReview()}
+            ScreenTab.MY_FOLDER -> {
+                FolderScreen(
+                    onNavigateToFolderDetail = onNavigateToFolderDetail
+                )
+            }
+            ScreenTab.REVIEW -> { /* Gọi màn hình Review */ }
             ScreenTab.GAME -> { /* Gọi màn hình Game */ }
         }
     }
