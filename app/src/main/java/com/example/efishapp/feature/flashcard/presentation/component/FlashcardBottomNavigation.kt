@@ -48,7 +48,7 @@ fun FlashcardBottomNavigation(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            IconButton(onClick = {onClickBack}) {
+            IconButton(onClick = onClickBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
@@ -57,7 +57,7 @@ fun FlashcardBottomNavigation(
                 )
             }
 
-            IconButton(onClick = {onClickDetail}) {
+            IconButton(onClick = onClickDetail) {
                 Icon(
                     imageVector = Icons.Default.Lightbulb,
                     contentDescription = "Detail",

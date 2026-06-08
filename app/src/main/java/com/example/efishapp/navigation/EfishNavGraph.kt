@@ -1,23 +1,25 @@
 package com.example.efishapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.efishapp.core.util.OnDeviceTTSHelper
 import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
 import com.example.efishapp.feature.Auth.Presentation.ForgotPasswordScreen
 import com.example.efishapp.feature.Auth.Presentation.LoginScreen
 import com.example.efishapp.feature.Auth.Presentation.RegisterScreen
-import com.example.efishapp.feature.dashboard.presentation.DashboardScreen
-import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
 import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
 import com.example.efishapp.feature.flashcard.presentation.CongratulationViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
+import com.example.efishapp.feature.flashcard.presentation.component.EmptyReviewScreen
 import com.example.efishapp.feature.mainscreen.MainScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
@@ -34,7 +36,7 @@ fun EfishNavGraph(
     modifier: Modifier = Modifier
 ){
     val authViewModel: AuthViewModel = hiltViewModel()
-    val startDestination = authViewModel.getStartDestination()
+    val startDestination = Screen.LOGIN//authViewModel.getStartDestination()
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -116,9 +118,10 @@ fun EfishNavGraph(
                     navController.navigate(Screen.LOGIN) {
                         popUpTo(Screen.HOME) { inclusive = true }
                     }
-                } // Đóng lambda của onLogoutSuccess đúng chỗ
-            ) // Đóng hàm MainScreen đúng chỗ
-        } // Đóng composable(Screen.HOME) đúng chỗ
+                },
+                onNavigateToReview = {navController.navigate(FlashcardScreenRoute(null))}
+            )
+        }
 
         composable(Screen.DAILY_STUDY_REMINDER) {
             val dailyStudyReminderViewModel: DailyStudyReminderViewModel = hiltViewModel()
@@ -135,11 +138,16 @@ fun EfishNavGraph(
 
         composable<FlashcardScreenRoute> {
             val flashcardViewModel: FlashcardViewModel = hiltViewModel()
+            val context = LocalContext.current
+
+            val onDeviceTTSHelper = remember { OnDeviceTTSHelper(context) }
             FlashcardScreen(
                 flashcardViewModel,
+                {word -> onDeviceTTSHelper.speak(word)},
                 onNavigateToCongratulation = { totalRemember, totalForget ->
                     navController.navigate(CongratulationScreenRoute(totalRemember,totalForget))
-                }
+                },
+                onNavigateNotifyEmpty = {navController.navigate(Screen.EMPTY_VOCABULARY)}
             )
         }
 
@@ -149,6 +157,16 @@ fun EfishNavGraph(
                 congratulationViewModel,
                 onBackToHome = {
                     navController.navigate(Screen.HOME) {
+                        popUpTo(Screen.HOME) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.EMPTY_VOCABULARY) {
+            EmptyReviewScreen(
+                {
+                    navController.navigate(Screen.HOME){
                         popUpTo(Screen.HOME) { inclusive = true }
                     }
                 }

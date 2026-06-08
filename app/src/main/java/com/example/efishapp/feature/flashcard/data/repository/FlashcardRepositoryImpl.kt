@@ -1,11 +1,15 @@
 package com.example.efishapp.feature.flashcard.data.repository
 
-import com.example.efishapp.feature.flashcard.domain.model.VocabularyReview
-import com.example.efishapp.feature.flashcard.domain.FlashcardRepository
+import android.util.Log
+import com.example.efishapp.feature.flashcard.domain.repository.FlashcardRepository
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
+import com.example.efishapp.feature.flashcard.domain.model.VocabularyReview
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,84 +18,93 @@ class FlashcardRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : FlashcardRepository {
 
-    override suspend fun getVocabulariesReview(userId: String): List<Vocabulary> {
-        val today = Date()
-        val reviewVocabularies = mutableListOf<Vocabulary>()
+override suspend fun getVocabulariesReview(userId: String): List<Vocabulary> {
+    val DATE_FORMAT = "yyyy-MM-dd"
+    val sdf = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
+    val todayStr = sdf.format(Date())
+    return try {
+        val progressSnapshots = firestore.collection("user_review")
+            .document(userId)
+            .collection("vocab_review")
+            .whereLessThanOrEqualTo("nextReviewDate", todayStr)
+            .get()
+            .await()
 
-        try {
-            // 1. Truy cập vào sub-collection tiến độ học của User cụ thể
-            // Lọc điều kiện: nextReviewDate <= ngày hôm nay
-            val progressSnapshots = firestore.collection("flashcards")
-                .document(userId)
-                .collection("progress")
-                .whereLessThanOrEqualTo("nextReviewDate", today)
+        val vocabIds = progressSnapshots.documents.map{it.id}
+        Log.d("DEBUG_REPO",vocabIds.toString())
+        if (vocabIds.isEmpty()) return emptyList()
+
+        val vocabularySnapshots = firestore.collection("vocabulary")
+            .whereIn(FieldPath.documentId(), vocabIds.take(30))
+            .get()
+            .await()
+
+        // 3. Tự động parse sang list object (Sử dụng tính năng tự nhận ID của Cách 2 @DocumentId)
+        val vocabularies = vocabularySnapshots.toObjects(Vocabulary::class.java)
+
+        Log.d("DEBUG_REPO", "Đã lấy chi tiết thành công: ${vocabularies.size} từ vựng.")
+        return vocabularies
+
+    } catch (e: Exception) {
+        // Luôn ghi log lỗi tại đây để dễ bắt bệnh trong Logcat nếu có trục trặc phát sinh
+        Log.e("DEBUG_REPO", "getVocabulariesReview: ${e.message}", e)
+        throw e
+    }
+}
+
+    override suspend fun getVocabulariesFromFolder(folderId: String?): List<Vocabulary> {
+        return try {
+            val progressSnapshots = firestore.collection("vocabulary")
+                .whereEqualTo("folderId", folderId)
                 .get()
                 .await()
 
-            // Lấy danh sách các vocabularyId cần phải ôn tập
-            val vocabularyIds = progressSnapshots.documents.mapNotNull { doc ->
-                doc.getString("vocabularyId")
-            }
-
-            if (vocabularyIds.isEmpty()) return emptyList()
-
-            // 2. Lấy thông tin chi tiết của từng từ vựng từ collection "vocabularies" gốc
-            // Firestore giới hạn toán tử 'whereIn' tối đa 30 phần tử mỗi query.
-            // Để an toàn và tối ưu, ta chia nhỏ danh sách Id ra nếu số lượng từ cần ôn tập quá lớn.
-            val chunks = vocabularyIds.chunked(30)
-            for (chunk in chunks) {
-                val vocabSnapshots = firestore.collection("vocabularies")
-                    .whereIn("id", chunk)
-                    .get()
-                    .await()
-
-                val vocabs = vocabSnapshots.toObjects(Vocabulary::class.java)
-                reviewVocabularies.addAll(vocabs)
-            }
+            val vocabularies = progressSnapshots.toObjects(Vocabulary::class.java)
+            return vocabularies
 
         } catch (e: Exception) {
-            e.printStackTrace()
-            // Có thể xử lý hoặc ném custom exception tùy kiến trúc dự án của bạn
+            throw e
         }
-
-        return reviewVocabularies
     }
 
     override suspend fun getFlashcardProgress(userId: String, vocabularyId: String): VocabularyReview {
+        if (userId.isBlank() || vocabularyId.isBlank()) {
+            //Log.e("DEBUG_REPO_GET", "Không thể lấy tiến độ: userId hoặc vocabularyId bị rỖNG!")
+            return VocabularyReview(vocabularyId = vocabularyId)
+        }
         return try {
-            val documentSnapshot = firestore.collection("flashcards")
+            val documentSnapshot = firestore.collection("user_review")
                 .document(userId)
-                .collection("progress")
+                .collection("vocab_review")
                 .document(vocabularyId)
                 .get()
                 .await()
 
             if (documentSnapshot.exists()) {
-                // Map từ document Firestore sang Object Kotlin
                 documentSnapshot.toObject(VocabularyReview::class.java)
                     ?: VocabularyReview(vocabularyId = vocabularyId)
             } else {
-                // Nếu chưa từng học từ này, trả về object mặc định ban đầu
                 VocabularyReview(vocabularyId = vocabularyId)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
-            VocabularyReview(vocabularyId = vocabularyId)
+            Log.d("DEBUG_REPO_GET",e.message.toString())
+            throw e
         }
     }
 
     override suspend fun updateFlashcardProgress(userId: String, vocabularyReview: VocabularyReview) {
+        if (userId.isBlank() || vocabularyReview == null) {
+            return
+        }
         try {
-            // Lưu dữ liệu tiến độ vào sub-collection theo cấu trúc rõ ràng:
-            // flashcards -> {userId} -> progress -> {vocabularyId}
-            firestore.collection("flashcards")
+            firestore.collection("user_review")
                 .document(userId)
-                .collection("progress")
+                .collection("vocab_review")
                 .document(vocabularyReview.vocabularyId)
                 .set(vocabularyReview) // Ghi đè hoặc tạo mới nếu chưa tồn tại
                 .await()
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.d("DEBUG_REPO_UPDATE",e.message.toString())
             throw e
         }
     }

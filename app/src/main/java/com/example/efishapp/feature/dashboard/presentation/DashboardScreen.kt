@@ -1,4 +1,4 @@
-// com.example.efishapp.feature.dashboard.presentation.DashboardScreen.kt
+
 package com.example.efishapp.feature.dashboard.presentation
 
 import androidx.compose.foundation.layout.*
@@ -6,10 +6,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
-import androidx.hilt.navigation.compose.hiltViewModel // Sử dụng chuẩn của hilt navigation compose
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.core.ui.component.AppBottomNavigationBar
+import com.example.efishapp.core.ui.component.ScreenTab
 import com.example.efishapp.feature.dashboard.domain.DailyVocabTracker
 import com.example.efishapp.feature.dashboard.domain.MonthlyStudyTracker
 import com.example.efishapp.feature.dashboard.presentation.component.GreetingCard
@@ -21,11 +24,12 @@ import com.example.efishapp.feature.dashboard.presentation.component.WeeklyVocab
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier, // Thêm giá trị mặc định để tránh lỗi biên dịch
+    modifier: Modifier,
     onNavigateToUserProfile: () -> Unit,
     onNavigateToNotification: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
+
 
     LaunchedEffect(Unit) {
         viewModel.LoadingDashboard()
@@ -48,6 +52,8 @@ fun DashboardScreen(
             .verticalScroll(scrollState)
     )
 }
+
+
 
 @Composable
 fun DashboarContent(
@@ -73,3 +79,8 @@ fun DashboarContent(
         MonthlyStatsScreen(monthlyLearningStat)
     }
 }
+
+
+
+
+

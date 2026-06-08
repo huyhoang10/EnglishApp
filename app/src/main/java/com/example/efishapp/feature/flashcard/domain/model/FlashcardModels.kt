@@ -1,5 +1,6 @@
 package com.example.efishapp.feature.flashcard.domain.model
 
+import com.google.firebase.firestore.DocumentId
 import java.util.Date
 
 data class VocabularyReview(
@@ -7,10 +8,11 @@ data class VocabularyReview(
     val repetitions: Int = 0,
     val easinessFactor: Float = 2.5f,
     val intervalDays: Int = 1,
-    val nextReviewDate: Date = Date()
+    val nextReviewDate: String = ""
 )
 
 data class Vocabulary(
+    @DocumentId
     val id: String = "",
     val word: String = "",
     val pronunciation: String = "",
@@ -20,4 +22,21 @@ data class Vocabulary(
     val collocation: String = "",
     val relatedWords: String = "",
     val note: String = "",
+)
+
+enum class ActionType(val quality: Int) {
+    AGAIN(0),
+    HARD(1),
+    GOOD(2),
+    EASY(3)
+}
+
+class FlashcardSession(
+    val userId: String,
+    val folderId: String,
+    val currentIndex: Int,
+    val countForget: Int,
+    val countRemember: Int,
+    val vocabularies: List<Vocabulary>,
+    val userAnswers: Map<String, ActionType>
 )

@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.efishapp.feature.flashcard.domain.ActionType
+import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardActionButtons
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardBottomNavigation
@@ -38,13 +38,20 @@ data class FlashcardScreenConfig(
 
 @Composable
 fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
-                    onNavigateToCongratulation: (totalRemember: Int, totalForget: Int) -> Unit) {
+                    onClickSpeech: (String) -> Unit,
+                    onNavigateToCongratulation: (totalRemember: Int, totalForget: Int) -> Unit,
+                    onNavigateNotifyEmpty: () -> Unit) {
 
     val state by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(state.isFinished) {
+    LaunchedEffect(state.isFinished, state.isEmpty) {
         if (state.isFinished) {
+            viewModel.updateUserReview()
+            viewModel.resetNavigationFlag()
             onNavigateToCongratulation(state.countRemember, state.countForget)
+        }
+        if(state.isEmpty){
+            onNavigateNotifyEmpty()
             viewModel.resetNavigationFlag()
         }
     }
@@ -54,6 +61,7 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
             FlashcardBottomNavigation(onClickBack = { viewModel.onEvent(FlashcardUiEvent.OnClickBack) },
                 onClickDetail = { viewModel.onEvent(FlashcardUiEvent.OnClickDetail) }) }
     ) {
+
         innerPadding -> FlashcardContent(
                 indexWord = state.indexWord,
                 state.vocabularies.size,
@@ -63,7 +71,8 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
                 isFlipped = state.isFlipped,
                 isShowDetail = state.isShowDetail,
                 onClickFlipCard = { viewModel.onEvent(FlashcardUiEvent.OnFlipCard) },
-                onClickAgain = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.AGAIN)) },
+                onClickSpeech = onClickSpeech,
+                onClickAgain = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.AGAIN))} ,
                 onClickHard = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.HARD)) },
                 onClickGood = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.GOOD)) },
                 onClickEasy = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.EASY)) },
@@ -83,6 +92,7 @@ fun FlashcardContent(
     isFlipped: Boolean,
     isShowDetail: Boolean,
     onClickFlipCard: () -> Unit,
+    onClickSpeech: (String) -> Unit,
     onClickAgain: () -> Unit,
     onClickHard: () -> Unit,
     onClickGood: () -> Unit,
@@ -114,6 +124,7 @@ fun FlashcardContent(
                 isFlipped,
                 isShowDetail,
                 onClickFlipCard,
+                onClickSpeech,
                 modifier = Modifier.weight(1f))
 
             Spacer(modifier = Modifier.height(config.spaceHeight))
@@ -151,9 +162,10 @@ private fun FlashcardContentPreview() {
             relatedWords = "fruit, orange, banana",
             note = "Common vocabulary for beginners."
         ),
-        isFlipped = true,
+        isFlipped = false,
         isShowDetail = true,
         onClickFlipCard = {},
+        onClickSpeech = {word ->{}},
         onClickAgain = {},
         onClickHard = {},
         onClickGood = {},

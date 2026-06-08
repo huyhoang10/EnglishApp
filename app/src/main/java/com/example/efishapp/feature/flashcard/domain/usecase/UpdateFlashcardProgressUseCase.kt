@@ -1,26 +1,15 @@
-package com.example.efishapp.feature.flashcard.domain
+package com.example.efishapp.feature.flashcard.domain.usecase
 
-import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
+import android.util.Log
+import com.example.efishapp.feature.flashcard.domain.model.ActionType
+import com.example.efishapp.feature.flashcard.domain.repository.FlashcardRepository
 import com.example.efishapp.feature.flashcard.domain.model.VocabularyReview
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.max
-
-enum class ActionType(val quality: Int) {
-    AGAIN(0),
-    HARD(1),
-    GOOD(2),
-    EASY(3)
-}
-
-class GetVocabularyReviewUseCase @Inject constructor(
-    private val repository: FlashcardRepository
-) {
-    suspend operator fun invoke(userId: String): List<Vocabulary> {
-        return repository.getVocabulariesReview(userId)
-    }
-}
 
 class UpdateFlashcardProgressUseCase @Inject constructor(
     private val repository: FlashcardRepository
@@ -32,7 +21,6 @@ class UpdateFlashcardProgressUseCase @Inject constructor(
     ) {
         val quality = actionType.quality
         val currentProgress: VocabularyReview? = repository.getFlashcardProgress(userId, vocabularyId)
-
         // Nếu chưa từng học (null), lấy giá trị mặc định ban đầu
         val oldRepetitions = currentProgress?.repetitions ?: 0
         val oldInterval = currentProgress?.intervalDays ?: 0
@@ -60,7 +48,10 @@ class UpdateFlashcardProgressUseCase @Inject constructor(
         val calendar = Calendar.getInstance()
         calendar.time = Date() // Ngày hôm nay
         calendar.add(Calendar.DAY_OF_YEAR, nextIntervalDays)
-        val nextReviewDate = calendar.time
+
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val nextReviewDate = sdf.format(calendar.time)
+
 
         // Tạo object tiến độ mới để cập nhật xuống DB
         val updatedProgress = VocabularyReview(
@@ -71,7 +62,7 @@ class UpdateFlashcardProgressUseCase @Inject constructor(
             nextReviewDate = nextReviewDate
         )
 
-        // Cập nhật thông qua Repository
+        Log.d("Usecase",updatedProgress.toString() )
         repository.updateFlashcardProgress(userId,updatedProgress)
     }
 }

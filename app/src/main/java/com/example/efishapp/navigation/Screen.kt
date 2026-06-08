@@ -12,12 +12,13 @@ object Screen {
     const val DAILY_STUDY_REMINDER = "daily_study_reminder"
     const val DUE_WORDS_REMINDER = "due_words_reminder"
 
+    const val EMPTY_VOCABULARY = "empty_vocabulary"
 
 }
 
 @Serializable
 data class FlashcardScreenRoute(
-    val folderId: String
+    val folderId: String?
 )
 
 @Serializable

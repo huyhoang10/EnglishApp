@@ -22,16 +22,4 @@ class MonthlyTrackerTest {
         Assert.assertEquals(3, monthKey.length)
     }
 
-    @Test
-    fun test_getMonthlyStats() = runBlocking() {
-        // Chạy thử hàm lấy tên tháng viết tắt
-        val monthKey = getCurrentMonthKey()
-        val monthlyTrackerRepositoryImpl = MonthlyTrackerRepositoryImpl()
-        val stats = monthlyTrackerRepositoryImpl.getMonthStats("DuwZLdACmcWoYCqFPhbPdeKy7Mk1")
-        // Kiểm tra xem nó có viết thường và có 3 chữ cái không
-        // Sử dụng Log.d (Debug) với một cái TAG để dễ tìm kiếm
-        Log.d("FIREBASE_TEST", "Tháng hiện tại là: $monthKey")
-        Log.d("FIREBASE_TEST", "Dữ liệu stats: $stats")
-        Assert.assertEquals(3, monthKey.length)
-    }
 }

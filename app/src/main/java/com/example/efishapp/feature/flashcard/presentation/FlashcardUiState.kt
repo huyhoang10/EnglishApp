@@ -1,6 +1,6 @@
 package com.example.efishapp.feature.flashcard.presentation
 
-import com.example.efishapp.feature.flashcard.domain.ActionType
+import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 
 val sampleVocabularies = listOf(
@@ -62,14 +62,15 @@ val sampleVocabularies = listOf(
 )
 
 data class FlashcardUiState(
-    val vocabularies: List<Vocabulary> = sampleVocabularies,
+    val vocabularies: List<Vocabulary> = sampleVocabularies,//emptyList(),
     val indexWord: Int = 0,
     val countForget: Int = 0,
     val countRemember: Int = 0,
     val isFlipped: Boolean = false,
     val isShowDetail: Boolean = false,
     val isLoading: Boolean = false,
-    val isFinished: Boolean = false
+    val isFinished: Boolean = false,
+    val isEmpty: Boolean = false
 )
 
 //sealed interface FlashcardUiEvent{
