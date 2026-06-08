@@ -7,11 +7,11 @@ import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 import javax.inject.Inject
 
-class GetFlashcardSessionUseCase @Inject constructor(
+class GetVocabularyReviewUseCase @Inject constructor(
     private val remoteRepository: FlashcardRepository,
     private val localRepository: FlashcardLocalRepository
 ) {
-    suspend operator fun invoke(userId: String, folderId: String?): FlashcardSessionResult {
+    suspend operator fun invoke(userId: String): FlashcardSessionResult {
 //        val localCache = localRepository.getCurrentSession(userId, "")
 //
 //        if (localCache != null) {

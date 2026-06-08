@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,14 +44,13 @@ fun RegisterScreen(
 
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
-
     var localErrorMessage by remember { mutableStateOf<String?>(null) }
+    var showSuccessDialog by remember { mutableStateOf(false) }
 
     // Theo dõi trạng thái đăng ký thành công từ Firebase
     LaunchedEffect(uiState) {
-        if (uiState is AuthUiState.Success) {
-            onRegisterSuccess()
-            viewModel.resetUiState()
+        if (uiState is AuthUiState.RegisterSuccessNeedVerify) {
+            showSuccessDialog = true
         }
     }
 
@@ -62,7 +62,7 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Tạo Tài Khoản Mới",
+            text = "Đăng ký tài khoản",
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
@@ -80,10 +80,10 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Ô nhập Email
+        // Ô nhập Email (Đã dọn dẹp lambda)
         AuthTextField(
             value = email,
-            onValueChange = { email = it; Modifier },
+            onValueChange = { email = it },
             label = "Email",
             keyboardType = KeyboardType.Email,
             modifier = Modifier.fillMaxWidth()
@@ -91,10 +91,10 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Ô nhập Mật khẩu
+        // Ô nhập Mật khẩu (Đã dọn dẹp lambda)
         AuthTextField(
             value = password,
-            onValueChange = { password = it; Modifier },
+            onValueChange = { password = it },
             label = "Mật khẩu",
             isPassword = true,
             passwordVisible = isPasswordVisible,
@@ -104,10 +104,10 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Ô nhập lại Mật khẩu để đối chiếu
+        // Ô nhập lại Mật khẩu để đối chiếu (Đã dọn dẹp lambda)
         AuthTextField(
             value = confirmPassword,
-            onValueChange = { confirmPassword = it; Modifier },
+            onValueChange = { confirmPassword = it },
             label = "Xác nhận mật khẩu",
             isPassword = true,
             passwordVisible = isConfirmPasswordVisible,
@@ -170,5 +170,26 @@ fun RegisterScreen(
             ErrorDialog(message = errorMessage, onDismiss = { viewModel.resetUiState() })
         }
         else -> Unit
+    }
+
+    // Hiển thị Dialog thông báo yêu cầu xác thực Mail
+    if (showSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = { /* Không cho phép tắt bằng cách bấm ra ngoài */ },
+            title = { Text(text = "Đăng ký thành công!") },
+            text = {
+                Text(text = "Một email xác thực đã được gửi tới ứng dụng hộp thư của bạn. Vui lòng kiểm tra và kích hoạt tài khoản trước khi đăng nhập.")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.resetUiState() // Reset lại state về Idle để không bị lặp loop
+                        onRegisterSuccess() // Điều hướng về màn hình Login
+                    }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }

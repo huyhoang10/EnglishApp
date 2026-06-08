@@ -68,6 +68,10 @@ override suspend fun getVocabulariesReview(userId: String): List<Vocabulary> {
     }
 
     override suspend fun getFlashcardProgress(userId: String, vocabularyId: String): VocabularyReview {
+        if (userId.isBlank() || vocabularyId.isBlank()) {
+            //Log.e("DEBUG_REPO_GET", "Không thể lấy tiến độ: userId hoặc vocabularyId bị rỖNG!")
+            return VocabularyReview(vocabularyId = vocabularyId)
+        }
         return try {
             val documentSnapshot = firestore.collection("user_review")
                 .document(userId)
@@ -89,6 +93,9 @@ override suspend fun getVocabulariesReview(userId: String): List<Vocabulary> {
     }
 
     override suspend fun updateFlashcardProgress(userId: String, vocabularyReview: VocabularyReview) {
+        if (userId.isBlank() || vocabularyReview == null) {
+            return
+        }
         try {
             firestore.collection("user_review")
                 .document(userId)

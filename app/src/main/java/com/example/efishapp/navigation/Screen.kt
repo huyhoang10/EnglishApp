@@ -7,16 +7,14 @@ object Screen {
     const val REGISTER = "register"
     const val FORGOT_PASSWORD = "forgot_password"
     const val PROFILE_SETUP = "profile_setup"
+    const val PROFILE = "profile"
     const val HOME = "home" // Màn hình chính sau khi vào app thành công
-    const val FLASHCARD = "flashcard"
     const val DAILY_STUDY_REMINDER = "daily_study_reminder"
+    const val DUE_WORDS_REMINDER = "due_words_reminder"
+
+    const val EMPTY_VOCABULARY = "empty_vocabulary"
 
 }
-
-//@Serializable
-//data class DashboardScreenRoute(
-//    val
-//)
 
 @Serializable
 data class FlashcardScreenRoute(
@@ -28,3 +26,6 @@ data class CongratulationScreenRoute(
     val totalRemember: Int,
     val totalForget: Int,
 )
+
+@Serializable
+data object SettingScreenRoute

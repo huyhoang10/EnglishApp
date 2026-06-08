@@ -1,4 +1,6 @@
+
 package com.example.efishapp.feature.dashboard.presentation
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
@@ -34,22 +36,21 @@ fun DashboardScreen(
     }
 
     val scrollState = rememberScrollState()
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        bottomBar = {AppBottomNavigationBar(ScreenTab.HOME,{})}
-    ) {
 
-        paddingValues -> DashboarContent(
-            state.userName,
-            state.streak,
-            state.totalVocabLeaned,
-            state.weeklyLearningStats,
-            state.monthlyLearningStat,
-            onNavigateToUserProfile,
-            onNavigateToNotification,
-            Modifier.padding(paddingValues).verticalScroll(scrollState)
-        )
-    }
+    // XÓA BỎ HOÀN TOÀN SCAFFOLD VÀ BOTTOMBAR Ở ĐÂY
+    DashboarContent(
+        userName = state.userName,
+        streak = state.streak,
+        totalVocabLearned = state.totalVocabLeaned,
+        weeklyLearningStats = state.weeklyLearningStats,
+        monthlyLearningStat = state.monthlyLearningStat,
+        onNavigateToUserProfile = onNavigateToUserProfile,
+        onNavigateToNotification = onNavigateToNotification,
+        // Dùng modifier được truyền từ MainScreen xuống để tránh đè lên thanh bar tổng
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+    )
 }
 
 
@@ -66,11 +67,10 @@ fun DashboarContent(
     modifier: Modifier = Modifier
 ){
     Column(
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
-        GreetingCard(userName, onUserProfileClick = onNavigateToUserProfile,onNotificationClick = onNavigateToNotification)
-        Row() {
+        GreetingCard(userName, onUserProfileClick = onNavigateToUserProfile, onNotificationClick = onNavigateToNotification)
+        Row {
             StreakCard(streak, modifier = Modifier.weight(1f))
             ReviewCard(totalVocabLearned, modifier = Modifier.weight(1f))
         }

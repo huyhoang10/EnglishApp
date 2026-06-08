@@ -7,9 +7,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.usecase.FlashcardSessionResult
-import com.example.efishapp.feature.flashcard.domain.usecase.GetFlashcardSessionUseCase
+import com.example.efishapp.feature.flashcard.domain.usecase.GetVocabularyReviewUseCase
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
-import com.example.efishapp.feature.flashcard.domain.model.VocabularyReview
 import com.example.efishapp.feature.flashcard.domain.usecase.GetVocabularyFromFolder
 import com.example.efishapp.feature.flashcard.domain.usecase.UpdateFlashcardProgressUseCase
 import com.example.efishapp.navigation.FlashcardScreenRoute
@@ -17,7 +16,6 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,11 +42,11 @@ class FlashcardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val updateFlashcardProgressUseCase: UpdateFlashcardProgressUseCase,
     private val getVocabularyFromFolder: GetVocabularyFromFolder,
-    private val getFlashcardSessionUseCase: GetFlashcardSessionUseCase,
+    private val getVocabularyReviewUseCase: GetVocabularyReviewUseCase,
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
-    private val userId: String = firebaseAuth.currentUser?.uid ?: ""
+    private val userId: String = firebaseAuth.currentUser?.uid ?: "DuwZLdACmcWoYCqFPhbPdeKy7Mk1"
     val routeArgs = savedStateHandle.toRoute<FlashcardScreenRoute>()
     private val folderId: String? = routeArgs.folderId
     // Trong Kotlin
@@ -63,15 +61,20 @@ class FlashcardViewModel @Inject constructor(
             loadVocabularyFromFolder(folderId)
         }
         else{
-        initSessionData()
+            loadVocabularyReview()
+        }
+
+        if(_uiState.value.vocabularies.isEmpty()){
+            _uiState.update { it.copy(isEmpty = true)}
+            Log.d("DeBugEmty",_uiState.value.toString())
         }
     }
 
-    private fun initSessionData() = viewModelScope.launch {
+    private fun loadVocabularyReview() = viewModelScope.launch {
         _uiState.update { it.copy(isLoading = true) }
 
         // Gọi UseCase xử lý phân luồng logic giữa Room và Firestore
-        when (val result = getFlashcardSessionUseCase(userId, folderId)) {
+        when (val result = getVocabularyReviewUseCase(userId)) {
             is FlashcardSessionResult.ContinueSession -> {
                 // TÌNH HUỐNG HỌC DỞ: Khôi phục lại toàn bộ dữ liệu từ Room Local lên UI
                 userAnswers.putAll(result.savedAnswers)
@@ -196,6 +199,7 @@ class FlashcardViewModel @Inject constructor(
 
     fun resetNavigationFlag() {
         _uiState.update { it.copy(isFinished = false) }
+        _uiState.update { it.copy(isEmpty = false) }
         historyStack.clear()
     }
 

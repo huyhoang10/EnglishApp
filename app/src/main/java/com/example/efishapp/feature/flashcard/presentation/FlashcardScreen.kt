@@ -39,15 +39,20 @@ data class FlashcardScreenConfig(
 @Composable
 fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
                     onClickSpeech: (String) -> Unit,
-                    onNavigateToCongratulation: (totalRemember: Int, totalForget: Int) -> Unit) {
+                    onNavigateToCongratulation: (totalRemember: Int, totalForget: Int) -> Unit,
+                    onNavigateNotifyEmpty: () -> Unit) {
 
     val state by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(state.isFinished) {
+    LaunchedEffect(state.isFinished, state.isEmpty) {
         if (state.isFinished) {
             viewModel.updateUserReview()
             viewModel.resetNavigationFlag()
             onNavigateToCongratulation(state.countRemember, state.countForget)
+        }
+        if(state.isEmpty){
+            onNavigateNotifyEmpty()
+            viewModel.resetNavigationFlag()
         }
     }
 

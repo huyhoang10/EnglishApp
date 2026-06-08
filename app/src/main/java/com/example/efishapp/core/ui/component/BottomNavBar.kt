@@ -1,6 +1,7 @@
 package com.example.efishapp.core.ui.component
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Gamepad
@@ -23,8 +24,8 @@ import androidx.compose.ui.unit.sp
 // Định nghĩa các tính năng (Tabs) xuất hiện trên thanh điều hướng
 enum class ScreenTab(val title: String, val icon: ImageVector) {
     HOME("HOME", Icons.Filled.Home),
-    MY_FOLDER("MY FOLDER", Icons.Filled.Folder),
-    REVIEW("REVIEW", Icons.Filled.Refresh), // Icon vòng lặp/làm mới đại diện cho ôn tập
+    MY_FOLDER("FOLDER", Icons.Filled.Folder),
+    REVIEW("REVIEW", Icons.Filled.Checklist), // Icon vòng lặp/làm mới đại diện cho ôn tập
     GAME("GAME", Icons.Filled.Gamepad),
     SETTING("SETTING", Icons.Filled.Settings)
 }

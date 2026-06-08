@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.efishapp.R
 
 @Composable
 fun GoogleSignInButton(
@@ -37,10 +38,8 @@ fun GoogleSignInButton(
             pressedElevation = 4.dp
         )
     ) {
-        // Logo Google - Bạn nhớ thêm ảnh logo vào thư mục drawable nhé
-        // (Có thể dùng hệ thống drawable dùng chung của hệ thống ở nhánh <core>)
         Image(
-            painter = painterResource(id = android.R.drawable.ic_menu_compass), // Thay bằng drawable logo Google của bạn
+            painter = painterResource(id = R.drawable.ic_gg),
             contentDescription = "Google Logo",
             modifier = Modifier.size(24.dp)
         )
@@ -50,7 +49,7 @@ fun GoogleSignInButton(
         Text(
             text = "Tiếp tục với Google",
             fontSize = 16.sp,
-            color = Color(0xFF1F1F1F) // Màu chữ xám đen chuẩn Google
+            color = Color(0xFF1F1F1F)
         )
     }
 }

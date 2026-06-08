@@ -14,12 +14,12 @@ import com.example.efishapp.feature.flashcard.data.repository.FlashcardLocalRepo
 import com.example.efishapp.feature.flashcard.data.repository.FlashcardRepositoryImpl
 import com.example.efishapp.feature.flashcard.domain.repository.FlashcardLocalRepository
 import com.example.efishapp.feature.flashcard.domain.repository.FlashcardRepository
-
 import com.example.efishapp.feature.notification.Data.repository.DailyStudyNotificationRepositoryImpl
 import com.example.efishapp.feature.notification.Domain.repository.DailyStudyNotificationRepository
 import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
 import com.example.efishapp.feature.profile.domain.repository.UserProfileRepository
-
+import com.example.efishapp.feature.setting.data.repository.SettingRepositoryImpl
+import com.example.efishapp.feature.setting.domain.repository.SettingRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -63,4 +63,7 @@ abstract class RepositoryModule {
     @Singleton
     abstract fun bindFlashcardLocalRepository(impl: FlashcardLocalRepositoryImpl): FlashcardLocalRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindSettingRepository(impl: SettingRepositoryImpl): SettingRepository
 }
