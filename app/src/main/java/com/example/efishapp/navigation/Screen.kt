@@ -13,6 +13,8 @@ object Screen {
     const val DUE_WORDS_REMINDER = "due_words_reminder"
 
     const val EMPTY_VOCABULARY = "empty_vocabulary"
+    const val FOLDER = "folder"
+
 
 }
 
