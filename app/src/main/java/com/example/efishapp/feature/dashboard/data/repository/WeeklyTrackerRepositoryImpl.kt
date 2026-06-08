@@ -6,7 +6,12 @@ import com.example.efishapp.feature.dashboard.domain.DayOfWeek
 import com.example.efishapp.feature.dashboard.domain.WeeklyTrackerRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -64,15 +69,59 @@ class WeeklyTrackerRepositoryImpl @Inject constructor(
         return DayOfWeek.entries.map { DailyVocabTracker(dayOfWeek = it, newVocabCount = 0, reviewVocabCount = 0) }
     }
 
+    override suspend fun getTodayVocabCounts(userId: String, todayStr: String): Pair<Int, Int> {
+        var newVocabCountToday = 0
+        var reviewVocabCountToday = 0
+
+        try {
+            val documentSnapshot = FirebaseFirestore.getInstance()
+                .collection("user_review")
+                .document(userId)
+                .collection("vocab_review")
+                .whereEqualTo("updateAt", todayStr)
+                .get()
+                .await()
+
+            documentSnapshot.documents.forEach { doc ->
+                val count = doc.getLong("repetitions")?.toInt() ?: 0
+                when {
+                    count == 1 -> newVocabCountToday++
+                    count > 1 -> reviewVocabCountToday++
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("Firestore_Debug", "Error fetching today's vocabs: ${e.message}")
+        }
+
+        // Trả về một Cặp (Từ mới, Từ ôn tập)
+        return Pair(newVocabCountToday, reviewVocabCountToday)
+    }
+
     override suspend fun updateWeeklyStats(userId: String, dailyVocabTracker: DailyVocabTracker) {
+        val DATE_FORMAT = "yyyy-MM-dd"
+        val sdf = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
+        val todayStr = sdf.format(Date())
+
+        // Gọi hàm lấy thông số học tập của hôm nay
+        val (newCount, reviewCount) = getTodayVocabCounts(userId, todayStr)
+
+        // Lấy tên thứ trong tuần (ví dụ: MONDAY, TUESDAY,...) làm key
         val dayKey = dailyVocabTracker.dayOfWeek.name
 
+        // Chuẩn bị map data để update cục bộ vào đúng trường trong mảng/object
         val updates = mapOf(
-            "weekly_stats.$dayKey.newVocabCount" to dailyVocabTracker.newVocabCount,
-            "weekly_stats.$dayKey.reviewVocabCount" to dailyVocabTracker.reviewVocabCount
+            "weekly_stats.$dayKey.newVocabCount" to newCount,
+            "weekly_stats.$dayKey.reviewVocabCount" to reviewCount
         )
+
         try {
-            collectionRef.document(userId).update(updates).await()
+            FirebaseFirestore.getInstance()
+                .collection("weekly_study_tracker")
+                .document(userId)
+                .update(updates)
+                .await()
+
+            Log.d("Firestore_Debug", "Update weekly stats for $dayKey successfully.")
         } catch (e: Exception) {
             Log.e("Firestore_Debug", "Error updating daily stats: ${e.message}")
         }
@@ -89,6 +138,21 @@ class WeeklyTrackerRepositoryImpl @Inject constructor(
             collectionRef.document(userId).update("last_weekly_stats", lastWeeklyMap).await()
         } catch (e: Exception) {
             Log.e("Firestore_Debug", "Error backing up weekly stats: ${e.message}")
+        }
+    }
+
+    override suspend fun getLastResetWeek(userId: String): Int? {
+        return try {
+            val documentSnapshot = FirebaseFirestore.getInstance()
+                .collection("weekly_study_tracker")
+                .document(userId)
+                .get()
+                .await()
+
+            documentSnapshot.getLong("lastResetWeek")?.toInt()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }

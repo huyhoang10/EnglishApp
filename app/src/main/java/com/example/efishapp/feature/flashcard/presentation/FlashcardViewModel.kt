@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.efishapp.feature.dashboard.domain.usecase.UpdateWeeklyStatsUseCase
 import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.usecase.FlashcardSessionResult
 import com.example.efishapp.feature.flashcard.domain.usecase.GetVocabularyReviewUseCase
@@ -43,6 +44,7 @@ class FlashcardViewModel @Inject constructor(
     private val updateFlashcardProgressUseCase: UpdateFlashcardProgressUseCase,
     private val getVocabularyFromFolder: GetVocabularyFromFolder,
     private val getVocabularyReviewUseCase: GetVocabularyReviewUseCase,
+    private val updateWeeklyStatsUseCase: UpdateWeeklyStatsUseCase,
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
@@ -230,6 +232,8 @@ suspend fun updateUserReview() {
                 }
             }
         }
+
+        updateWeeklyStatsUseCase(userId)
         tasks.awaitAll()
         userActionStack.clear()
     } catch (e: Exception) {
@@ -237,13 +241,4 @@ suspend fun updateUserReview() {
     }
 }
 
-//    fun checkAndNotifyReview(context: Context) {
-//        val count = _uiState.value.vocabularies.count { it.interval <= 0 && it.repetitions > 0 }
-//        if (count > 0) {
-//            val intent = Intent(context, ReviewReminderReceiver::class.java).apply {
-//                putExtra(ReviewReminderReceiver.EXTRA_COUNT, count)
-//            }
-//            context.sendBroadcast(intent)
-//        }
-//    }
 }

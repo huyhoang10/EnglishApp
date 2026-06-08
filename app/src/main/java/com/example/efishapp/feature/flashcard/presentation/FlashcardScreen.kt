@@ -70,7 +70,7 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
             }
 
             state.vocabularies.isEmpty() || state.isEmpty -> {
-                LoadingDialog()
+                onNavigateNotifyEmpty()
             }
             else -> {
                 FlashcardContent(
