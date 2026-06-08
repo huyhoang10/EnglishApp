@@ -25,6 +25,7 @@ import com.example.efishapp.feature.setting.presentation.SettingViewModel
 fun MainScreen(
     onNavigateToUserProfile: () -> Unit,
     onNavigateToNotification: () -> Unit,
+    onNavigateToDailyStudyReminder: () -> Unit,
     onNavigateToReview: () -> Unit,
     onNavigateToGame: () -> Unit,
     onLogoutSuccess: () -> Unit,
@@ -62,7 +63,8 @@ fun MainScreen(
                 SettingScreen(
                     viewModel = settingViewModel,
                     modifier = contentModifier,
-                    onLogoutClick = onLogoutSuccess
+                    onLogoutClick = onLogoutSuccess,
+                    onNavigateToDailyReminder = onNavigateToDailyStudyReminder
                 )
             }
 

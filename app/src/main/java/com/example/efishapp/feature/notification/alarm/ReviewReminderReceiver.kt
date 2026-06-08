@@ -16,7 +16,7 @@ class ReviewReminderReceiver : BroadcastReceiver() {
         if (count <= 0) return
 
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        NotificationChannels.ensureDailyStudyChannel(context) // Reusing the same channel or can create a new one
+        NotificationChannels.ensureDailyStudyChannel(context)
 
         val activityIntent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
@@ -28,8 +28,8 @@ class ReviewReminderReceiver : BroadcastReceiver() {
 
         val notification = NotificationCompat.Builder(context, DailyStudyReminderReceiver.CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Vocabulary Review")
-            .setContentText("You have $count words due for review today!")
+            .setContentTitle("Ôn tập từ vựng")
+            .setContentText("Bạn có $count từ cần ôn tập hôm nay!")
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
