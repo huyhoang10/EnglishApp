@@ -2,12 +2,14 @@ package com.example.efishapp.feature.folder.data.repository
 
 import com.example.efishapp.feature.folder.domain.FolderRepository
 import com.example.efishapp.feature.folder.domain.model.Folder
+import com.example.efishapp.feature.vocabulary.domain.VocabularyRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FolderRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val vocabularyRepository: VocabularyRepository
 ) : FolderRepository {
 
     private val folderCollection = firestore.collection("folders")
@@ -20,6 +22,7 @@ class FolderRepositoryImpl @Inject constructor(
                 .await()
             snapshot.toObjects(Folder::class.java)
         } catch (e: Exception) {
+            e.printStackTrace()
             emptyList()
         }
     }
@@ -44,8 +47,11 @@ class FolderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteFolder(folderId: String): Result<Unit> {
+    override suspend fun deleteFolder(folderId: String, deleteVocabularies: Boolean): Result<Unit> {
         return try {
+            if (deleteVocabularies) {
+                vocabularyRepository.deleteVocabulariesByFolder(folderId)
+            }
             folderCollection.document(folderId).delete().await()
             Result.success(Unit)
         } catch (e: Exception) {

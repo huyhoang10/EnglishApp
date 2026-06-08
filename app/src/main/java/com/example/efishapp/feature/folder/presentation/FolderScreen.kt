@@ -24,7 +24,7 @@ import com.example.efishapp.feature.folder.domain.model.Folder
 @Composable
 fun FolderScreen(
     viewModel: FolderViewModel = hiltViewModel(),
-    onNavigateToFolderDetail: (String) -> Unit
+    onNavigateToFolderDetail: (String, String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showFilterMenu by remember { mutableStateOf(false) }
@@ -164,7 +164,7 @@ fun FolderScreen(
                 items(folders, key = { it.id }) { folder ->
                     FolderItem(
                         folder = folder,
-                        onClick = { onNavigateToFolderDetail(folder.id) },
+                        onClick = { onNavigateToFolderDetail(folder.id, folder.name) },
                         onEdit = { viewModel.onEvent(FolderUiEvent.OpenEditDialog(folder)) },
                         onDelete = { viewModel.onEvent(FolderUiEvent.OpenDeleteDialog(folder)) },
                         onToggleStar = { viewModel.onEvent(FolderUiEvent.ToggleStar(folder)) }
