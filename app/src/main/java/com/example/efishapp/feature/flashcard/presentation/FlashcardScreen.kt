@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.core.designsystem.LoadingDialog
 import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardActionButtons
@@ -49,8 +50,7 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
             viewModel.updateUserReview()
             viewModel.resetNavigationFlag()
             onNavigateToCongratulation(state.countRemember, state.countForget)
-        }
-        if(state.isEmpty){
+        }else if (state.isEmpty) {
             onNavigateNotifyEmpty()
             viewModel.resetNavigationFlag()
         }
@@ -60,25 +60,34 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
         bottomBar = {
             FlashcardBottomNavigation(onClickBack = { viewModel.onEvent(FlashcardUiEvent.OnClickBack) },
                 onClickDetail = { viewModel.onEvent(FlashcardUiEvent.OnClickDetail) }) }
-    ) {
+    ) { innerPadding ->
+        when {
+            state.isLoading -> {
+                LoadingDialog()
+            }
 
-        innerPadding -> FlashcardContent(
-                indexWord = state.indexWord,
-                state.vocabularies.size,
-                countForget = state.countForget,
-                countRemember = state.countRemember,
-                vocabulary = state.vocabularies[state.indexWord],
-                isFlipped = state.isFlipped,
-                isShowDetail = state.isShowDetail,
-                onClickFlipCard = { viewModel.onEvent(FlashcardUiEvent.OnFlipCard) },
-                onClickSpeech = onClickSpeech,
-                onClickAgain = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.AGAIN))} ,
-                onClickHard = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.HARD)) },
-                onClickGood = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.GOOD)) },
-                onClickEasy = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.EASY)) },
-                modifier = Modifier.padding(innerPadding)
-            )
-
+            state.vocabularies.isEmpty() || state.isEmpty -> {
+                LoadingDialog()
+            }
+            else -> {
+                FlashcardContent(
+                    indexWord = state.indexWord,
+                    numVocabulary = state.vocabularies.size,
+                    countForget = state.countForget,
+                    countRemember = state.countRemember,
+                    vocabulary = state.vocabularies[state.indexWord],
+                    isFlipped = state.isFlipped,
+                    isShowDetail = state.isShowDetail,
+                    onClickFlipCard = { viewModel.onEvent(FlashcardUiEvent.OnFlipCard) },
+                    onClickSpeech = onClickSpeech,
+                    onClickAgain = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.AGAIN)) },
+                    onClickHard = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.HARD)) },
+                    onClickGood = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.GOOD)) },
+                    onClickEasy = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.EASY)) },
+                    modifier = Modifier.padding(innerPadding)
+                )
+            }
+        }
     }
 }
 

@@ -19,7 +19,7 @@ import com.example.efishapp.feature.flashcard.presentation.CongratulationScreen
 import com.example.efishapp.feature.flashcard.presentation.CongratulationViewModel
 import com.example.efishapp.feature.flashcard.presentation.FlashcardScreen
 import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
-import com.example.efishapp.feature.flashcard.presentation.component.EmptyReviewScreen
+import com.example.efishapp.feature.flashcard.presentation.EmptyReviewScreen
 import com.example.efishapp.feature.mainscreen.MainScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderScreen
 import com.example.efishapp.feature.notification.presentation.DailyStudyReminderViewModel
@@ -165,11 +165,7 @@ fun EfishNavGraph(
 
         composable(Screen.EMPTY_VOCABULARY) {
             EmptyReviewScreen(
-                {
-                    navController.navigate(Screen.HOME){
-                        popUpTo(Screen.HOME) { inclusive = true }
-                    }
-                }
+                { navController.navigate(Screen.HOME) }
             )
         }
     }
