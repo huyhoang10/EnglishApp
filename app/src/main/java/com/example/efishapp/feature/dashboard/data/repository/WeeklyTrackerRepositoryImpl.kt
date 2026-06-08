@@ -78,7 +78,7 @@ class WeeklyTrackerRepositoryImpl @Inject constructor(
                 .collection("user_review")
                 .document(userId)
                 .collection("vocab_review")
-                .whereEqualTo("updateAt", todayStr)
+                .whereEqualTo("learnAt", todayStr)
                 .get()
                 .await()
 

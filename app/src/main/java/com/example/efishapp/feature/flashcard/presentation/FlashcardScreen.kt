@@ -43,8 +43,7 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
 
     LaunchedEffect(state.isFinished, state.isEmpty) {
         if (state.isFinished) {
-            viewModel.updateUserReview()
-            viewModel.resetNavigationFlag()
+            viewModel.loadIsFinish()
             onNavigateToCongratulation(state.countRemember, state.countForget)
         }else if (state.isEmpty) {
             onNavigateNotifyEmpty()

@@ -62,6 +62,24 @@ class UserAnalyticsRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getTotalWords(userId: String): Long {
+        return try {
+            val querySnapshot = FirebaseFirestore.getInstance()
+                .collection("user_review")
+                .document(userId)
+                .collection("vocab_review")
+                .count() // Khởi tạo một AggregateQuery để đếm
+                .get(com.google.firebase.firestore.AggregateSource.SERVER) // Lấy dữ liệu từ Server
+                .await()
+
+            // Lấy số lượng document từ kết quả snapshot
+            val totalCount = querySnapshot.count
+            totalCount
+        } catch (e: Exception) {
+            Log.e("FirestoreError", "Lỗi khi đếm số từ: ${e.message}")
+            0L // Trả về 0 nếu xảy ra lỗi
+        }
+    }
     override suspend fun updateTotalWords(userId: String, totalWords: Long) {
         try {
             analyticsCollection.document(userId).update("totalWordsLearned", totalWords).await()
@@ -69,6 +87,7 @@ class UserAnalyticsRepositoryImpl @Inject constructor(
             Log.e("Firestore_Debug", "Error updating total words: ${e.message}")
         }
     }
+
 
     override suspend fun getUserName(userId: String): String {
         return try {
