@@ -30,6 +30,18 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun register(email: String, password: String): Result<Unit> {
         return try {
+            // 1. Tiền kiểm tra các phương thức đăng nhập của email này trên hệ thống
+            val signInMethods = firebaseAuth.fetchSignInMethodsForEmail(email).await().signInMethods ?: emptyList()
+
+            // 2. Phân tách và chặn trước khi Firebase kịp ném ngoại lệ loằng ngoằng
+            if (signInMethods.contains("google.com")) {
+                return Result.failure(Exception("GOOGLE_COLLISION"))
+            }
+            if (signInMethods.contains("password")) {
+                return Result.failure(Exception("PASSWORD_COLLISION"))
+            }
+
+            // 3. Nếu kiểm tra sạch sẽ, tiến hành tạo tài khoản bình thường
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             authResult.user?.sendEmailVerification()?.await()
 
@@ -51,25 +63,11 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun loginWithGoogle(idToken: String): Result<Unit> {
         return try {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
-
             firebaseAuth.signInWithCredential(credential).await()
             Result.success(Unit)
-
-        } catch (e: FirebaseAuthUserCollisionException) {
-            try {
-                val currentUser = firebaseAuth.currentUser
-
-                if (currentUser != null) {
-                    val credential = GoogleAuthProvider.getCredential(idToken, null)
-                    currentUser.linkWithCredential(credential).await()
-                    Result.success(Unit)
-                } else {
-                    Result.failure(Exception("Email này đã được đăng ký bằng Mật khẩu. Vui lòng đăng nhập bằng Mật khẩu trước để liên kết tài khoản."))
-                }
-            } catch (linkException: Exception) {
-                Result.failure(linkException)
-            }
         } catch (e: Exception) {
+            // Mọi loại lỗi (bao gồm cả Collision nếu có phát sinh ngầm)
+            // sẽ được ném thẳng lên ViewModel để xử lý tập trung
             Result.failure(e)
         }
     }
