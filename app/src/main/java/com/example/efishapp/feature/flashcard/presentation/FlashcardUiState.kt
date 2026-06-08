@@ -62,7 +62,7 @@ val sampleVocabularies = listOf(
 )
 
 data class FlashcardUiState(
-    val vocabularies: List<Vocabulary> = sampleVocabularies,//emptyList(),
+    val vocabularies: List<Vocabulary> = emptyList(),
     val indexWord: Int = 0,
     val countForget: Int = 0,
     val countRemember: Int = 0,
@@ -70,6 +70,7 @@ data class FlashcardUiState(
     val isShowDetail: Boolean = false,
     val isLoading: Boolean = false,
     val isFinished: Boolean = false,
+    val isError: Boolean = false,
     val isEmpty: Boolean = false
 )
 

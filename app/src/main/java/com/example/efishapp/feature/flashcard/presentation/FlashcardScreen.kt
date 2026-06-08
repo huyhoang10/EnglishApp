@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.core.designsystem.LoadingDialog
 import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardActionButtons
@@ -52,8 +53,7 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
             viewModel.updateUserReview()
             viewModel.resetNavigationFlag()
             onNavigateToCongratulation(state.countRemember, state.countForget)
-        }
-        if(state.isEmpty){
+        }else if (state.isEmpty) {
             onNavigateNotifyEmpty()
             viewModel.resetNavigationFlag()
         }
@@ -63,9 +63,16 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
         bottomBar = {
             FlashcardBottomNavigation(onClickBack = { viewModel.onEvent(FlashcardUiEvent.OnClickBack) },
                 onClickDetail = { viewModel.onEvent(FlashcardUiEvent.OnClickDetail) }) }
-    ) {
+    ) { innerPadding ->
+        when {
+            state.isLoading -> {
+                LoadingDialog()
+            }
 
-            innerPadding -> if (state.vocabularies.isNotEmpty()) {
+            state.vocabularies.isEmpty() || state.isEmpty -> {
+                LoadingDialog()
+            }
+            else -> {
                 FlashcardContent(
                     indexWord = state.indexWord,
                     numVocabulary = state.vocabularies.size,
@@ -77,22 +84,25 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
                     onClickFlipCard = { viewModel.onEvent(FlashcardUiEvent.OnFlipCard) },
                     isTtsReady = isTtsReady,
                     onClickSpeech = onClickSpeech,
-                    onClickAgain = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.AGAIN))} ,
+                    onClickAgain = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.AGAIN)) },
                     onClickHard = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.HARD)) },
                     onClickGood = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.GOOD)) },
                     onClickEasy = { viewModel.onEvent(FlashcardUiEvent.OnAnswer(ActionType.EASY)) },
                     modifier = Modifier.padding(innerPadding)
                 )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
             }
+//            else {
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .padding(innerPadding),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    CircularProgressIndicator()
+//                }
+//            }
+        }
+
 
     }
 }
