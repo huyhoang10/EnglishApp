@@ -73,7 +73,7 @@ class UserAnalyticsRepositoryImpl @Inject constructor(
     override suspend fun getUserName(userId: String): String {
         return try {
             val snapshot = usersCollection.document(userId).get().await()
-            snapshot.getString("name") ?: "User"
+            snapshot.getString("fullName") ?: "User"
         } catch (e: Exception) {
             Log.e("Firestore_Debug", "Error getting user name: ${e.message}")
             "User"
