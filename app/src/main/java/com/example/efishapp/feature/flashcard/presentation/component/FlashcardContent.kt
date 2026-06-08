@@ -1,6 +1,6 @@
 package com.example.efishapp.feature.flashcard.presentation.component
 
-import android.graphics.drawable.Icon
+import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -30,19 +30,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.efishapp.feature.flashcard.presentation.FlashcardUiEvent
-import com.example.efishapp.feature.flashcard.presentation.FlashcardUiState
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
-import org.intellij.lang.annotations.JdkConstants
 
 data class FlashcardContentCardConfig(
     val cornerRadius: Dp = 24.dp,
@@ -73,7 +70,8 @@ fun FlashcardContentCard(
     isFlipped: Boolean = false,
     isShowDetail: Boolean = false,
     onFlipCard:() -> Unit = {},
-    onClickSpeech: (String) -> Unit,
+    isTtsReady: Boolean = true,
+    onClickSpeech: (String) -> Unit = {},
     modifier: Modifier = Modifier,
     config: FlashcardContentCardConfig = FlashcardContentCardConfig()
 ) {
@@ -105,7 +103,7 @@ fun FlashcardContentCard(
             if (cardRotation > 90f) {
                 BackContent(vocabulary,isShowDetail)
             } else {
-                FrontContent(vocabulary.word,onClickSpeech)
+                FrontContent(vocabulary.word, isTtsReady, onClickSpeech)
             }
         }
     }
@@ -122,15 +120,19 @@ private fun FlashcardContentCardPreview() {
         isFlipped = false,
         isShowDetail = false,
         onFlipCard = {},
+        isTtsReady = true,
         onClickSpeech = {word->{}}
     )
 }
 
 @Composable
-private fun FrontContent(word: String="",
-                         onClickSpeech:(String)-> Unit,
+private fun FrontContent(word: String = "",
+                         isTtsReady: Boolean = true,
+                         onClickSpeech:(String) -> Unit,
                          config: FlashcardContentCardConfig = FlashcardContentCardConfig()
-){
+) {
+    val context = LocalContext.current
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -138,13 +140,21 @@ private fun FrontContent(word: String="",
         contentAlignment = Alignment.Center
     ) {
         IconButton(
-            onClick = { onClickSpeech(word) },
+            onClick = {
+                if (!isTtsReady) {
+                    Toast.makeText(context, "Đang khởi tạo giọng đọc...", Toast.LENGTH_SHORT).show()
+                    return@IconButton
+                }
+                onClickSpeech(word)
+            },
             modifier = Modifier.align(Alignment.TopStart)
         ) {
             Icon(
                 imageVector = Icons.Default.VolumeUp,
                 contentDescription = "Phát âm",
-                modifier = Modifier.size(config.iconSize)
+                modifier = Modifier.size(config.iconSize),
+                tint = if (isTtsReady) Color(0xFF2196F3)
+                       else Color.LightGray
             )
         }
 
@@ -154,7 +164,6 @@ private fun FrontContent(word: String="",
             modifier = Modifier.padding(horizontal = 48.dp)
         )
     }
-
 }
 
 @Composable
