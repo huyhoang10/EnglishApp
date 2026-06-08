@@ -1,5 +1,8 @@
 package com.example.efishapp.feature.folder.presentation
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,10 +18,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.efishapp.feature.folder.domain.model.Folder
+import com.example.efishapp.feature.folder.presentation.component.ImportExportDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +34,13 @@ fun FolderScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showFilterMenu by remember { mutableStateOf(false) }
     var showSortMenu by remember { mutableStateOf(false) }
+    var showImportExportDialog by remember { mutableStateOf(false) }
+
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let { viewModel.onEvent(FolderUiEvent.OnFileSelected(it)) }
+    }
 
     Scaffold(
         topBar = {
@@ -115,7 +127,7 @@ fun FolderScreen(
         floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier.padding(bottom = 60.dp),
-                onClick = { viewModel.onEvent(FolderUiEvent.OpenCreateDialog) }
+                onClick = { showImportExportDialog = true }
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Tạo thư mục mới")
             }
@@ -182,6 +194,35 @@ fun FolderScreen(
             onColorChange = { viewModel.onEvent(FolderUiEvent.OnDialogColorChange(it)) },
             onDismiss = { viewModel.onEvent(FolderUiEvent.CloseCreateDialog) },
             onConfirm = { viewModel.onEvent(FolderUiEvent.ConfirmCreateOrUpdate) }
+        )
+    }
+
+    // Import / Export Dialog
+    if (showImportExportDialog) {
+        ImportExportDialog(
+            onDismiss = { showImportExportDialog = false },
+            onCreateManually = {
+                showImportExportDialog = false
+                viewModel.onEvent(FolderUiEvent.OpenCreateDialog)
+            },
+            onImportFile = {
+                showImportExportDialog = false
+                viewModel.onEvent(FolderUiEvent.OpenImportDialog)
+                filePickerLauncher.launch(arrayOf("text/plain"))
+            }
+        )
+    }
+
+    // Import Preview Dialog
+    if (uiState.importDialog.isOpen) {
+        ImportPreviewDialog(
+            state = uiState.importDialog,
+            onDismiss = {
+                viewModel.onEvent(FolderUiEvent.CloseImportDialog)
+            },
+            onConfirm = {
+                viewModel.onEvent(FolderUiEvent.ConfirmImport)
+            }
         )
     }
 
@@ -359,4 +400,109 @@ fun FolderItemPreview() {
             onToggleStar = {}
         )
     }
+}
+
+@Composable
+fun ImportPreviewDialog(
+    state: ImportDialogState,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = {
+            if (!state.isProcessing) onDismiss()
+        },
+        title = {
+            if (state.importResult != null) {
+                Text(if (state.importResult.success) "Kết quả Import" else "Lỗi Import")
+            } else {
+                Text("Import từ vựng")
+            }
+        },
+        text = {
+            when {
+                state.isProcessing -> {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("Đang xử lý...")
+                    }
+                }
+                state.importResult != null -> {
+                    Column {
+                        Text(state.importResult.message)
+                        if (state.importResult.success) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("Đã import: ${state.importResult.importedCount} từ")
+                            if (state.importResult.skippedCount > 0) {
+                                Text("Bỏ qua: ${state.importResult.skippedCount} từ")
+                            }
+                        }
+                    }
+                }
+                state.selectedUri != null && state.previewVocabularies.isNotEmpty() -> {
+                    Column {
+                        Text(
+                            text = "Tên thư mục: ${state.fileName.ifEmpty { "Thư mục mới" }}",
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "${state.previewVocabularies.size} từ vựng được tìm thấy",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        val displayList = state.previewVocabularies.take(5)
+                        displayList.forEach { vocab ->
+                            Text(
+                                text = "• ${vocab.word}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        if (state.previewVocabularies.size > 5) {
+                            Text(
+                                text = "... và ${state.previewVocabularies.size - 5} từ khác",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+                state.selectedUri != null && state.previewVocabularies.isEmpty() -> {
+                    Text("Không tìm thấy từ vựng nào trong file. Đảm bảo file có định dạng: word|meaning|pronunciation|example|description")
+                }
+                else -> {
+                    Text("Chọn file .txt để import. Định dạng: word|meaning|pronunciation|example|description (mỗi từ 1 dòng)")
+                }
+            }
+        },
+        confirmButton = {
+            when {
+                state.importResult != null -> {
+                    Button(onClick = onDismiss) {
+                        Text("Đóng")
+                    }
+                }
+                state.previewVocabularies.isNotEmpty() && !state.isProcessing -> {
+                    Button(onClick = onConfirm) {
+                        Text("Import")
+                    }
+                }
+            }
+        },
+        dismissButton = {
+            if (state.importResult == null && !state.isProcessing) {
+                TextButton(onClick = onDismiss) {
+                    Text("Hủy")
+                }
+            }
+        }
+    )
 }

@@ -14,8 +14,11 @@ open class OnDeviceTTSHelper(context: Context) : TextToSpeech.OnInitListener {
 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
-            val result = tts?.setLanguage(Locale.US)
-            _isReady = result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED
+            val locales = listOf(Locale.US, Locale.ENGLISH, Locale.getDefault())
+            _isReady = locales.any { locale ->
+                val result = tts?.setLanguage(locale)
+                result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED
+            }
         }
     }
 

@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -48,6 +49,7 @@ import com.example.efishapp.feature.vocabulary.domain.model.Vocabulary
 import com.example.efishapp.feature.vocabulary.presentation.component.AddVocabularyDialog
 import com.example.efishapp.feature.vocabulary.presentation.component.DeleteVocabularyDialog
 import com.example.efishapp.feature.vocabulary.presentation.component.EditVocabularyDialog
+import com.example.efishapp.feature.vocabulary.presentation.component.ExportVocabularyDialog
 import com.example.efishapp.feature.vocabulary.presentation.component.PronunciationSection
 import com.example.efishapp.feature.vocabulary.presentation.component.VocabularyItem
 import kotlinx.coroutines.launch
@@ -63,6 +65,7 @@ fun VocabularyScreen(
     val scope = rememberCoroutineScope()
 
     var selectedVocabulary by remember { mutableStateOf<Vocabulary?>(null) }
+    var showExportDialog by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     LaunchedEffect(uiState.error) {
@@ -81,6 +84,13 @@ fun VocabularyScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Quay lai")
+                    }
+                },
+                actions = {
+                    if (uiState.vocabularies.isNotEmpty()) {
+                        IconButton(onClick = { showExportDialog = true }) {
+                            Icon(Icons.Default.Share, contentDescription = "Export từ vựng")
+                        }
                     }
                 }
             )
@@ -192,6 +202,14 @@ fun VocabularyScreen(
             state = uiState.deleteDialog,
             onDismiss = { viewModel.onEvent(VocabularyUiEvent.CloseDeleteDialog) },
             onConfirm = { viewModel.onEvent(VocabularyUiEvent.ConfirmDelete) }
+        )
+    }
+
+    if (showExportDialog) {
+        ExportVocabularyDialog(
+            folderName = viewModel.folderName,
+            vocabularies = uiState.vocabularies,
+            onDismiss = { showExportDialog = false }
         )
     }
 }

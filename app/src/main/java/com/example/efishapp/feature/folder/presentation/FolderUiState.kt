@@ -15,7 +15,8 @@ data class FolderUiState(
     val sortOption: FolderSortOption = FolderSortOption.NEWEST,
 
     val createDialog: CreateDialogState = CreateDialogState(),
-    val deleteDialog: DeleteDialogState = DeleteDialogState()
+    val deleteDialog: DeleteDialogState = DeleteDialogState(),
+    val importDialog: ImportDialogState = ImportDialogState()
 )
 
 data class CreateDialogState(
@@ -31,6 +32,30 @@ data class DeleteDialogState(
     val isOpen: Boolean = false,
     val folderId: String? = null,
     val folderName: String = ""
+)
+
+data class ImportDialogState(
+    val isOpen: Boolean = false,
+    val selectedUri: android.net.Uri? = null,
+    val fileName: String = "",
+    val previewVocabularies: List<ImportedVocabulary> = emptyList(),
+    val isProcessing: Boolean = false,
+    val importResult: ImportResult? = null
+)
+
+data class ImportedVocabulary(
+    val word: String = "",
+    val meaning: String = "",
+    val pronunciation: String = "",
+    val example: String = "",
+    val description: String = ""
+)
+
+data class ImportResult(
+    val success: Boolean,
+    val message: String,
+    val importedCount: Int = 0,
+    val skippedCount: Int = 0
 )
 
 
@@ -60,4 +85,10 @@ sealed interface FolderUiEvent {
 
     // General
     object ClearError : FolderUiEvent
+
+    // Import / Export
+    object OpenImportDialog : FolderUiEvent
+    object CloseImportDialog : FolderUiEvent
+    data class OnFileSelected(val uri: android.net.Uri) : FolderUiEvent
+    object ConfirmImport : FolderUiEvent
 }

@@ -48,6 +48,7 @@ fun VocabularyItem(
     val ttsHelper = remember {
         object : OnDeviceTTSHelper(context) {
             override fun onInit(status: Int) {
+                super.onInit(status)
                 if (status == android.speech.tts.TextToSpeech.SUCCESS) {
                     isTtsReady = true
                 }
