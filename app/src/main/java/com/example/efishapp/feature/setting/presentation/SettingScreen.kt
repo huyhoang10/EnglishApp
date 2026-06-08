@@ -45,6 +45,7 @@ fun SettingContent(
 ) {
     // Biến kiểm tra xem theme hiện tại có phải là DARK hay không để gạt nút Switch
     val isDarkMode = uiState.currentTheme == AppTheme.DARK
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -93,13 +94,44 @@ fun SettingContent(
             }
         }
         Button(
-            onClick = onLogoutClick, // Khi bấm nút, bắn sự kiện ra ngoài luôn
+            onClick = { showLogoutDialog = true }, // Khi bấm nút, bắn sự kiện ra ngoài luôn
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.error // Màu đỏ cảnh báo
             )
         ) {
             Text(text = "Đăng xuất tài khoản")
+        }
+        if (showLogoutDialog) {
+            AlertDialog(
+                onDismissRequest = { showLogoutDialog = false }, // Tắt dialog khi bấm ra ngoài vùng trống
+                title = {
+                    Text(text = "Xác nhận đăng xuất")
+                },
+                text = {
+                    Text(text = "Bạn có chắc chắn muốn đăng xuất không?")
+                },
+                confirmButton = {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error // Màu đỏ nút xác nhận
+                        ),
+                        onClick = {
+                            showLogoutDialog = false // Tắt dialog đi
+                            onLogoutClick() // Bắn sự kiện logout ra NavGraph xử lý chuyển màn hình
+                        }
+                    ) {
+                        Text("Đăng xuất")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showLogoutDialog = false } // Bấm hủy thì tắt dialog đi là xong
+                    ) {
+                        Text("Hủy bỏ")
+                    }
+                }
+            )
         }
     }
 }

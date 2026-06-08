@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.efishapp.core.designsystem.EfishAppTheme
+import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
 import com.example.efishapp.feature.setting.domain.model.AppTheme
 import com.example.efishapp.feature.setting.presentation.SettingViewModel
 import com.example.efishapp.navigation.EfishNavGraph
@@ -30,7 +31,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settingViewModel: SettingViewModel = hiltViewModel()
             val uiState by settingViewModel.uiState.collectAsState()
-
             val isDarkMode = uiState.currentTheme == AppTheme.DARK
             EfishAppTheme(darkTheme = isDarkMode) {
                 EfishNavGraph()

@@ -91,6 +91,10 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+    override fun isUserLoggedIn(): Boolean {
+        // Trả về true nếu Firebase đang giữ token của user hiện tại
+        return firebaseAuth.currentUser != null
+    }
 
 
 }

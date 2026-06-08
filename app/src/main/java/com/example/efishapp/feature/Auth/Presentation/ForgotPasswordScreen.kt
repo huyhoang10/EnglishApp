@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,12 +37,13 @@ fun ForgotPasswordScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var email by remember { mutableStateOf("") }
+    var showSuccessDialog by remember { mutableStateOf(false) }
 
     // Theo dõi khi Firebase gửi mail thành công
     LaunchedEffect(uiState) {
-        if (uiState is AuthUiState.Success) {
-            onSendEmailSuccess()
+        if (uiState is AuthUiState.ForgotPasswordEmailSent) {
             viewModel.resetUiState()
+            showSuccessDialog = true
         }
     }
 
@@ -71,10 +73,10 @@ fun ForgotPasswordScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Ô nhập Email yêu cầu khôi phục
+        // Ô nhập Email yêu cầu khôi phục (Đã sửa lỗi Lambda)
         AuthTextField(
             value = email,
-            onValueChange = { email = it; Modifier },
+            onValueChange = { email = it },
             label = "Email của bạn",
             keyboardType = KeyboardType.Email,
             modifier = Modifier.fillMaxWidth()
@@ -96,7 +98,7 @@ fun ForgotPasswordScreen(
 
         // Nút quay lại màn hình đăng nhập
         Text(
-            text = "Quay lại Đăng nhập",
+            text = "Quay lại đăng nhập",
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
@@ -115,5 +117,26 @@ fun ForgotPasswordScreen(
             ErrorDialog(message = errorMessage, onDismiss = { viewModel.resetUiState() })
         }
         else -> Unit
+    }
+
+    // Hiển thị Dialog thông báo khi gửi email thành công
+    if (showSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = { /* Không cho phép tắt tùy tiện khi chưa bấm nút */ },
+            title = { Text(text = "Kiểm tra Email của bạn") },
+            text = {
+                Text(text = "Chúng tôi đã gửi đường dẫn thay đổi mật khẩu vào email của bạn. Vui lòng nhấp vào liên kết trong email để tiến hành tạo mật khẩu mới.")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.resetUiState() // Trả State về Idle
+                        onSendEmailSuccess() // Quay về màn Login
+                    }
+                ) {
+                    Text("Tôi đã hiểu")
+                }
+            }
+        )
     }
 }
