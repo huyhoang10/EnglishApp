@@ -10,10 +10,11 @@ import javax.inject.Inject
 class UpdateStreakAndActivityUseCase @Inject constructor(
     private val repository: UserAnalyticsRepository
 ) {
-    suspend operator fun invoke(userId: String): Pair<UserAnalytics, String> {
+    suspend operator fun invoke(userId: String) {
+        // update total word
         val totalVocabulary = repository.getTotalWords(userId)
         repository.updateTotalWords(userId,totalVocabulary)
-        val userName = repository.getUserName(userId)
+
         val currentAnalytics = repository.getUserAnalytics(userId)
             ?: repository.initializeUserAnalytics(userId)
 
@@ -21,9 +22,6 @@ class UpdateStreakAndActivityUseCase @Inject constructor(
         val calendar = Calendar.getInstance()
         val todayStr = formatter.format(calendar.time)
 
-        if (currentAnalytics.lastActiveDate == todayStr) {
-            return Pair(currentAnalytics, userName)
-        }
 
         val updatedAnalytics = if (currentAnalytics.lastActiveDate.isNotEmpty()) {
             val lastActiveDate = formatter.parse(currentAnalytics.lastActiveDate)
@@ -54,6 +52,5 @@ class UpdateStreakAndActivityUseCase @Inject constructor(
             )
         }
 
-        return Pair(updatedAnalytics, userName)
     }
 }

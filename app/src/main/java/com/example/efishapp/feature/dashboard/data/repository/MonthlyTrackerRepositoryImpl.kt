@@ -22,11 +22,12 @@ class MonthlyTrackerRepositoryImpl @Inject constructor(
 
     override suspend fun getMonthStats(userId: String, month: Int): MonthlyStudyTracker? {
         return try {
+            Log.e("Firestore_Debug", "Error fetching monthly stats: ${month}")
             val snapshot = collectionRef.document(userId).get().await()
             if (snapshot.exists()) {
                 val monthlyStatsMap = snapshot.get("monthly_stats") as? Map<String, Any>
                 val currentMonthMap = monthlyStatsMap?.get(month.toString()) as? Map<String, Any>
-
+                Log.e("Firestore_Debug", "Error fetching monthly stats: ${currentMonthMap.toString()}")
                 if (currentMonthMap != null) {
                     MonthlyStudyTracker(
                         userId = userId,
@@ -87,13 +88,11 @@ class MonthlyTrackerRepositoryImpl @Inject constructor(
     override suspend fun getVocabularyInCurrentMonthString(userId: String): List<VocabularyReview> {
         val db = FirebaseFirestore.getInstance()
 
-        // 1. Lấy chuỗi định dạng "yyyy-MM" của tháng hiện tại
         val calendar = Calendar.getInstance()
         val yearAndMonth = SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(calendar.time)
 
-        // Tạo mốc bắt đầu và mốc kết thúc dựa trên chuỗi
-        val startPrefix = "$yearAndMonth-01" // Ví dụ: "2026-06-01"
-        val endPrefix = "$yearAndMonth-31"   // Ví dụ: "2026-06-31" (String tự so sánh từ điển nên -31 là đủ bao quát)
+        val startPrefix = "$yearAndMonth-01"
+        val endPrefix = "$yearAndMonth-31"
 
         return try {
             val querySnapshot = db.collection("user_review")
