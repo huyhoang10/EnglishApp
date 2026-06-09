@@ -243,7 +243,10 @@ init {
         val currentState = _uiState.value
         val currentIndex = currentState.indexWord
 
-        if (currentIndex >= currentState.vocabularies.size) return
+        if (currentIndex >= currentState.vocabularies.size) {
+            _uiState.update { it.copy(isFlipped = true) }
+            return
+        }
 
         historyStack.add(FlashcardHistorySnapshot(
             indexWord = currentState.indexWord,
@@ -257,25 +260,43 @@ init {
             actionType = actionType
         ))
 
-        viewModelScope.launch {
-            val isCorrect = actionType != ActionType.AGAIN
-            val newCountForget = if (!isCorrect) currentState.countForget + 1 else currentState.countForget
-            val newCountRemember = if (isCorrect) currentState.countRemember + 1 else currentState.countRemember
+        val isCorrect = (actionType != ActionType.AGAIN && actionType != ActionType.HARD)
+        val newCountForget = if (!isCorrect) currentState.countForget + 1 else currentState.countForget
+        val newCountRemember = if (isCorrect) currentState.countRemember + 1 else currentState.countRemember
 
-            val nextIndex = currentIndex + 1
-            val hasFinishedNow = nextIndex >= currentState.vocabularies.size
+        val nextIndex = currentIndex + 1
+        val hasFinishedNow = nextIndex >= currentState.vocabularies.size
 
-            _uiState.update {
-                it.copy(
-                    indexWord = if (hasFinishedNow) currentIndex else nextIndex,
-                    countForget = newCountForget,
-                    countRemember = newCountRemember,
-                    isFlipped = false,
-                    isShowDetail = false,
-                    isFinished = hasFinishedNow
-                )
-            }
+        _uiState.update {
+            it.copy(
+                indexWord = if (hasFinishedNow) currentIndex else nextIndex,
+                countForget = newCountForget,
+                countRemember = newCountRemember,
+                isFlipped = false,
+                isShowDetail = false,
+                isFinished = hasFinishedNow
+            )
         }
+
+//        viewModelScope.launch {
+//            val isCorrect = (actionType != ActionType.AGAIN && actionType != ActionType.HARD)
+//            val newCountForget = if (!isCorrect) currentState.countForget + 1 else currentState.countForget
+//            val newCountRemember = if (isCorrect) currentState.countRemember + 1 else currentState.countRemember
+//
+//            val nextIndex = currentIndex + 1
+//            val hasFinishedNow = nextIndex >= currentState.vocabularies.size
+//
+//            _uiState.update {
+//                it.copy(
+//                    indexWord = if (hasFinishedNow) currentIndex else nextIndex,
+//                    countForget = newCountForget,
+//                    countRemember = newCountRemember,
+//                    isFlipped = false,
+//                    isShowDetail = false,
+//                    isFinished = hasFinishedNow
+//                )
+//            }
+//        }
     }
 
     fun resetNavigationFlag() {
@@ -307,9 +328,9 @@ init {
 
     suspend fun loadIsFinish(){
         updateUserReview()
-        updateWeeklyStatsUseCase(userId)
-        updateMonthlyAccuracyUseCase(userId)
-        updateStreakAndActivityUseCase(userId)
+//        updateWeeklyStatsUseCase(userId)
+//        updateMonthlyAccuracyUseCase(userId)
+//        updateStreakAndActivityUseCase(userId)
         userActionStack.clear()
         resetNavigationFlag()
     }
