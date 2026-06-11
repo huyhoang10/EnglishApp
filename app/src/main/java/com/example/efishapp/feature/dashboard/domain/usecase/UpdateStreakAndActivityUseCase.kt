@@ -12,8 +12,8 @@ class UpdateStreakAndActivityUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(userId: String) {
         // update total word
-        val totalVocabulary = repository.getTotalWords(userId)
-        repository.updateTotalWords(userId,totalVocabulary)
+//        val totalVocabulary = repository.getTotalWords(userId)
+//        repository.updateTotalWords(userId,totalVocabulary)
 
         val currentAnalytics = repository.getUserAnalytics(userId)
             ?: repository.initializeUserAnalytics(userId)

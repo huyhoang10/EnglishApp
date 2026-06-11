@@ -3,6 +3,7 @@ package com.example.efishapp.feature.dashboard.data.repository
 import android.util.Log
 import com.example.efishapp.feature.dashboard.domain.UserAnalytics
 import com.example.efishapp.feature.dashboard.domain.UserAnalyticsRepository
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -80,9 +81,14 @@ class UserAnalyticsRepositoryImpl @Inject constructor(
             0L // Trả về 0 nếu xảy ra lỗi
         }
     }
-    override suspend fun updateTotalWords(userId: String, totalWords: Long) {
+    override suspend fun updateTotalWords(userId: String, newWords: Int) {
         try {
-            analyticsCollection.document(userId).update("totalWordsLearned", totalWords).await()
+            // Sử dụng FieldValue.increment để cộng dồn số lượng từ mới vào giá trị cũ trên Firestore
+            analyticsCollection.document(userId)
+                .update("totalWordsLearned", FieldValue.increment(newWords.toLong()))
+                .await()
+
+            Log.d("Firestore_Debug", "Incremented total words learned by $newWords successfully.")
         } catch (e: Exception) {
             Log.e("Firestore_Debug", "Error updating total words: ${e.message}")
         }

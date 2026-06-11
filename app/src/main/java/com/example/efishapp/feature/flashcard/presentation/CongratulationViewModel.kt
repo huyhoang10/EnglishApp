@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.efishapp.feature.dashboard.domain.usecase.UpdateMonthlyAccuracyUseCase
 import com.example.efishapp.feature.dashboard.domain.usecase.UpdateStreakAndActivityUseCase
-import com.example.efishapp.feature.dashboard.domain.usecase.UpdateWeeklyStatsUseCase
 import com.example.efishapp.navigation.CongratulationScreenRoute
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +30,7 @@ sealed interface CongratulationUiEvent {
 @HiltViewModel
 class CongratulationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val updateWeeklyStatsUseCase: UpdateWeeklyStatsUseCase,
+    //private val updateWeeklyStatsUseCase: UpdateWeeklyStatsUseCase,
     private val updateMonthlyAccuracyUseCase: UpdateMonthlyAccuracyUseCase,
     private val updateStreakAndActivityUseCase: UpdateStreakAndActivityUseCase,
     private val firebaseAuth: FirebaseAuth
@@ -49,7 +48,7 @@ class CongratulationViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = true) }
     }
     suspend fun updateStats(){
-        updateWeeklyStatsUseCase(userId)
+        //updateWeeklyStatsUseCase(userId)
         updateMonthlyAccuracyUseCase(userId)
         updateStreakAndActivityUseCase(userId)
         _uiState.update { it.copy(isLoading = false) }

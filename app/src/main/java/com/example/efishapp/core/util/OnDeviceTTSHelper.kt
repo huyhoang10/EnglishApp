@@ -95,6 +95,9 @@ open class OnDeviceTTSHelper(context: Context) : TextToSpeech.OnInitListener {
         }
     }
 
+    fun speakBasic(text: String) {
+
+    }
     private fun retrySetLanguage() {
         tts?.let { engine ->
             val locales = listOf(Locale.US, Locale.ENGLISH, Locale.UK)

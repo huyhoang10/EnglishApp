@@ -67,44 +67,88 @@ override suspend fun getVocabulariesReview(userId: String): List<Vocabulary> {
         }
     }
 
-    override suspend fun getFlashcardProgress(userId: String, vocabularyId: String): VocabularyReview {
-        if (userId.isBlank() || vocabularyId.isBlank()) {
-            //Log.e("DEBUG_REPO_GET", "Không thể lấy tiến độ: userId hoặc vocabularyId bị rỖNG!")
-            return VocabularyReview(vocabularyId = vocabularyId)
-        }
-        return try {
-            val documentSnapshot = firestore.collection("user_review")
+    override suspend fun getFlashcardProgressList(
+        userId: String,
+        vocabularyIds: List<String>
+    ): List<VocabularyReview> {
+        if (userId.isBlank() || vocabularyIds.isEmpty()) return emptyList()
+
+        // Lọc bỏ các ID bị trống để tránh lỗi Firestore
+        val validIds = vocabularyIds.filter { it.isNotBlank() }.distinct()
+        if (validIds.isEmpty()) return emptyList()
+
+        val resultList = mutableListOf<VocabularyReview>()
+
+        try {
+            val collectionRef = firestore.collection("user_review")
                 .document(userId)
                 .collection("vocab_review")
-                .document(vocabularyId)
-                .get()
-                .await()
 
-            if (documentSnapshot.exists()) {
-                documentSnapshot.toObject(VocabularyReview::class.java)
-                    ?: VocabularyReview(vocabularyId = vocabularyId)
-            } else {
-                VocabularyReview(vocabularyId = vocabularyId)
+            // Firestore giới hạn `whereIn` tối đa 30 phần tử trong 1 Query.
+            // Cần chia nhỏ danh sách thành từng cụm tối đa 30 ID.
+            val chunks = validIds.chunked(30)
+
+            for (chunk in chunks) {
+                val querySnapshot = collectionRef
+                    .whereIn(FieldPath.documentId(), chunk)
+                    .get()
+                    .await()
+
+                // Chuyển đổi các Document tìm thấy sang Object
+                val reviews = querySnapshot.documents.mapNotNull { document ->
+                    document.toObject(VocabularyReview::class.java)
+                }
+                resultList.addAll(reviews)
             }
+
+            // Bổ sung các VocabularyReview mặc định cho những ID chưa tồn tại trên Firestore
+            val foundIds = resultList.map { it.vocabularyId }.toSet() // Giả định trường trong object là vocabularyId hoặc vocabId
+            val missingReviews = validIds
+                .filter { it !in foundIds }
+                .map { VocabularyReview(vocabularyId = it) }
+
+            resultList.addAll(missingReviews)
+
         } catch (e: Exception) {
-            Log.d("DEBUG_REPO_GET",e.message.toString())
+            Log.e("DEBUG_REPO_GET_LIST", e.message.toString())
             throw e
         }
+
+        return resultList
     }
 
-    override suspend fun updateFlashcardProgress(userId: String, vocabularyReview: VocabularyReview) {
-        if (userId.isBlank() || vocabularyReview == null) {
-            return
-        }
+    override suspend fun updateFlashcardProgressList(
+        userId: String,
+        vocabularyReviews: List<VocabularyReview>
+    ) {
+        if (userId.isBlank() || vocabularyReviews.isEmpty()) return
+
         try {
-            firestore.collection("user_review")
+            val collectionRef = firestore.collection("user_review")
                 .document(userId)
                 .collection("vocab_review")
-                .document(vocabularyReview.vocabularyId)
-                .set(vocabularyReview) // Ghi đè hoặc tạo mới nếu chưa tồn tại
-                .await()
+
+            // Firestore giới hạn tối đa 500 thao tác ghi trong 1 Batch.
+            // Chia nhỏ danh sách thành các cụm tối đa 500 phần tử để xử lý an toàn.
+            val chunks = vocabularyReviews.chunked(500)
+
+            for (chunk in chunks) {
+                val batch = firestore.batch()
+
+                for (review in chunk) {
+                    if (review.vocabularyId.isBlank()) continue
+
+                    val docRef = collectionRef.document(review.vocabularyId)
+                    batch.set(docRef, review) // Đưa lệnh ghi của từng document vào Batch
+                }
+
+                // Gửi toàn bộ cụm dữ liệu này lên Firestore trong 1 Request duy nhất
+                batch.commit().await()
+            }
+
+            Log.d("DEBUG_REPO_UPDATE_LIST", "Updated ${vocabularyReviews.size} flashcards successfully.")
         } catch (e: Exception) {
-            Log.d("DEBUG_REPO_UPDATE",e.message.toString())
+            Log.e("DEBUG_REPO_UPDATE_LIST", e.message.toString())
             throw e
         }
     }
