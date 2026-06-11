@@ -6,6 +6,12 @@ import com.example.efishapp.feature.flashcard.domain.model.VocabularyReview
 interface FlashcardRepository {
     suspend fun getVocabulariesReview(userId: String): List<Vocabulary>
     suspend fun getVocabulariesFromFolder(folderId: String?): List<Vocabulary>
-    suspend fun  getFlashcardProgress(userId: String, vocabularyId: String): VocabularyReview
-    suspend fun updateFlashcardProgress(userId: String, vocabularyReview: VocabularyReview)
+    suspend fun getFlashcardProgressList(
+        userId: String,
+        vocabularyIds: List<String>
+    ): List<VocabularyReview>
+    suspend fun updateFlashcardProgressList(
+        userId: String,
+        vocabularyReviews: List<VocabularyReview>
+    )
 }

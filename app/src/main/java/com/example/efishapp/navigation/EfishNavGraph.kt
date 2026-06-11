@@ -236,7 +236,7 @@ fun EfishNavGraph(
 
         composable(Screen.GAME) {
             GameScreen(
-                onNavigateBack = { navController.popBackStack() },
+                onNavigateBack = { navController.navigate(Screen.HOME) },
                 onNavigateToResult = { correct, wrong, gameType, gameLevel ->
                     navController.navigate(GameResultScreenRoute(correct, wrong, gameType.name, gameLevel.name))
                 }

@@ -76,22 +76,29 @@ fun CongratulationScreen(
 ) {
 
     val state by viewModel.uiState.collectAsState()
-    LaunchedEffect(state.isLoading) {
-        if(state.isLoading){
-            viewModel.updateStats()
-        }
-    }
-    if (state.isLoading) {
-        LoadingDialog()
-    }
-    else{
+//    LaunchedEffect(state.isLoading) {
+//        if(state.isLoading){
+//            viewModel.updateStats()
+//        }
+//    }
+//    if (state.isLoading) {
+//        LoadingDialog()
+//    }
+//    else{
+//    CongratulationContent(
+//        state.totalRemember,
+//        state.totalForget,
+//        onBackToHome,
+//        modifier,
+//        config
+//    )}
     CongratulationContent(
         state.totalRemember,
         state.totalForget,
         onBackToHome,
         modifier,
         config
-    )}
+    )
 }
 @Preview
 @Composable

@@ -1,9 +1,12 @@
 package com.example.efishapp.feature.dashboard.data.repository
 
 import android.util.Log
+import com.example.efishapp.core.util.getCurrentDayOfWeek
+import com.example.efishapp.core.util.getTodayStr
 import com.example.efishapp.feature.dashboard.domain.DailyVocabTracker
 import com.example.efishapp.feature.dashboard.domain.DayOfWeek
 import com.example.efishapp.feature.dashboard.domain.WeeklyTrackerRepository
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
@@ -97,21 +100,13 @@ class WeeklyTrackerRepositoryImpl @Inject constructor(
         return Pair(newVocabCountToday, reviewVocabCountToday)
     }
 
-    override suspend fun updateWeeklyStats(userId: String, dailyVocabTracker: DailyVocabTracker) {
-        val DATE_FORMAT = "yyyy-MM-dd"
-        val sdf = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
-        val todayStr = sdf.format(Date())
+    override suspend fun updateWeeklyStats(userId: String, newCount: Int, reviewCount: Int) {
+        val dayKey = getCurrentDayOfWeek()
 
-        // Gọi hàm lấy thông số học tập của hôm nay
-        val (newCount, reviewCount) = getTodayVocabCounts(userId, todayStr)
-
-        // Lấy tên thứ trong tuần (ví dụ: MONDAY, TUESDAY,...) làm key
-        val dayKey = dailyVocabTracker.dayOfWeek.name
-
-        // Chuẩn bị map data để update cục bộ vào đúng trường trong mảng/object
+        // Sử dụng FieldValue.increment() để cộng dồn giá trị
         val updates = mapOf(
-            "weekly_stats.$dayKey.newVocabCount" to newCount,
-            "weekly_stats.$dayKey.reviewVocabCount" to reviewCount
+            "weekly_stats.$dayKey.newVocabCount" to FieldValue.increment(newCount.toLong()),
+            "weekly_stats.$dayKey.reviewVocabCount" to FieldValue.increment(reviewCount.toLong())
         )
 
         try {
@@ -121,7 +116,7 @@ class WeeklyTrackerRepositoryImpl @Inject constructor(
                 .update(updates)
                 .await()
 
-            Log.d("Firestore_Debug", "Update weekly stats for $dayKey successfully.")
+            Log.d("Firestore_Debug", "Incremented weekly stats for $dayKey successfully.")
         } catch (e: Exception) {
             Log.e("Firestore_Debug", "Error updating daily stats: ${e.message}")
         }
