@@ -13,12 +13,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class ReviewReminderUiState(
-    val vocabularies: List<Vocabulary> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
-
 @HiltViewModel
 class ReviewReminderViewModel @Inject constructor(
     private val getVocabularyReviewUseCase: GetVocabularyReviewUseCase,
@@ -32,6 +26,7 @@ class ReviewReminderViewModel @Inject constructor(
         loadReviewVocabularies()
     }
 
+    // Tải danh sách từ vựng đến hạn cần ôn tập
     fun loadReviewVocabularies() {
         val userId = auth.currentUser?.uid ?: return
         viewModelScope.launch {

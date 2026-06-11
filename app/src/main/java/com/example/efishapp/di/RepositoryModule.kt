@@ -14,8 +14,8 @@ import com.example.efishapp.feature.flashcard.data.repository.FlashcardLocalRepo
 import com.example.efishapp.feature.flashcard.data.repository.FlashcardRepositoryImpl
 import com.example.efishapp.feature.flashcard.domain.repository.FlashcardLocalRepository
 import com.example.efishapp.feature.flashcard.domain.repository.FlashcardRepository
-import com.example.efishapp.feature.notification.Data.repository.DailyStudyNotificationRepositoryImpl
-import com.example.efishapp.feature.notification.Domain.repository.DailyStudyNotificationRepository
+import com.example.efishapp.feature.notification.data.repository.DailyStudyNotificationRepositoryImpl
+import com.example.efishapp.feature.notification.domain.repository.DailyStudyNotificationRepository
 import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
 import com.example.efishapp.feature.profile.domain.repository.UserProfileRepository
 

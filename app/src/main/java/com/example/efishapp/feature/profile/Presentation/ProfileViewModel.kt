@@ -26,6 +26,7 @@ class ProfileViewModel @Inject constructor(
         loadProfile()
     }
 
+    // Tải thông tin hồ sơ người dùng từ Firestore
     fun loadProfile() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -49,16 +50,24 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+
+    // Chuyển đổi qua lại giữa chế độ xem và chế độ chỉnh sửa
     fun toggleEditMode() {
         _uiState.update { it.copy(isEditMode = !it.isEditMode) }
     }
 
+    // Cập nhật thông tin tạm thời vào State khi người dùng nhập liệu
     fun onFullNameChange(name: String) = _uiState.update { it.copy(editedFullName = name) }
+
     fun onDateOfBirthChange(dob: String) = _uiState.update { it.copy(editedDateOfBirth = dob) }
+
     fun onGenderChange(gender: String) = _uiState.update { it.copy(editedGender = gender) }
+
     fun onGoalChange(goal: String) = _uiState.update { it.copy(editedGoal = goal) }
+
     fun onLevelChange(level: String) = _uiState.update { it.copy(editedLevel = level) }
 
+    // Gửi yêu cầu cập nhật hồ sơ lên Firestore
     fun updateProfile() {
         val currentState = _uiState.value
         viewModelScope.launch {
@@ -83,11 +92,11 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             
-            // 1. Xóa dữ liệu trong Firestore
+            // Xóa dữ liệu trong Firestore
             val dbResult = repository.deleteUserProfile()
             
             dbResult.onSuccess {
-                // 2. Xóa tài khoản trong Firebase Auth
+                // Xóa tài khoản trong Firebase Auth
                 val authResult = repository.deleteFirebaseAuth()
                 
                 authResult.onSuccess {

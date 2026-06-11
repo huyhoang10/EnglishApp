@@ -25,7 +25,7 @@ fun ReviewReminderScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Từ vựng cần ôn tập") },
+                title = { Text("Words to Review") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -41,7 +41,7 @@ fun ReviewReminderScreen(
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Hôm nay bạn không có từ nào cần ôn!")
+                Text("No words to review today!")
             }
         } else if (uiState.isLoading) {
             Box(
@@ -58,7 +58,7 @@ fun ReviewReminderScreen(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Bạn có ${dueWords.size} từ cần ôn tập.",
+                    text = "You have ${dueWords.size} words to review.",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
