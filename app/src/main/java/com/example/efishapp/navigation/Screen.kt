@@ -15,6 +15,7 @@ object Screen {
     const val EMPTY_VOCABULARY = "empty_vocabulary"
     const val FOLDER = "folder"
     const val VOCABULARY = "vocabulary"
+    const val GAME = "game"
 }
 
 @Serializable
@@ -36,3 +37,16 @@ data class CongratulationScreenRoute(
 
 @Serializable
 data object SettingScreenRoute
+
+@Serializable
+data class GameScreenRoute(
+    val folderId: String? = null
+)
+
+@Serializable
+data class GameResultScreenRoute(
+    val correctAnswers: Int,
+    val wrongAnswers: Int,
+    val gameType: String,
+    val gameLevel: String
+)

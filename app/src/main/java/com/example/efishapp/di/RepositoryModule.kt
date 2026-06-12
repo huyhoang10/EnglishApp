@@ -21,6 +21,8 @@ import com.example.efishapp.feature.profile.domain.repository.UserProfileReposit
 
 import com.example.efishapp.feature.folder.data.repository.FolderRepositoryImpl
 import com.example.efishapp.feature.folder.domain.FolderRepository
+import com.example.efishapp.feature.game.data.repository.GameRepositoryImpl
+import com.example.efishapp.feature.game.domain.repository.GameRepository
 import com.example.efishapp.feature.setting.data.repository.SettingRepositoryImpl
 import com.example.efishapp.feature.setting.domain.repository.SettingRepository
 import dagger.Binds
@@ -73,4 +75,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindSettingRepository(impl: SettingRepositoryImpl): SettingRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGameRepository(impl: GameRepositoryImpl): GameRepository
 }

@@ -91,5 +91,4 @@ sealed interface FlashcardUiEvent {
     object OnClickDetail : FlashcardUiEvent
     object OnClickBack: FlashcardUiEvent
     data class OnAnswer(val actionType: ActionType) : FlashcardUiEvent
-    data class LoadVocabularies(val userId: String) : FlashcardUiEvent
 }

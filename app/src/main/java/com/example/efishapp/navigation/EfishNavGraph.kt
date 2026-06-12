@@ -40,6 +40,10 @@ import com.example.efishapp.feature.notification.presentation.ReviewReminderScre
 import com.example.efishapp.feature.notification.presentation.ReviewReminderViewModel
 import com.example.efishapp.feature.vocabulary.presentation.VocabularyScreen
 import com.example.efishapp.feature.vocabulary.presentation.VocabularyViewModel
+import com.example.efishapp.feature.game.presentation.GameScreen
+import com.example.efishapp.feature.game.presentation.GameResultScreen
+import com.example.efishapp.feature.game.domain.model.GameType
+import com.example.efishapp.feature.game.domain.model.GameLevel
 
 @Composable
 fun EfishNavGraph(
@@ -134,6 +138,7 @@ fun EfishNavGraph(
                     }
                 },
                 onNavigateToReview = {navController.navigate(FlashcardScreenRoute(null))},
+                onNavigateToGame = { navController.navigate(Screen.GAME) },
                 onNavigateToFolderDetail = { folderId, folderName ->
                     navController.navigate(VocabularyScreenRoute(folderId, folderName))
                 }
@@ -169,7 +174,9 @@ fun EfishNavGraph(
 
             VocabularyScreen(
                 viewModel = vocabularyViewModel,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onFlashcardScreen = {folderId ->
+                    navController.navigate(FlashcardScreenRoute(folderId))}
             )
         }
 
@@ -227,6 +234,38 @@ fun EfishNavGraph(
 //                    }
 //                }
                 { navController.navigate(Screen.HOME) }
+            )
+        }
+
+        composable(Screen.GAME) {
+            GameScreen(
+                onNavigateBack = { navController.navigate(Screen.HOME) },
+                onNavigateToResult = { correct, wrong, gameType, gameLevel ->
+                    navController.navigate(GameResultScreenRoute(correct, wrong, gameType.name, gameLevel.name))
+                }
+            )
+        }
+
+        composable<GameResultScreenRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<GameResultScreenRoute>()
+            val gameType = try { GameType.valueOf(route.gameType) } catch (e: Exception) { GameType.SPELLING }
+            val gameLevel = try { GameLevel.valueOf(route.gameLevel) } catch (e: Exception) { GameLevel.EASY }
+
+            GameResultScreen(
+                correctAnswers = route.correctAnswers,
+                wrongAnswers = route.wrongAnswers,
+                gameType = gameType,
+                gameLevel = gameLevel,
+                onPlayAgain = {
+                    navController.navigate(Screen.GAME) {
+                        popUpTo(Screen.GAME) { inclusive = true }
+                    }
+                },
+                onGoBack = {
+                    navController.navigate(Screen.HOME) {
+                        popUpTo(Screen.HOME) { inclusive = true }
+                    }
+                }
             )
         }
 

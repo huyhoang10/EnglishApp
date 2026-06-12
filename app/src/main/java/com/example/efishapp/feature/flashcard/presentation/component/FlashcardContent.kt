@@ -1,5 +1,6 @@
 package com.example.efishapp.feature.flashcard.presentation.component
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -24,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.efishapp.core.util.OnDeviceTTSHelper
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 
 data class FlashcardContentCardConfig(
@@ -77,6 +80,7 @@ fun FlashcardContentCard(
 ) {
 
 
+
     val cardRotation by animateFloatAsState(
         targetValue = if (isFlipped) 180f else 0f,
         animationSpec = tween(durationMillis = config.animationDurationMillis),
@@ -103,7 +107,7 @@ fun FlashcardContentCard(
             if (cardRotation > 90f) {
                 BackContent(vocabulary,isShowDetail)
             } else {
-                FrontContent(vocabulary.word, isTtsReady, onClickSpeech)
+                FrontContent(vocabulary.word, isTtsReady)
             }
         }
     }
@@ -128,10 +132,17 @@ private fun FlashcardContentCardPreview() {
 @Composable
 private fun FrontContent(word: String = "",
                          isTtsReady: Boolean = true,
-                         onClickSpeech:(String) -> Unit,
                          config: FlashcardContentCardConfig = FlashcardContentCardConfig()
 ) {
     val context = LocalContext.current
+    val ttsHelper = remember { OnDeviceTTSHelper(context) }
+
+    // 2. Quản lý vòng đời: Tự động giải phóng khi rời khỏi Composable này
+    DisposableEffect(Unit) {
+        onDispose {
+            ttsHelper.shutdown()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -141,11 +152,7 @@ private fun FrontContent(word: String = "",
     ) {
         IconButton(
             onClick = {
-                if (!isTtsReady) {
-                    Toast.makeText(context, "Đang khởi tạo giọng đọc...", Toast.LENGTH_SHORT).show()
-                    return@IconButton
-                }
-                onClickSpeech(word)
+                ttsHelper.speak(word)
             },
             modifier = Modifier.align(Alignment.TopStart)
         ) {

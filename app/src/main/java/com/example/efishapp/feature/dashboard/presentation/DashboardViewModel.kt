@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.efishapp.feature.dashboard.domain.usecase.GetMonthStatsUseCase
+import com.example.efishapp.feature.dashboard.domain.usecase.GetUserAnalystUsecase
 import com.example.efishapp.feature.dashboard.domain.usecase.GetWeeklyStatsUseCase
-import com.example.efishapp.feature.dashboard.domain.usecase.SyncStreakAndActivityUseCase
 
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 class DashboardViewModel @Inject constructor(
     private val getWeeklyStatsUseCase: GetWeeklyStatsUseCase,
     private val getMonthStatsUseCase: GetMonthStatsUseCase,
-    private val syncStreakAndActivityUseCase: SyncStreakAndActivityUseCase,
+    private val getUserAnalystUsecase: GetUserAnalystUsecase,
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
@@ -31,13 +31,15 @@ class DashboardViewModel @Inject constructor(
         val userId: String = firebaseAuth.currentUser?.uid.toString()
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             try {
-                val (analytics, name) = syncStreakAndActivityUseCase(userId)
+                val (analytics, name) = getUserAnalystUsecase(userId)
                 _uiState.update {
                     it.copy(
                         userName = name,
                         streak = analytics.streak,
-                        totalVocabLeaned = analytics.totalVocabLearned
+                        totalVocabLeaned = analytics.totalVocabLearned,
+                        isLoading = false
                     )
                 }
                 Log.d("Dashboard", "Successfully Synchronized Profile & Analytics")

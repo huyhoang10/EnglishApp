@@ -3,6 +3,7 @@ package com.example.efishapp.core.util
 import com.example.efishapp.feature.dashboard.domain.DayOfWeek
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 
@@ -28,4 +29,9 @@ fun getCurrentDayOfWeek(): DayOfWeek {
         Calendar.SUNDAY -> DayOfWeek.Sun
         else -> DayOfWeek.Mon // Giá trị phòng hờ (Fallback)
     }
+}
+
+fun getTodayStr(): String {
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    return sdf.format(Date())
 }

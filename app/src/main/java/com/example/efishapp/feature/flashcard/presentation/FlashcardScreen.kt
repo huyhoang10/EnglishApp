@@ -1,22 +1,16 @@
 package com.example.efishapp.feature.flashcard.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,7 +25,6 @@ import com.example.efishapp.feature.flashcard.presentation.component.FlashcardAc
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardBottomNavigation
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardContentCard
 import com.example.efishapp.feature.flashcard.presentation.component.FlashcardHeader
-import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
 
 data class FlashcardScreenConfig(
     val backgroundColor: Color = Color(0xFFF7F9FA),
@@ -50,8 +43,7 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
 
     LaunchedEffect(state.isFinished, state.isEmpty) {
         if (state.isFinished) {
-            viewModel.updateUserReview()
-            viewModel.resetNavigationFlag()
+            viewModel.loadIsFinish()
             onNavigateToCongratulation(state.countRemember, state.countForget)
         }else if (state.isEmpty) {
             onNavigateNotifyEmpty()
@@ -179,7 +171,7 @@ private fun FlashcardContentPreview() {
         countForget = 3,
         countRemember = 5,
         vocabulary = Vocabulary(
-            id = "1",
+            documentId = "1",
             word = "apple",
             pronunciation = "/ˈæp.əl/",
             meaning = "quả táo",

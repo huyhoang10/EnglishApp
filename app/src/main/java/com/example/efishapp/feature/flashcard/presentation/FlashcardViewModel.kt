@@ -5,12 +5,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.example.efishapp.feature.dashboard.domain.usecase.UpdateWeeklyStatsUseCase
+import com.example.efishapp.feature.dashboard.domain.usecase.UpdateMonthlyAccuracyUseCase
+import com.example.efishapp.feature.dashboard.domain.usecase.UpdateStreakAndActivityUseCase
 import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.domain.usecase.FlashcardSessionResult
 import com.example.efishapp.feature.flashcard.domain.usecase.GetVocabularyReviewUseCase
 import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
-import com.example.efishapp.feature.flashcard.domain.usecase.GetVocabularyFromFolder
+import com.example.efishapp.feature.flashcard.domain.usecase.GetVocabularyFromFolderUsecase
 import com.example.efishapp.feature.flashcard.domain.usecase.UpdateFlashcardProgressUseCase
 import com.example.efishapp.navigation.FlashcardScreenRoute
 import com.google.firebase.auth.FirebaseAuth
@@ -42,9 +43,10 @@ data class UserActionSnapshot(
 class FlashcardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val updateFlashcardProgressUseCase: UpdateFlashcardProgressUseCase,
-    private val getVocabularyFromFolder: GetVocabularyFromFolder,
+    private val updateStreakAndActivityUseCase: UpdateStreakAndActivityUseCase,
+    private val updateMonthlyAccuracyUseCase: UpdateMonthlyAccuracyUseCase,
+    private val getVocabularyFromFolderUsecase: GetVocabularyFromFolderUsecase,
     private val getVocabularyReviewUseCase: GetVocabularyReviewUseCase,
-    private val updateWeeklyStatsUseCase: UpdateWeeklyStatsUseCase,
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
@@ -58,29 +60,25 @@ class FlashcardViewModel @Inject constructor(
     private val userActionStack = ArrayDeque<UserActionSnapshot>()
     private val userAnswers = mutableMapOf<String, ActionType>()
 
-    init {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            try {
-                if(folderId != null){
-                    loadVocabularyFromFolder(folderId)
-                }
-                else{
-                    loadVocabularyReview()
-                }
-                _uiState.update { it.copy(isLoading = false) }
+init {
+    viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true, isError = false) }
+        try {
+            if (folderId != null) {
+                // Đợi hàm suspend này chạy xong xuôi
+                loadVocabularyFromFolder(folderId)
+            } else {
+                // Đợi hàm suspend này chạy xong xuôi
+                loadVocabularyReview()
             }
-            catch (e: Exception){
-                _uiState.update { it.copy(isError = true)}
-                Log.d("Exception:", "Load Vocabulary Fail")
-            }
+        } catch (e: Exception) {
+            Log.e("VocabularyViewModel", "Load Vocabulary Fail: ${e.message}", e)
+            _uiState.update { it.copy(isError = true, isLoading = false) }
         }
-
     }
+}
 
-    private fun loadVocabularyReview() = viewModelScope.launch {
-        _uiState.update { it.copy(isLoading = true) }
-
+    private suspend fun loadVocabularyReview() {
         // Gọi UseCase xử lý phân luồng logic giữa Room và Firestore
         when (val result = getVocabularyReviewUseCase(userId)) {
             is FlashcardSessionResult.ContinueSession -> {
@@ -92,7 +90,7 @@ class FlashcardViewModel @Inject constructor(
                     countForget = result.countForget,
                     countRemember = result.countRemember,
                     isEmpty = result.vocabularies.isEmpty(),
-                    isLoading = false
+                    isLoading = false // Tắt loading sau khi cập nhật trạng thái thành công
                 ) }
             }
             is FlashcardSessionResult.NewSession -> {
@@ -102,38 +100,30 @@ class FlashcardViewModel @Inject constructor(
                     countForget = 0,
                     countRemember = 0,
                     isEmpty = result.vocabularies.isEmpty(),
-                    isLoading = false
+                    isLoading = false // Tắt loading sau khi cập nhật trạng thái thành công
                 ) }
             }
         }
     }
 
-    private fun loadVocabularyFromFolder(folderId: String) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            try {
-                val list = getVocabularyFromFolder(folderId)
-                _uiState.update {
-                    it.copy(
-                        vocabularies = list,
-                        isLoading = false,
-                        isEmpty = list.isEmpty(),
-                        isFinished = false
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false) }
-            }
+    // Chuyển thành suspend fun, loại bỏ hoàn toàn viewModelScope.launch thừa ở đây
+    private suspend fun loadVocabularyFromFolder(folderId: String) {
+        // Gọi UseCase lấy dữ liệu bất đồng bộ từ Repo
+        val list = getVocabularyFromFolderUsecase(folderId)
+
+        _uiState.update {
+            it.copy(
+                vocabularies = list,
+                isEmpty = list.isEmpty(),
+                isFinished = false,
+                isLoading = false // Tắt loading ngay tại đây khi dữ liệu đã nạp xong
+            )
         }
     }
 
-
     fun onEvent(event: FlashcardUiEvent) {
         when (event) {
-            is FlashcardUiEvent.LoadVocabularies -> {
-                loadVocabularyFromFolder(event.userId)
-            }
-            FlashcardUiEvent.OnFlipCard -> {
+            is FlashcardUiEvent.OnFlipCard -> {
                 _uiState.update { it.copy(isFlipped = !it.isFlipped) }
             }
             FlashcardUiEvent.OnClickDetail -> {
@@ -168,16 +158,20 @@ class FlashcardViewModel @Inject constructor(
                 val actionType = event.actionType
                 handleUserAnswer(actionType = actionType)
             }
+            else -> {
+
+            }
         }
     }
-
-
 
     private fun handleUserAnswer(actionType: ActionType) {
         val currentState = _uiState.value
         val currentIndex = currentState.indexWord
 
-        if (currentIndex >= currentState.vocabularies.size) return
+        if (currentIndex >= currentState.vocabularies.size) {
+            _uiState.update { it.copy(isFlipped = true) }
+            return
+        }
 
         historyStack.add(FlashcardHistorySnapshot(
             indexWord = currentState.indexWord,
@@ -187,58 +181,51 @@ class FlashcardViewModel @Inject constructor(
         ))
 
         userActionStack.add(UserActionSnapshot(
-            vocabId = currentState.vocabularies[currentState.indexWord].id,
+            vocabId = currentState.vocabularies[currentState.indexWord].documentId,
             actionType = actionType
         ))
 
-        viewModelScope.launch {
-            val isCorrect = actionType != ActionType.AGAIN
-            val newCountForget = if (!isCorrect) currentState.countForget + 1 else currentState.countForget
-            val newCountRemember = if (isCorrect) currentState.countRemember + 1 else currentState.countRemember
+        val isCorrect = (actionType != ActionType.AGAIN)
+        val newCountForget = if (!isCorrect) currentState.countForget + 1 else currentState.countForget
+        val newCountRemember = if (isCorrect) currentState.countRemember + 1 else currentState.countRemember
 
-            val nextIndex = currentIndex + 1
-            val hasFinishedNow = nextIndex >= currentState.vocabularies.size
+        val nextIndex = currentIndex + 1
+        val hasFinishedNow = nextIndex >= currentState.vocabularies.size
 
-            _uiState.update {
-                it.copy(
-                    indexWord = if (hasFinishedNow) currentIndex else nextIndex,
-                    countForget = newCountForget,
-                    countRemember = newCountRemember,
-                    isFlipped = false,
-                    isShowDetail = false,
-                    isFinished = hasFinishedNow
-                )
-            }
+        _uiState.update {
+            it.copy(
+                indexWord = if (hasFinishedNow) currentIndex else nextIndex,
+                countForget = newCountForget,
+                countRemember = newCountRemember,
+                isFlipped = false,
+                isShowDetail = false,
+                isFinished = hasFinishedNow
+            )
         }
     }
 
     fun resetNavigationFlag() {
         _uiState.update { it.copy(isFinished = false) }
         _uiState.update { it.copy(isEmpty = false) }
+        _uiState.update { it.copy(isLoading = false) }
         historyStack.clear()
-    }
-
-suspend fun updateUserReview() {
-    if (userActionStack.isEmpty()) return
-    try {
-        val tasks = userActionStack.map { actionSnapshot ->
-            viewModelScope.async {
-                if (actionSnapshot.vocabId.isNotEmpty()) {
-                    updateFlashcardProgressUseCase(
-                        userId = "DuwZLdACmcWoYCqFPhbPdeKy7Mk1",
-                        vocabularyId = actionSnapshot.vocabId,
-                        actionType = actionSnapshot.actionType
-                    )
-                }
-            }
-        }
-
-        updateWeeklyStatsUseCase(userId)
-        tasks.awaitAll()
         userActionStack.clear()
-    } catch (e: Exception) {
-        Log.e("updateUserReview", "Error ${e.message}", e)
     }
-}
+    suspend fun updateUserReview() {
+        if (userActionStack.isEmpty()) return
+        try {
+            updateFlashcardProgressUseCase(userId, userActionStack )
+        } catch (e: Exception) {
+            Log.e("updateUserReview", "Error ${e.message}", e)
+        }
+    }
+
+    suspend fun loadIsFinish(){
+        _uiState.update { it.copy(isLoading = true) }
+        updateUserReview()
+        updateStreakAndActivityUseCase(userId)
+        updateMonthlyAccuracyUseCase(userId)
+        resetNavigationFlag()
+    }
 
 }

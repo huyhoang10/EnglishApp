@@ -50,7 +50,7 @@ data class FlashcardHeaderConfig(
     ),
 
     // Cấu hình mặc định cho viền của 2 nút Pill
-    val leftPillBorderColor: Color = Color(0xFFFFE0B2),  // Viền cam nhạt
+    val leftPillBorderColor: Color = Color(0xffe06355),  // Viền cam nhạt
     val rightPillBorderColor: Color = Color(0xFFC8E6C9)  // Viền xanh nhạt
 )
 
