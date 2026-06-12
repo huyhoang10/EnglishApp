@@ -147,7 +147,10 @@ fun EfishNavGraph(
 
         composable(Screen.DAILY_STUDY_REMINDER) {
             val dailyStudyReminderViewModel: DailyStudyReminderViewModel = hiltViewModel()
-            DailyStudyReminderScreen(dailyStudyReminderViewModel)
+            DailyStudyReminderScreen(
+                vm = dailyStudyReminderViewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
 
         composable(Screen.DUE_WORDS_REMINDER) {

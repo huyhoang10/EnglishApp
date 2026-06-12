@@ -56,7 +56,7 @@ fun SettingContent(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = "Cài đặt hệ thống", style = MaterialTheme.typography.titleLarge)
+        Text(text = "System Settings", style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(24.dp))
 
         Card(
@@ -76,15 +76,15 @@ fun SettingContent(
                 // Icon Chế độ tối (Hình mặt trăng)
                 Icon(
                     imageVector = if (isDarkMode) Icons.Default.DarkMode else Icons.Default.WbSunny,
-                    contentDescription = if (isDarkMode) "Chế độ tối" else "Chế độ sáng",
+                    contentDescription = if (isDarkMode) "Dark Mode" else "Light Mode",
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "Chế độ tối", style = MaterialTheme.typography.titleMedium)
+                    Text(text = "Dark Mode", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        text = if (isDarkMode) "Đang bật" else "Đang tắt",
+                        text = if (isDarkMode) "Enabled" else "Disabled",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -116,15 +116,15 @@ fun SettingContent(
             ) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
-                    contentDescription = "Cài đặt thông báo",
+                    contentDescription = "Notification Settings",
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "Thông báo học tập", style = MaterialTheme.typography.titleMedium)
+                    Text(text = "Study Notifications", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        text = "Thiết lập thời gian nhắc nhở hàng ngày",
+                        text = "Set up your daily reminder time",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -141,16 +141,16 @@ fun SettingContent(
                 containerColor = MaterialTheme.colorScheme.error // Màu đỏ cảnh báo
             )
         ) {
-            Text(text = "Đăng xuất tài khoản")
+            Text(text = "Logout")
         }
         if (showLogoutDialog) {
             AlertDialog(
                 onDismissRequest = { showLogoutDialog = false }, // Tắt dialog khi bấm ra ngoài vùng trống
                 title = {
-                    Text(text = "Xác nhận đăng xuất")
+                    Text(text = "Confirm Logout")
                 },
                 text = {
-                    Text(text = "Bạn có chắc chắn muốn đăng xuất không?")
+                    Text(text = "Are you sure you want to log out?")
                 },
                 confirmButton = {
                     Button(
@@ -162,14 +162,14 @@ fun SettingContent(
                             onLogoutClick() // Bắn sự kiện logout ra NavGraph xử lý chuyển màn hình
                         }
                     ) {
-                        Text("Đăng xuất")
+                        Text("Logout")
                     }
                 },
                 dismissButton = {
                     TextButton(
                         onClick = { showLogoutDialog = false } // Bấm hủy thì tắt dialog đi là xong
                     ) {
-                        Text("Hủy bỏ")
+                        Text("Cancel")
                     }
                 }
             )

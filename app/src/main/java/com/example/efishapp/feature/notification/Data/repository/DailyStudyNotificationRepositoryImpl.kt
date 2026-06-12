@@ -1,7 +1,7 @@
-package com.example.efishapp.feature.notification.Data.repository
+package com.example.efishapp.feature.notification.data.repository
 
-import com.example.efishapp.feature.notification.Domain.model.DailyStudyNotification
-import com.example.efishapp.feature.notification.Domain.repository.DailyStudyNotificationRepository
+import com.example.efishapp.feature.notification.domain.model.DailyStudyNotification
+import com.example.efishapp.feature.notification.domain.repository.DailyStudyNotificationRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject

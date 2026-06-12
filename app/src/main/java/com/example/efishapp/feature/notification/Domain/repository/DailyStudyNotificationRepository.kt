@@ -1,6 +1,6 @@
-package com.example.efishapp.feature.notification.Domain.repository
+package com.example.efishapp.feature.notification.domain.repository
 
-import com.example.efishapp.feature.notification.Domain.model.DailyStudyNotification
+import com.example.efishapp.feature.notification.domain.model.DailyStudyNotification
 
 interface DailyStudyNotificationRepository {
     suspend fun get(uid: String): DailyStudyNotification?

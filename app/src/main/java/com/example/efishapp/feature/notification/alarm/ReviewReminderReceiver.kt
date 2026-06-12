@@ -28,8 +28,8 @@ class ReviewReminderReceiver : BroadcastReceiver() {
 
         val notification = NotificationCompat.Builder(context, DailyStudyReminderReceiver.CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Ôn tập từ vựng")
-            .setContentText("Bạn có $count từ cần ôn tập hôm nay!")
+            .setContentTitle("Vocabulary Review")
+            .setContentText("You have $count words to review today!")
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
