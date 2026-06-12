@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +25,9 @@ class DailyStudyReminderViewModel @Inject constructor(
 
     private fun uidOrNull(): String? = auth.currentUser?.uid
 
-    // Tải cài đặt nhắc nhở học tập của người dùng từ Firestore
+    /**
+     * Tải cài đặt nhắc nhở học tập của người dùng từ Firestore
+     */
     fun load() {
         val uid = uidOrNull() ?: return
 
@@ -39,13 +42,11 @@ class DailyStudyReminderViewModel @Inject constructor(
                     message = data.message,
                     hour = data.hour,
                     minute = data.minute,
-                    isActive = data.isActive,
-                    info = "Loaded"
+                    isActive = data.isActive
                 )
             } else {
                 _uiState.value.copy(
-                    loading = false,
-                    info = "No settings yet, please save"
+                    loading = false
                 )
             }
         }
@@ -57,7 +58,9 @@ class DailyStudyReminderViewModel @Inject constructor(
     fun onMinuteChange(v: Int) { _uiState.value = _uiState.value.copy(minute = v.coerceIn(0, 59)) }
     fun onActiveChange(v: Boolean) { _uiState.value = _uiState.value.copy(isActive = v) }
 
-    // Lưu cài đặt nhắc nhở học tập và thiết lập AlarmManager để thông báo
+    /**
+     * Lưu cài đặt nhắc nhở học tập và thiết lập AlarmManager để thông báo
+     */
     fun save(context: Context) {
         val uid = uidOrNull() ?: return
 
@@ -74,7 +77,7 @@ class DailyStudyReminderViewModel @Inject constructor(
 
             val ok = repo.upsert(uid, data)
             if (!ok) {
-                _uiState.value = _uiState.value.copy(loading = false, info = "Save FAIL")
+                _uiState.value = _uiState.value.copy(loading = false, info = "Save failed!")
                 return@launch
             }
 
@@ -90,11 +93,13 @@ class DailyStudyReminderViewModel @Inject constructor(
                 DailyStudyAlarmScheduler.cancel(context)
             }
 
-            _uiState.value = _uiState.value.copy(loading = false, info = "Saved")
+            _uiState.value = _uiState.value.copy(loading = false, info = "Settings saved successfully!")
         }
     }
 
-    // Xóa cài đặt nhắc nhở và hủy bỏ thông báo đã lập lịch
+    /**
+     * Xóa cài đặt nhắc nhở và hủy bỏ thông báo đã lập lịch
+     */
     fun delete(context: Context) {
         val uid = uidOrNull() ?: return
 
@@ -107,8 +112,15 @@ class DailyStudyReminderViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 loading = false,
                 isActive = false,
-                info = if (ok) "Deleted" else "Delete FAIL"
+                info = if (ok) "Reminder deleted!" else "Delete failed!"
             )
         }
+    }
+
+    /**
+     * Xóa thông báo sau khi hiển thị
+     */
+    fun clearInfo() {
+        _uiState.update { it.copy(info = null) }
     }
 }
