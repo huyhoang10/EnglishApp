@@ -19,9 +19,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.efishapp.R
 import com.example.efishapp.feature.folder.domain.model.Folder
 import com.example.efishapp.feature.folder.presentation.component.ImportExportDialog
 
@@ -45,7 +47,7 @@ fun FolderScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Thư mục của tôi") },
+                title = { Text(stringResource(R.string.folder_myFolder)) },
                 actions = {
                     Box {
                         IconButton(onClick = { showFilterMenu = true }) {
@@ -60,8 +62,8 @@ fun FolderScreen(
                                     text = {
                                         Text(
                                             when (option) {
-                                                FolderFilterOption.ALL -> "Tất cả"
-                                                FolderFilterOption.STARRED -> "Đã ghim"
+                                                FolderFilterOption.ALL -> stringResource(R.string.folder_filterAll)
+                                                FolderFilterOption.STARRED -> stringResource(R.string.folder_filterPinned)
                                             }
                                         )
                                     },
@@ -96,10 +98,10 @@ fun FolderScreen(
                                     text = {
                                         Text(
                                             when (option) {
-                                                FolderSortOption.NEWEST -> "Mới nhất"
-                                                FolderSortOption.OLDEST -> "Cũ nhất"
-                                                FolderSortOption.ALPHABETICAL -> "A - Z"
-                                                FolderSortOption.STARRED -> "Đã ghim"
+                                                FolderSortOption.NEWEST -> stringResource(R.string.folder_sortNewest)
+                                                FolderSortOption.OLDEST -> stringResource(R.string.folder_sortOldest)
+                                                FolderSortOption.ALPHABETICAL -> stringResource(R.string.folder_sortFromAtoZ)
+                                                FolderSortOption.STARRED -> stringResource(R.string.folder_sortPinned)
                                             }
                                         )
                                     },
@@ -154,9 +156,9 @@ fun FolderScreen(
                 ) {
                     Text(
                         text = if (uiState.filterOption == FolderFilterOption.STARRED)
-                            "Chưa có thư mục nào được ghim"
+                            stringResource(R.string.folder_noFolderPinned)
                         else
-                            "Chưa có thư mục nào",
+                            stringResource(R.string.folder_NoFolder),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -311,19 +313,21 @@ fun FolderCreateDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(if (state.isEditMode) "Chỉnh sửa thư mục" else "Tạo thư mục mới")
+            Text(if (state.isEditMode) stringResource(R.string.folder_editFolderDialog) else stringResource(
+                R.string.folder_createFolderDialog
+            ))
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = state.name,
                     onValueChange = onNameChange,
-                    label = { Text("Tên thư mục") },
+                    label = { Text(stringResource(R.string.folder_nameFolder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
                 Text(
-                    text = "Màu sắc",
+                    text = stringResource(R.string.folder_colorFolder),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -347,11 +351,13 @@ fun FolderCreateDialog(
         },
         confirmButton = {
             Button(onClick = onConfirm) {
-                Text(if (state.isEditMode) "Lưu thay đổi" else "Tạo")
+                Text(if (state.isEditMode) stringResource(R.string.folder_saveChange) else stringResource(
+                    R.string.folder_create
+                ))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Hủy") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.folder_cancel)) }
         }
     )
 }
@@ -364,9 +370,9 @@ fun FolderDeleteDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Xóa thư mục") },
+        title = { Text(stringResource(R.string.folder_deleteFolderTile)) },
         text = {
-            Text("Bạn có chắc chắn muốn xóa thư mục \"$folderName\" không? Hành động này không thể hoàn tác.")
+            Text(stringResource(R.string.folder_contentDeleteDialog, folderName))
         },
         confirmButton = {
             Button(
@@ -375,11 +381,11 @@ fun FolderDeleteDialog(
                     containerColor = MaterialTheme.colorScheme.error
                 )
             ) {
-                Text("Xóa")
+                Text(stringResource(R.string.folder_deleteButton))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Hủy") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.folder_cancelButton)) }
         }
     )
 }
@@ -414,9 +420,11 @@ fun ImportPreviewDialog(
         },
         title = {
             if (state.importResult != null) {
-                Text(if (state.importResult.success) "Kết quả Import" else "Lỗi Import")
+                Text(if (state.importResult.success) stringResource(R.string.folder_importSuccess) else stringResource(
+                    R.string.folder_errorImport
+                ))
             } else {
-                Text("Import từ vựng")
+                Text(stringResource(R.string.folder_importVocab))
             }
         },
         text = {
@@ -428,7 +436,7 @@ fun ImportPreviewDialog(
                     ) {
                         CircularProgressIndicator()
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text("Đang xử lý...")
+                        Text(stringResource(R.string.folder_handingImport))
                     }
                 }
                 state.importResult != null -> {
@@ -436,9 +444,17 @@ fun ImportPreviewDialog(
                         Text(state.importResult.message)
                         if (state.importResult.success) {
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Đã import: ${state.importResult.importedCount} từ")
+                            Text(
+                                stringResource(
+                                    R.string.foder_countVocabImported,
+                                    state.importResult.importedCount
+                                ))
                             if (state.importResult.skippedCount > 0) {
-                                Text("Bỏ qua: ${state.importResult.skippedCount} từ")
+                                Text(
+                                    stringResource(
+                                        R.string.folder_countVocabIgnore,
+                                        state.importResult.skippedCount
+                                    ))
                             }
                         }
                     }
@@ -446,12 +462,17 @@ fun ImportPreviewDialog(
                 state.selectedUri != null && state.previewVocabularies.isNotEmpty() -> {
                     Column {
                         Text(
-                            text = "Tên thư mục: ${state.fileName.ifEmpty { "Thư mục mới" }}",
+                            text = stringResource(
+                                R.string.folder_nameFolderSelected,
+                                state.fileName.ifEmpty { stringResource(R.string.folder_newFolder) }),
                             style = MaterialTheme.typography.titleSmall
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "${state.previewVocabularies.size} từ vựng được tìm thấy",
+                            text = stringResource(
+                                R.string.folder_countVocabFound,
+                                state.previewVocabularies.size
+                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -468,7 +489,10 @@ fun ImportPreviewDialog(
                         }
                         if (state.previewVocabularies.size > 5) {
                             Text(
-                                text = "... và ${state.previewVocabularies.size - 5} từ khác",
+                                text = stringResource(
+                                    R.string.folder_previewVocab,
+                                    state.previewVocabularies.size - 5
+                                ),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -476,10 +500,10 @@ fun ImportPreviewDialog(
                     }
                 }
                 state.selectedUri != null && state.previewVocabularies.isEmpty() -> {
-                    Text("Không tìm thấy từ vựng nào trong file. Đảm bảo file có định dạng: word|meaning|pronunciation|example|description")
+                    Text(stringResource(R.string.folder_remindErrorImport))
                 }
                 else -> {
-                    Text("Chọn file .txt để import. Định dạng: word|meaning|pronunciation|example|description (mỗi từ 1 dòng)")
+                    Text(stringResource(R.string.folder_reminderImportTemplate))
                 }
             }
         },
@@ -487,12 +511,12 @@ fun ImportPreviewDialog(
             when {
                 state.importResult != null -> {
                     Button(onClick = onDismiss) {
-                        Text("Đóng")
+                        Text(stringResource(R.string.folder_closeButton))
                     }
                 }
                 state.previewVocabularies.isNotEmpty() && !state.isProcessing -> {
                     Button(onClick = onConfirm) {
-                        Text("Import")
+                        Text(stringResource(R.string.folder_importButton))
                     }
                 }
             }
@@ -500,7 +524,7 @@ fun ImportPreviewDialog(
         dismissButton = {
             if (state.importResult == null && !state.isProcessing) {
                 TextButton(onClick = onDismiss) {
-                    Text("Hủy")
+                    Text(stringResource(R.string.folder_cancelButton2))
                 }
             }
         }

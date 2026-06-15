@@ -23,11 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.efishapp.R
 import com.example.efishapp.core.ui.typography.ChartTypography
 import com.example.efishapp.feature.dashboard.domain.MonthlyStudyTracker
 
@@ -61,7 +63,7 @@ fun MonthlyAccuracyChart(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Text(text = "Độ chính xác từ vựng", style = ChartTypography.title)
+            Text(text = stringResource(R.string.dashboard_titleMonthlyChart), style = ChartTypography.title)
             Text(text = "Tháng ${monthlyStudyTracker.month}", style = ChartTypography.legend)
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -73,12 +75,12 @@ fun MonthlyAccuracyChart(
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     StatItem(
-                        label = "Chính xác",
+                        label = stringResource(R.string.dashboard_accuracyItem),
                         value = monthlyStudyTracker.correctVocabCount.toString(),
                         color = config.correctColor
                     )
                     StatItem(
-                        label = "Quên/Sai",
+                        label = stringResource(R.string.dashboard_forgotItem),
                         value = monthlyStudyTracker.wrongVocabCount.toString(),
                         color = config.forgottenColor
                     )
@@ -113,7 +115,7 @@ fun MonthlyAccuracyChart(
                     }
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Tổng", fontSize = 12.sp, color = Color.Gray)
+                        Text(stringResource(R.string.dashboard_sumItem), fontSize = 12.sp, color = Color.Gray)
                         Text(
                             text = "${monthlyStudyTracker.totalWords}",
                             fontSize = 24.sp,
