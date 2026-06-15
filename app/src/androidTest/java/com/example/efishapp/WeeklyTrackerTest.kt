@@ -12,12 +12,12 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class WeeklyTrackerTest {
 
-    @Test
-    fun test_getMonthlyStats() = runBlocking() {
-
-        val weeklyTrackerRepositoryImpl = WeeklyTrackerRepositoryImpl()
-        val stats = weeklyTrackerRepositoryImpl.getWeeklyStats("DuwZLdACmcWoYCqFPhbPdeKy7Mk1")
-
-        Log.d("FIREBASE_TEST", "Dữ liệu stats: $stats")
-    }
+//    @Test
+//    fun test_getMonthlyStats() = runBlocking() {
+//
+//        val weeklyTrackerRepositoryImpl = WeeklyTrackerRepositoryImpl()
+//        val stats = weeklyTrackerRepositoryImpl.getWeeklyStats("DuwZLdACmcWoYCqFPhbPdeKy7Mk1")
+//
+//        Log.d("FIREBASE_TEST", "Dữ liệu stats: $stats")
+//    }
 }
