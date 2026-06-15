@@ -21,10 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.R
 import com.example.efishapp.core.designsystem.ErrorDialog
 import com.example.efishapp.core.designsystem.LoadingDialog
 import com.example.efishapp.feature.Auth.Presentation.components.AuthTextField
@@ -55,7 +57,7 @@ fun ForgotPasswordScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Khôi Phục Mật Khẩu",
+            text = stringResource(R.string.forgotPass_rePassword),
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
@@ -64,7 +66,7 @@ fun ForgotPasswordScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Nhập email đăng ký của bạn. Chúng tôi sẽ gửi một liên kết để bạn thiết lập lại mật khẩu mới.",
+            text = stringResource(R.string.forgotPass_enterYourMail),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -77,7 +79,7 @@ fun ForgotPasswordScreen(
         AuthTextField(
             value = email,
             onValueChange = { email = it },
-            label = "Email của bạn",
+            label = stringResource(R.string.forgotPass_yourMail),
             keyboardType = KeyboardType.Email,
             modifier = Modifier.fillMaxWidth()
         )
@@ -91,14 +93,14 @@ fun ForgotPasswordScreen(
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text(text = "Gửi Yêu Cầu")
+            Text(text = stringResource(R.string.forgotPass_sendRequest))
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Nút quay lại màn hình đăng nhập
         Text(
-            text = "Quay lại đăng nhập",
+            text = stringResource(R.string.forgotPass_backLogin),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
@@ -123,9 +125,9 @@ fun ForgotPasswordScreen(
     if (showSuccessDialog) {
         AlertDialog(
             onDismissRequest = { /* Không cho phép tắt tùy tiện khi chưa bấm nút */ },
-            title = { Text(text = "Kiểm tra Email của bạn") },
+            title = { Text(text = stringResource(R.string.forgotPass_checkYourMail)) },
             text = {
-                Text(text = "Chúng tôi đã gửi đường dẫn thay đổi mật khẩu vào email của bạn. Vui lòng nhấp vào liên kết trong email để tiến hành tạo mật khẩu mới.")
+                Text(text = stringResource(R.string.forgotPass_contentDialog))
             },
             confirmButton = {
                 Button(
@@ -134,7 +136,7 @@ fun ForgotPasswordScreen(
                         onSendEmailSuccess() // Quay về màn Login
                     }
                 ) {
-                    Text("Tôi đã hiểu")
+                    Text(stringResource(R.string.forgot_iUnderstand))
                 }
             }
         )

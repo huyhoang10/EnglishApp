@@ -27,10 +27,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.R
 import com.example.efishapp.core.designsystem.LoadingDialog
 import kotlin.compareTo
 import kotlin.div
@@ -121,7 +123,7 @@ fun CongratulationContent(
     ) {
 
         Text(
-            text = "🎉 Awesome!",
+            text = stringResource(R.string.congratulation_title),
             style = config.titleStyle,
             textAlign = TextAlign.Center
         )
@@ -129,7 +131,7 @@ fun CongratulationContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "You have completed this flashcard set!",
+            text = stringResource(R.string.congratulation_content),
             style = config.subtitleStyle,
             textAlign = TextAlign.Center
         )
@@ -158,7 +160,7 @@ fun CongratulationContent(
                             style = config.scoreNumberStyle.copy(color = config.rememberColor)
                         )
                         Text(
-                            text = "Remembered",
+                            text = stringResource(R.string.congratulation_correctLabel),
                             style = config.scoreLabelStyle
                         )
                     }
@@ -169,7 +171,7 @@ fun CongratulationContent(
                             style = config.scoreNumberStyle.copy(color = config.forgetColor)
                         )
                         Text(
-                            text = "Forgot",
+                            text = stringResource(R.string.congratulation_forgotLabel),
                             style = config.scoreLabelStyle
                         )
                     }
@@ -203,7 +205,7 @@ fun CongratulationContent(
             colors = ButtonDefaults.buttonColors(containerColor = config.primaryButtonColor)
         ) {
             Text(
-                text = "Home",
+                text = stringResource(R.string.congratulation_homeButton),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White

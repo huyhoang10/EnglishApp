@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.efishapp.R
@@ -99,7 +100,7 @@ fun StreakCard(
     modifier: Modifier = Modifier
 ){
     StatCard(
-        data = StatCardData(title = "Streak", value = streak, iconRes = R.drawable.streakicon),
+        data = StatCardData(title = stringResource(R.string.dashboard_streakTitle), value = streak, iconRes = R.drawable.streakicon),
         modifier = modifier
     )
 }
@@ -110,7 +111,7 @@ fun ReviewCard(
     modifier: Modifier = Modifier
 ){
     StatCard(
-        data = StatCardData(title = "Review", value = numVocabularyReview, iconRes = R.drawable.reviewicon), // Bạn nhớ đổi R.drawable.review_icon tương ứng nhé
+        data = StatCardData(title = stringResource(R.string.dashboard_reviewTitle), value = numVocabularyReview, iconRes = R.drawable.reviewicon), // Bạn nhớ đổi R.drawable.review_icon tương ứng nhé
         modifier = modifier
     )
 }

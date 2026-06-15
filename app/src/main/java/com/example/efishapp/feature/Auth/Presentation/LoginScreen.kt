@@ -26,10 +26,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.R
 import com.example.efishapp.core.designsystem.ErrorDialog
 import com.example.efishapp.core.designsystem.LoadingDialog
 import com.example.efishapp.feature.Auth.Presentation.components.AuthTextField
@@ -144,7 +146,7 @@ fun LoginScreen(
 
         // Quên mật khẩu link
         Text(
-            text = "Quên mật khẩu?",
+            text = stringResource(R.string.login_forgetPassword),
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .fillMaxWidth()
@@ -162,12 +164,12 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text(text = "Đăng Nhập")
+            Text(text = stringResource(R.string.login_btn_login))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Hoặc")
+        Text(text = stringResource(R.string.login_or))
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -189,9 +191,9 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Chưa có tài khoản? ")
+            Text(text = stringResource(R.string.login_isExistAccount))
             Text(
-                text = "Đăng ký ngay",
+                text = stringResource(R.string.login_btn_loginNow),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onNavigateToRegister() }
             )
@@ -217,9 +219,9 @@ fun LoginScreen(
                 pendingIdTokenForLink = null
                 viewModel.resetUiState()
             },
-            title = { Text("Liên kết tài khoản?") },
+            title = { Text(stringResource(R.string.login_linkedAccount)) },
             text = {
-                Text("Hệ thống phát hiện email này đã được đăng ký bằng Mật khẩu trước đó. Bạn có muốn liên kết tài khoản Google này vào tài khoản đã có để đăng nhập cho những lần sau không?")
+                Text(stringResource(R.string.login_linkAccountContent))
             },
             confirmButton = {
                 Button(
@@ -228,7 +230,7 @@ fun LoginScreen(
                         pendingIdTokenForLink = null
                     }
                 ) {
-                    Text("Đồng ý liên kết")
+                    Text(stringResource(R.string.login_agreeLink))
                 }
             },
             dismissButton = {
@@ -238,7 +240,7 @@ fun LoginScreen(
                         viewModel.resetUiState() // Hủy, giữ nguyên trạng thái cũ độc lập
                     }
                 ) {
-                    Text("Không, hủy bỏ")
+                    Text(stringResource(R.string.login_cancelLink))
                 }
             }
         )
