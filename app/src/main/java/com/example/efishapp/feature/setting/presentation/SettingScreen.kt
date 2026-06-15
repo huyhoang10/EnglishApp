@@ -11,8 +11,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.efishapp.R
 import com.example.efishapp.feature.setting.domain.model.AppTheme
 
 // 1. Hàm Stateful: Kết nối dữ liệu từ ViewModel thực tế
@@ -56,7 +57,7 @@ fun SettingContent(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = "System Settings", style = MaterialTheme.typography.titleLarge)
+        Text(text = stringResource(R.string.system_setting), style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(24.dp))
 
         Card(
@@ -82,9 +83,11 @@ fun SettingContent(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "Dark Mode", style = MaterialTheme.typography.titleMedium)
+                    Text(text = stringResource(R.string.system_darkMode), style = MaterialTheme.typography.titleMedium)
                     Text(
-                        text = if (isDarkMode) "Enabled" else "Disabled",
+                        text = if (isDarkMode) stringResource(R.string.system_enabledDarkMode) else stringResource(
+                            R.string.system_disableDarkMode
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -116,15 +119,16 @@ fun SettingContent(
             ) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
-                    contentDescription = "Notification Settings",
+                    contentDescription = stringResource(R.string.system_studyNotification),
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "Study Notifications", style = MaterialTheme.typography.titleMedium)
+                    Text(text = stringResource(R.string.system_studyNotification),
+                        style = MaterialTheme.typography.titleMedium)
                     Text(
-                        text = "Set up your daily reminder time",
+                        text = stringResource(R.string.system_setupRemind),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -141,16 +145,16 @@ fun SettingContent(
                 containerColor = MaterialTheme.colorScheme.error // Màu đỏ cảnh báo
             )
         ) {
-            Text(text = "Logout")
+            Text(text = stringResource(R.string.system_logout))
         }
         if (showLogoutDialog) {
             AlertDialog(
                 onDismissRequest = { showLogoutDialog = false }, // Tắt dialog khi bấm ra ngoài vùng trống
                 title = {
-                    Text(text = "Confirm Logout")
+                    Text(text = stringResource(R.string.system_confirmLogout))
                 },
                 text = {
-                    Text(text = "Are you sure you want to log out?")
+                    Text(text = stringResource(R.string.system_contentDialog))
                 },
                 confirmButton = {
                     Button(
@@ -162,14 +166,14 @@ fun SettingContent(
                             onLogoutClick() // Bắn sự kiện logout ra NavGraph xử lý chuyển màn hình
                         }
                     ) {
-                        Text("Logout")
+                        Text(stringResource(R.string.system_logout))
                     }
                 },
                 dismissButton = {
                     TextButton(
                         onClick = { showLogoutDialog = false } // Bấm hủy thì tắt dialog đi là xong
                     ) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.system_cancel))
                     }
                 }
             )
