@@ -37,7 +37,7 @@ data class GreetingCardConfig(
     val backgroundColor: Color = Color.White,
     val iconSize: Dp = 24.dp,
     val iconColor: Color = Color.Gray,
-    val welcomeFontSize: TextUnit = 20.sp,
+    val welcomeFontSize: TextUnit = 18.sp,
     val subtitleFontSize: TextUnit = 14.sp
 )
 
@@ -49,6 +49,7 @@ fun GreetingCard(
     config: GreetingCardConfig = GreetingCardConfig(), // Nhận cấu hình tập trung
     modifier: Modifier = Modifier,
 ) {
+    val shortName = name.trim().split("\\s+".toRegex()).takeLast(2).joinToString(" ")
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -77,7 +78,7 @@ fun GreetingCard(
 
             ) {
                 Text(
-                    text = stringResource(R.string.dashboard_greeting, name),
+                    text = stringResource(R.string.dashboard_greeting, shortName),
                     fontSize = config.welcomeFontSize,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
