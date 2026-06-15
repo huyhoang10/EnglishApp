@@ -7,68 +7,35 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.google.firebase.auth.FirebaseAuth
-import com.example.efishapp.feature.Auth.Data.Repository.AuthRepositoryImpl
-import com.example.efishapp.feature.Auth.Domain.UseCase.ForgotPasswordUseCase
-import com.example.efishapp.feature.Auth.Domain.UseCase.LoginUseCase
-import com.example.efishapp.feature.Auth.Domain.UseCase.LoginWithGoogleUseCase
-import com.example.efishapp.feature.Auth.Domain.UseCase.RegisterUseCase
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.core.designsystem.EfishAppTheme
 import com.example.efishapp.feature.Auth.Presentation.AuthViewModel
+import com.example.efishapp.feature.setting.domain.model.AppTheme
+import com.example.efishapp.feature.setting.presentation.SettingViewModel
 import com.example.efishapp.navigation.EfishNavGraph
-import com.example.efishapp.ui.theme.EfishAppTheme
-import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import com.example.efishapp.feature.profile.data.repository.UserProfileRepositoryImpl
-import com.example.efishapp.feature.flashcard.presentation.FlashcardViewModel
+import com.example.efishapp.feature.profile.domain.usecase.GetProfileUseCase
+import com.example.efishapp.feature.profile.domain.usecase.UpdateProfileUseCase
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 1. Khởi tạo tầng Data (Firebase SDK)
-        val firebaseAuth = FirebaseAuth.getInstance()
-        val firestore = FirebaseFirestore.getInstance()
-        val authRepository = AuthRepositoryImpl(firebaseAuth)
-        val userProfileRepository = UserProfileRepositoryImpl(firebaseAuth, firestore)
 
-        // 2. Khởi tạo tầng Domain (Các UseCases)
-        val loginUseCase = LoginUseCase(authRepository)
-        val registerUseCase = RegisterUseCase(authRepository)
-        val forgotPasswordUseCase = ForgotPasswordUseCase(authRepository)
-        val loginWithGoogleUseCase = LoginWithGoogleUseCase(authRepository)
-
-        // 3. Khởi tạo tầng Presentation (ViewModel)
-        // (Lưu ý: Cách khởi tạo trực tiếp này dùng để chạy ngay, thực tế sau này bạn nên dùng DI như Hilt/Koin)
-        val authViewModel = AuthViewModel(
-            loginUseCase = loginUseCase,
-            registerUseCase = registerUseCase,
-            forgotPasswordUseCase = forgotPasswordUseCase,
-            loginWithGoogleUseCase = loginWithGoogleUseCase
-        )
-        val flashcardViewModel = FlashcardViewModel(
-
-        )
         enableEdgeToEdge()
         setContent {
-            EfishAppTheme {
-
-
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    // 2. Bây giờ bạn có thể truyền innerPadding và vocabularys vào đây mà không bị lỗi
-//
-//                    FlashcardScreen(
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
-//                }
-                EfishNavGraph(authViewModel = authViewModel, flashcardViewModel = flashcardViewModel)//userProfileRepository = userProfileRepository)
-
+            val settingViewModel: SettingViewModel = hiltViewModel()
+            val uiState by settingViewModel.uiState.collectAsState()
+            val isDarkMode = uiState.currentTheme == AppTheme.DARK
+            val navController = androidx.navigation.compose.rememberNavController()
+            EfishAppTheme(darkTheme = isDarkMode) {
+                EfishNavGraph(navController = navController)
             }
         }
     }
 }
-
-
-

@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
@@ -16,8 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +34,43 @@ fun ProfileScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    // DatePicker State
+    val datePickerState = rememberDatePickerState()
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val date = Date(millis)
+                        val calendar = Calendar.getInstance()
+                        calendar.time = date
+                        val formattedDate = String.format(
+                            Locale.getDefault(),
+                            "%02d/%02d/%04d",
+                            calendar.get(Calendar.DAY_OF_MONTH),
+                            calendar.get(Calendar.MONTH) + 1,
+                            calendar.get(Calendar.YEAR)
+                        )
+                        viewModel.onDateOfBirthChange(formattedDate)
+                    }
+                    showDatePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 
     LaunchedEffect(uiState.isDeleteSuccess) {
         if (uiState.isDeleteSuccess) {
@@ -74,7 +116,7 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Avatar Placeholder (Static as per request)
+            // Ảnh đại diện tĩnh
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -107,31 +149,37 @@ fun ProfileScreen(
                         onValueChange = { },
                         label = { Text("Email") },
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = false // Email usually read-only for security
+                        enabled = false // Email thường chỉ đọc vì lý do bảo mật
                     )
 
                     OutlinedTextField(
                         value = uiState.editedDateOfBirth,
-                        onValueChange = { viewModel.onDateOfBirthChange(it) },
-                        label = { Text("Date of Birth") },
-                        modifier = Modifier.fillMaxWidth()
+                        onValueChange = { },
+                        label = { Text("Date of Birth (DD/MM/YYYY)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        trailingIcon = {
+                            IconButton(onClick = { showDatePicker = true }) {
+                                Icon(Icons.Default.DateRange, contentDescription = "Select Date")
+                            }
+                        }
                     )
 
                     // Gender Selection
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text("Gender", style = MaterialTheme.typography.labelLarge)
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(selected = uiState.editedGender == "Nam", onClick = { viewModel.onGenderChange("Nam") })
-                            Text("Nam")
+                            RadioButton(selected = uiState.editedGender == "Male", onClick = { viewModel.onGenderChange("Male") })
+                            Text("Male")
                             Spacer(Modifier.width(16.dp))
-                            RadioButton(selected = uiState.editedGender == "Nữ", onClick = { viewModel.onGenderChange("Nữ") })
-                            Text("Nữ")
+                            RadioButton(selected = uiState.editedGender == "Female", onClick = { viewModel.onGenderChange("Female") })
+                            Text("Female")
                         }
                     }
 
                     // Goal Selection
                     var goalExpanded by remember { mutableStateOf(false) }
-                    val goals = listOf("Học tập", "Công việc", "Du lịch", "Giao tiếp")
+                    val goals = listOf("Study", "Work", "Travel", "Communication")
                     ExposedDropdownMenuBox(
                         expanded = goalExpanded,
                         onExpandedChange = { goalExpanded = !goalExpanded }
@@ -210,19 +258,19 @@ fun ProfileScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Xác nhận xóa") },
-            text = { Text("Bạn có chắc chắn muốn xóa tài khoản này không?") },
+            title = { Text("Confirm Deletion") },
+            text = { Text("Are you sure you want to delete this account?") },
             confirmButton = {
                 TextButton(onClick = { 
                     viewModel.deleteAccount()
                     showDeleteDialog = false 
                 }) {
-                    Text("Xóa", color = MaterialTheme.colorScheme.error)
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Hủy")
+                    Text("Cancel")
                 }
             }
         )

@@ -31,7 +31,8 @@ data class FlashcardBottomNavConfig(
 
 @Composable
 fun FlashcardBottomNavigation(
-    onEvent: (FlashcardUiEvent) -> Unit,
+    onClickBack: ()-> Unit,
+    onClickDetail: ()-> Unit,
     modifier: Modifier = Modifier,
     config: FlashcardBottomNavConfig = FlashcardBottomNavConfig()
 ) {
@@ -47,7 +48,7 @@ fun FlashcardBottomNavigation(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            IconButton(onClick = {onEvent(FlashcardUiEvent.OnClickBack)}) {
+            IconButton(onClick = onClickBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
@@ -56,7 +57,7 @@ fun FlashcardBottomNavigation(
                 )
             }
 
-            IconButton(onClick = {onEvent(FlashcardUiEvent.OnClickDetail)}) {
+            IconButton(onClick = onClickDetail) {
                 Icon(
                     imageVector = Icons.Default.Lightbulb,
                     contentDescription = "Detail",

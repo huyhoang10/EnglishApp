@@ -1,5 +1,8 @@
 package com.example.efishapp.feature.flashcard.presentation
 
+import com.example.efishapp.feature.flashcard.domain.model.ActionType
+import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
+
 val sampleVocabularies = listOf(
     Vocabulary(
         word = "Book",
@@ -10,10 +13,8 @@ val sampleVocabularies = listOf(
         collocation = "write a book",
         relatedWords = "magazine",
         note = "Có thể dùng như một động từ với nghĩa là 'đặt chỗ'.",
-        repetitions = 0,
-        interval = 0,
-        easinessFactor = 2.5f
-    ),
+
+        ),
     Vocabulary(
         word = "Apparent",
         pronunciation = "/əˈpær.ənt/",
@@ -23,9 +24,7 @@ val sampleVocabularies = listOf(
         collocation = "become apparent",
         relatedWords = "obvious, clear",
         note = "Trạng từ thường dùng là 'apparently' (nghe nói là, hình như).",
-        repetitions = 0,
-        interval = 0,
-        easinessFactor = 2.5f
+
     ),
     Vocabulary(
         word = "Collaborate",
@@ -36,9 +35,7 @@ val sampleVocabularies = listOf(
         collocation = "collaborate with someone",
         relatedWords = "cooperate, team up",
         note = "Danh từ của nó là 'collaboration'.",
-        repetitions = 0,
-        interval = 0,
-        easinessFactor = 2.5f
+
     ),
     Vocabulary(
         word = "Diligent",
@@ -49,9 +46,7 @@ val sampleVocabularies = listOf(
         collocation = "diligent effort",
         relatedWords = "hard-working, studious",
         note = "Trái nghĩa với 'lazy'.",
-        repetitions = 0,
-        interval = 0,
-        easinessFactor = 2.5f
+
     ),
     Vocabulary(
         word = "Evaluate",
@@ -62,28 +57,38 @@ val sampleVocabularies = listOf(
         collocation = "carefully evaluate",
         relatedWords = "assess, appraise",
         note = "Danh từ thường gặp là 'evaluation'.",
-        repetitions = 0,
-        interval = 0,
-        easinessFactor = 2.5f
+
     )
 )
 
 data class FlashcardUiState(
+    val vocabularies: List<Vocabulary> = emptyList(),
     val indexWord: Int = 0,
     val countForget: Int = 0,
     val countRemember: Int = 0,
     val isFlipped: Boolean = false,
     val isShowDetail: Boolean = false,
-    val vocabularies: List<Vocabulary> = sampleVocabularies,
-    val isFinished: Boolean = false
+    val isLoading: Boolean = false,
+    val isFinished: Boolean = false,
+    val isError: Boolean = false,
+    val isEmpty: Boolean = false
 )
 
-sealed interface FlashcardUiEvent{
+//sealed interface FlashcardUiEvent{
+//    object OnFlipCard : FlashcardUiEvent
+//    object OnClickDetail: FlashcardUiEvent
+//    object OnClickAgainAction: FlashcardUiEvent
+//    object OnClickHardAction: FlashcardUiEvent
+//    object OnClickGoodAction: FlashcardUiEvent
+//    object OnClickEasyAction: FlashcardUiEvent
+//    object OnClickBack: FlashcardUiEvent
+//    data class LoadVocabularies(val userId: String) : FlashcardUiEvent
+//
+//}
+
+sealed interface FlashcardUiEvent {
     object OnFlipCard : FlashcardUiEvent
-    object OnClickAgainAction: FlashcardUiEvent
-    object OnClickHardAction: FlashcardUiEvent
-    object OnClickGoodAction: FlashcardUiEvent
-    object OnClickEasyAction: FlashcardUiEvent
+    object OnClickDetail : FlashcardUiEvent
     object OnClickBack: FlashcardUiEvent
-    object OnClickDetail: FlashcardUiEvent
+    data class OnAnswer(val actionType: ActionType) : FlashcardUiEvent
 }

@@ -22,11 +22,19 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.core.designsystem.LoadingDialog
+import kotlin.compareTo
+import kotlin.div
+import kotlin.times
 
 data class CongratulationConfig(
     val backgroundColor: Color = Color(0xFFF7F9FA),
@@ -59,18 +67,50 @@ data class CongratulationConfig(
     )
 )
 
-
 @Composable
 fun CongratulationScreen(
-    totalRemember: Int,
-    totalForget: Int,
+    viewModel: CongratulationViewModel = hiltViewModel(),
     onBackToHome: () -> Unit,
     modifier: Modifier = Modifier,
     config: CongratulationConfig = CongratulationConfig()
 ) {
+
+    val state by viewModel.uiState.collectAsState()
+//    LaunchedEffect(state.isLoading) {
+//        if(state.isLoading){
+//            viewModel.updateStats()
+//        }
+//    }
+//    if (state.isLoading) {
+//        LoadingDialog()
+//    }
+//    else{
+//    CongratulationContent(
+//        state.totalRemember,
+//        state.totalForget,
+//        onBackToHome,
+//        modifier,
+//        config
+//    )}
+    CongratulationContent(
+        state.totalRemember,
+        state.totalForget,
+        onBackToHome,
+        modifier,
+        config
+    )
+}
+@Preview
+@Composable
+fun CongratulationContent(
+    totalRemember: Int = 0,
+    totalForget: Int = 0,
+    onBackToHome: () -> Unit = {},
+    modifier: Modifier = Modifier,
+    config: CongratulationConfig = CongratulationConfig()
+){
     val totalWords = totalRemember + totalForget
     val accuracy = if (totalWords > 0) (totalRemember * 100) / totalWords else 0
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -163,21 +203,11 @@ fun CongratulationScreen(
             colors = ButtonDefaults.buttonColors(containerColor = config.primaryButtonColor)
         ) {
             Text(
-                text = "Continue Learning",
+                text = "Home",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CongratulationScreenPreview() {
-    CongratulationScreen(
-        totalRemember = 4,
-        totalForget = 1,
-        onBackToHome = {}
-    )
 }

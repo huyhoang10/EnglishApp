@@ -9,7 +9,11 @@ import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 
-class UserProfileRepositoryImpl(
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class UserProfileRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) : UserProfileRepository {
@@ -56,7 +60,7 @@ class UserProfileRepositoryImpl(
         level: String?
     ): Result<Unit> {
         return try {
-            val user = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
+            val user = auth.currentUser ?: return Result.failure(Exception("Người dùng chưa đăng nhập"))
 
             // Đồng bộ fullName vào displayName của Auth luôn
             if (fullName != null) {
@@ -99,7 +103,7 @@ class UserProfileRepositoryImpl(
     }
 
     override suspend fun deleteUserProfile(): Result<Unit> {
-        val user = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
+        val user = auth.currentUser ?: return Result.failure(Exception("Người dùng chưa đăng nhập"))
         return try {
             withTimeout(5000) {
                 firestore.collection("users").document(user.uid).delete().await()
@@ -111,7 +115,7 @@ class UserProfileRepositoryImpl(
     }
 
     override suspend fun deleteFirebaseAuth(): Result<Unit> {
-        val user = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
+        val user = auth.currentUser ?: return Result.failure(Exception("Người dùng chưa đăng nhập"))
         return try {
             user.delete().await()
             Result.success(Unit)

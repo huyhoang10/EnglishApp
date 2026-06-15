@@ -3,13 +3,16 @@ package com.example.efishapp.feature.profile.presentation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,6 +23,43 @@ fun ProfileSetupScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
+    // DatePicker State
+    val datePickerState = rememberDatePickerState()
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val date = Date(millis)
+                        val calendar = Calendar.getInstance()
+                        calendar.time = date
+                        val formattedDate = String.format(
+                            Locale.getDefault(),
+                            "%02d/%02d/%04d",
+                            calendar.get(Calendar.DAY_OF_MONTH),
+                            calendar.get(Calendar.MONTH) + 1,
+                            calendar.get(Calendar.YEAR)
+                        )
+                        viewModel.onDateOfBirthChange(formattedDate)
+                    }
+                    showDatePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
             onSetupComplete()
@@ -28,7 +68,9 @@ fun ProfileSetupScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Thiết lập hồ sơ") })
+            TopAppBar(
+                title = { Text("Profile Setup") }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -41,50 +83,53 @@ fun ProfileSetupScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                "Chào mừng! Hãy cho chúng tôi biết thêm về bạn.",
+                "Welcome! Let us know more about you.",
                 style = MaterialTheme.typography.titleMedium
             )
 
             OutlinedTextField(
                 value = uiState.fullName,
                 onValueChange = { viewModel.onFullNameChange(it) },
-                label = { Text("Họ và tên") },
+                label = { Text("Full Name") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
 
             OutlinedTextField(
                 value = uiState.dateOfBirth,
-                onValueChange = { viewModel.onDateOfBirthChange(it) },
-                label = { Text("Ngày sinh (DD/MM/YYYY)") },
+                onValueChange = { },
+                label = { Text("Date of Birth (DD/MM/YYYY)") },
                 modifier = Modifier.fillMaxWidth(),
+                readOnly = true,
                 trailingIcon = {
-                    Icon(Icons.Default.DateRange, contentDescription = null)
+                    IconButton(onClick = { showDatePicker = true }) {
+                        Icon(Icons.Default.DateRange, contentDescription = "Select Date")
+                    }
                 },
                 singleLine = true
             )
 
             // Gender Selection
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text("Giới tính", style = MaterialTheme.typography.labelLarge)
+                Text("Gender", style = MaterialTheme.typography.labelLarge)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
-                        selected = uiState.gender == "Nam",
-                        onClick = { viewModel.onGenderChange("Nam") }
+                        selected = uiState.gender == "Male",
+                        onClick = { viewModel.onGenderChange("Male") }
                     )
-                    Text("Nam")
+                    Text("Male")
                     Spacer(modifier = Modifier.width(16.dp))
                     RadioButton(
-                        selected = uiState.gender == "Nữ",
-                        onClick = { viewModel.onGenderChange("Nữ") }
+                        selected = uiState.gender == "Female",
+                        onClick = { viewModel.onGenderChange("Female") }
                     )
-                    Text("Nữ")
+                    Text("Female")
                 }
             }
 
             // Goal Selection
             var goalExpanded by remember { mutableStateOf(false) }
-            val goals = listOf("Học tập", "Công việc", "Du lịch", "Giao tiếp")
+            val goals = listOf("Study", "Work", "Travel", "Communication")
             ExposedDropdownMenuBox(
                 expanded = goalExpanded,
                 onExpandedChange = { goalExpanded = !goalExpanded }
@@ -93,7 +138,7 @@ fun ProfileSetupScreen(
                     value = uiState.goal,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Mục tiêu học tập") },
+                    label = { Text("Study Goal") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = goalExpanded) },
                     modifier = Modifier.menuAnchor().fillMaxWidth()
                 )
@@ -124,7 +169,7 @@ fun ProfileSetupScreen(
                     value = uiState.level,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Trình độ hiện tại") },
+                    label = { Text("Current Level") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = levelExpanded) },
                     modifier = Modifier.menuAnchor().fillMaxWidth()
                 )
@@ -163,7 +208,7 @@ fun ProfileSetupScreen(
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 } else {
-                    Text("Lưu hồ sơ")
+                    Text("Save Profile")
                 }
             }
         }

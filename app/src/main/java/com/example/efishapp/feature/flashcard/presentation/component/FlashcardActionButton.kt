@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.presentation.FlashcardUiEvent
 
 data class FlashcardButtonsStyleConfig(
@@ -35,7 +36,10 @@ data class FlashcardButtonData(
 
 @Composable
 fun FlashcardActionButtons(
-    onEvent: (FlashcardUiEvent) -> Unit
+    onClickAgain: ()-> Unit,
+    onClickHard: ()-> Unit,
+    onClickGood: ()-> Unit,
+    onClickEasy: ()-> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -43,13 +47,13 @@ fun FlashcardActionButtons(
     ) {
         val actionButtons = listOf(
             FlashcardButtonData(text = "Again", containerColor = Color(0xFFE6153C),
-                onClick = {onEvent(FlashcardUiEvent.OnClickAgainAction)}),
+                onClick = onClickAgain),
             FlashcardButtonData(text = "Hard", containerColor = Color(0xFFFFA726),
-                onClick = {onEvent(FlashcardUiEvent.OnClickHardAction)}),
+                onClick = onClickHard),
             FlashcardButtonData(text = "Good", containerColor = Color(0xFF29B6F6),
-                onClick = {onEvent(FlashcardUiEvent.OnClickGoodAction)}),
+                onClick = onClickGood),
             FlashcardButtonData(text = "Easy", containerColor = Color(0xFF9CCC65),
-                onClick = {onEvent(FlashcardUiEvent.OnClickEasyAction)})
+                onClick = onClickEasy)
         )
         actionButtons.forEach {dataAction ->
             ActionButton(dataAction, modifier = Modifier.weight(1f))
