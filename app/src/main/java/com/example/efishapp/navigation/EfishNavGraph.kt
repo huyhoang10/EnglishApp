@@ -210,7 +210,8 @@ fun EfishNavGraph(
                 onNavigateToCongratulation = { totalRemember, totalForget ->
                     navController.navigate(CongratulationScreenRoute(totalRemember,totalForget))
                 },
-                onNavigateNotifyEmpty = {navController.navigate(Screen.EMPTY_VOCABULARY)}
+                onNavigateNotifyEmpty = {navController.navigate(Screen.EMPTY_VOCABULARY)},
+                onNavigateToHome = {navController.navigate(Screen.HOME)}
             )
         }
 
@@ -228,11 +229,6 @@ fun EfishNavGraph(
 
         composable(Screen.EMPTY_VOCABULARY) {
             EmptyReviewScreen(
-//                {
-//                    navController.navigate(Screen.HOME){
-//                        popUpTo(Screen.FOLDER) { inclusive = true }
-//                    }
-//                }
                 { navController.navigate(Screen.HOME) }
             )
         }
