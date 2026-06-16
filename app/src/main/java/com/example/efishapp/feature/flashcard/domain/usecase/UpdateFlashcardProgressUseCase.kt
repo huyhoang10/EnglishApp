@@ -33,6 +33,8 @@ class UpdateFlashcardProgressUseCase @Inject constructor(
         val progressMap = flashcardRepository.getFlashcardProgressList(userId, vocabIds)
             .associateBy { it.vocabularyId }
 
+        Log.d("Debug_UpdateWeekly", "${progressMap.size}")
+
         var newVocabCount = 0
         var reviewVocabCount = 0
         val updatedProgressList = mutableListOf<VocabularyReview>()
@@ -42,22 +44,27 @@ class UpdateFlashcardProgressUseCase @Inject constructor(
             val currentProgress = progressMap[actionSnapshot.vocabId] ?: continue
             val isActionAgain = (actionSnapshot.actionType == ActionType.AGAIN)
 
-            if (currentProgress.nextReviewDate != todayStr && !isActionAgain) {
+            val isNewVocab = currentProgress.learnAt.isBlank()
+
+            // CHỈ chặn review nếu đó là từ cũ, sai ngày hẹn VÀ không phải bấm "AGAIN"
+            if (!isNewVocab && currentProgress.nextReviewDate != todayStr && !isActionAgain) {
                 continue
             }
 
-            if (currentProgress.learnAt.isBlank()) {
+            if (isNewVocab) {
                 newVocabCount++
-            } else if (currentProgress.learnAt != getTodayStr()) {
+            } else if (currentProgress.learnAt != todayStr) {
                 reviewVocabCount++
             }
 
+            // Tính toán SM2 và thêm vào danh sách cập nhật
             val updatedProgress = calculateSM2(currentProgress, actionSnapshot.actionType, todayStr)
             updatedProgressList.add(updatedProgress)
         }
 
         // 3. Cập nhật hàng loạt tiến trình học xuống DB nếu có sự thay đổi
         if (updatedProgressList.isNotEmpty()) {
+            Log.d("Debug_UpdateWeekly", "${updatedProgressList.size}")
             flashcardRepository.updateFlashcardProgressList(userId, updatedProgressList)
         }
 

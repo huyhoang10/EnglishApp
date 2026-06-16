@@ -28,51 +28,6 @@ class DashboardViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
-//    fun LoadingDashboard() {
-//        val userId: String = firebaseAuth.currentUser?.uid.toString()
-//
-//        viewModelScope.launch {
-//            _uiState.update { it.copy(isLoading = true) }
-//            try {
-//                val (analytics, name) = getUserAnalystUsecase(userId)
-//                _uiState.update {
-//                    it.copy(
-//                        userName = name,
-//                        streak = analytics.streak,
-//                        totalVocabLeaned = analytics.totalVocabLearned,
-//                        isLoading = false
-//                    )
-//                }
-//                Log.d("Dashboard", "Successfully Synchronized Profile & Analytics")
-//            } catch (e: Exception) {
-//                Log.e("Dashboard", "Error Synchronizing Profile & Analytics", e)
-//            }
-//        }
-//
-//        viewModelScope.launch {
-//            try {
-//                val weeklyStats = getWeeklyStatsUseCase(userId)
-//                _uiState.update {
-//                    it.copy(weeklyLearningStats = weeklyStats)
-//                }
-//                Log.d("Dashboard", "Successfully Loaded Weekly Stats")
-//            } catch (e: Exception) {
-//                Log.e("Dashboard", "Error Loading Weekly Stats", e)
-//            }
-//        }
-//
-//        viewModelScope.launch {
-//            try {
-//                val monthlyStats = getMonthStatsUseCase(userId)
-//                _uiState.update {
-//                    it.copy(monthlyLearningStat = monthlyStats)
-//                }
-//                Log.d("Dashboard", "Successfully Loaded Monthly Stats")
-//            } catch (e: Exception) {
-//                Log.e("Dashboard", "Error Loading Monthly Stats", e)
-//            }
-//        }
-//    }
 fun LoadingDashboard() {
     val userId = firebaseAuth.currentUser?.uid.orEmpty()
     if (userId.isEmpty()) return
