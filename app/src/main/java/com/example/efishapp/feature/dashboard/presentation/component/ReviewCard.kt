@@ -38,7 +38,7 @@ data class ReviewCardConfig(
 )
 
 @Composable
-fun ReviewCard(
+fun LevelCard(
     numReview: Int,
     config: ReviewCardConfig = ReviewCardConfig()
 ) {

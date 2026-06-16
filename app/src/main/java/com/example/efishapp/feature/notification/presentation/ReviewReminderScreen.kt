@@ -9,9 +9,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.efishapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,7 +27,7 @@ fun ReviewReminderScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Words to Review") },
+                title = { Text(stringResource(R.string.notify_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -41,11 +43,13 @@ fun ReviewReminderScreen(
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No words to review today!")
+                Text(stringResource(R.string.notify_noWord))
             }
         } else if (uiState.isLoading) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
@@ -58,7 +62,7 @@ fun ReviewReminderScreen(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "You have ${dueWords.size} words to review.",
+                    text = stringResource(R.string.notify_countWordReview, dueWords.size),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )

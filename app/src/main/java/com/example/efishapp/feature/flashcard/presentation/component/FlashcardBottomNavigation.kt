@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +34,7 @@ data class FlashcardBottomNavConfig(
 fun FlashcardBottomNavigation(
     onClickBack: ()-> Unit,
     onClickDetail: ()-> Unit,
+    onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier,
     config: FlashcardBottomNavConfig = FlashcardBottomNavConfig()
 ) {
@@ -52,6 +54,15 @@ fun FlashcardBottomNavigation(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
+                    tint = config.iconTint,
+                    modifier = Modifier.size(config.iconSize)
+                )
+            }
+
+            IconButton(onClick = onNavigateToHome) {
+                Icon(
+                    imageVector = Icons.Default.Home,
+                    contentDescription = "home",
                     tint = config.iconTint,
                     modifier = Modifier.size(config.iconSize)
                 )

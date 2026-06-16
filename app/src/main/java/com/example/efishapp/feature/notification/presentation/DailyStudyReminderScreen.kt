@@ -1,15 +1,21 @@
 package com.example.efishapp.feature.notification.presentation
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import com.example.efishapp.R
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,12 +40,12 @@ fun DailyStudyReminderScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Study Notifications") },
+                title = { Text(stringResource(R.string.reminder_title_screen)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.reminder_back_desc)
                         )
                     }
                 }
@@ -53,7 +59,7 @@ fun DailyStudyReminderScreen(
                 .fillMaxSize()
         ) {
             Text(
-                "Set your daily reminder to stay on track!",
+                text = stringResource(R.string.reminder_description),
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -62,7 +68,7 @@ fun DailyStudyReminderScreen(
             OutlinedTextField(
                 value = state.title,
                 onValueChange = vm::onTitleChange,
-                label = { Text("Notification Title") },
+                label = { Text(stringResource(R.string.reminder_label_title)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -71,7 +77,7 @@ fun DailyStudyReminderScreen(
             OutlinedTextField(
                 value = state.message,
                 onValueChange = vm::onMessageChange,
-                label = { Text("Notification Message") },
+                label = { Text(stringResource(R.string.reminder_label_message)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -84,13 +90,13 @@ fun DailyStudyReminderScreen(
                 OutlinedTextField(
                     value = state.hour.toString(),
                     onValueChange = { vm.onHourChange(it.toIntOrNull() ?: 0) },
-                    label = { Text("Hour (0-23)") },
+                    label = { Text(stringResource(R.string.reminder_label_hour)) },
                     modifier = Modifier.weight(1f)
                 )
                 OutlinedTextField(
                     value = state.minute.toString(),
                     onValueChange = { vm.onMinuteChange(it.toIntOrNull() ?: 0) },
-                    label = { Text("Minute (0-59)") },
+                    label = { Text(stringResource(R.string.reminder_label_minute)) },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -110,10 +116,13 @@ fun DailyStudyReminderScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Text("Enable Reminder", style = MaterialTheme.typography.titleMedium)
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            "Receive daily push notifications",
+                            text = stringResource(R.string.reminder_toggle_title),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = stringResource(R.string.reminder_toggle_desc),
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -133,16 +142,16 @@ fun DailyStudyReminderScreen(
                     modifier = Modifier.weight(1f)
                 ) {
                     if (state.loading) CircularProgressIndicator(size = 20.dp)
-                    else Text("Save Settings")
+                    else Text(stringResource(R.string.reminder_btn_save))
                 }
-                
+
                 OutlinedButton(
                     onClick = { vm.delete(context) },
                     enabled = !state.loading,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("Delete")
+                    Text(stringResource(R.string.reminder_btn_delete))
                 }
             }
 
