@@ -117,10 +117,22 @@ class UserProfileRepositoryImpl @Inject constructor(
     override suspend fun deleteFirebaseAuth(): Result<Unit> {
         val user = auth.currentUser ?: return Result.failure(Exception("Người dùng chưa đăng nhập"))
         return try {
+            // Kiểm tra xem phiên đăng nhập có quá cũ không (ví dụ > 5 phút)
+            val lastSignIn = user.metadata?.lastSignInTimestamp ?: 0
+            val fiveMinutesInMillis = 5 * 60 * 1000
+            if (System.currentTimeMillis() - lastSignIn > fiveMinutesInMillis) {
+                return Result.failure(Exception("RECENT_AUTH_REQUIRED"))
+            }
+
             user.delete().await()
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            // Nếu Firebase trả về lỗi "requires-recent-login"
+            if (e.message?.contains("recent authentication", ignoreCase = true) == true) {
+                Result.failure(Exception("RECENT_AUTH_REQUIRED"))
+            } else {
+                Result.failure(e)
+            }
         }
     }
 }
