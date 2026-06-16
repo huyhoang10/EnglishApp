@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,27 +21,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.efishapp.Core.designsystem.ErrorDialog
-import com.example.efishapp.Core.designsystem.LoadingDialog
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.R
+import com.example.efishapp.core.designsystem.ErrorDialog
+import com.example.efishapp.core.designsystem.LoadingDialog
 import com.example.efishapp.feature.Auth.Presentation.components.AuthTextField
 
 @Composable
 fun ForgotPasswordScreen(
-    viewModel: AuthViewModel,
+    viewModel: AuthViewModel = hiltViewModel(),
     onNavigateBackToLogin: () -> Unit,
     onSendEmailSuccess: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var email by remember { mutableStateOf("") }
+    var showSuccessDialog by remember { mutableStateOf(false) }
 
     // Theo dõi khi Firebase gửi mail thành công
     LaunchedEffect(uiState) {
-        if (uiState is AuthUiState.Success) {
-            onSendEmailSuccess()
+        if (uiState is AuthUiState.ForgotPasswordEmailSent) {
             viewModel.resetUiState()
+            showSuccessDialog = true
         }
     }
 
@@ -52,7 +57,7 @@ fun ForgotPasswordScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Khôi Phục Mật Khẩu",
+            text = stringResource(R.string.forgotPass_rePassword),
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
@@ -61,7 +66,7 @@ fun ForgotPasswordScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Nhập email đăng ký của bạn. Chúng tôi sẽ gửi một liên kết để bạn thiết lập lại mật khẩu mới.",
+            text = stringResource(R.string.forgotPass_enterYourMail),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -70,11 +75,11 @@ fun ForgotPasswordScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Ô nhập Email yêu cầu khôi phục
+        // Ô nhập Email yêu cầu khôi phục (Đã sửa lỗi Lambda)
         AuthTextField(
             value = email,
-            onValueChange = { email = it; Modifier },
-            label = "Email của bạn",
+            onValueChange = { email = it },
+            label = stringResource(R.string.forgotPass_yourMail),
             keyboardType = KeyboardType.Email,
             modifier = Modifier.fillMaxWidth()
         )
@@ -88,14 +93,14 @@ fun ForgotPasswordScreen(
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text(text = "Gửi Yêu Cầu")
+            Text(text = stringResource(R.string.forgotPass_sendRequest))
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Nút quay lại màn hình đăng nhập
         Text(
-            text = "Quay lại Đăng nhập",
+            text = stringResource(R.string.forgotPass_backLogin),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
@@ -114,5 +119,26 @@ fun ForgotPasswordScreen(
             ErrorDialog(message = errorMessage, onDismiss = { viewModel.resetUiState() })
         }
         else -> Unit
+    }
+
+    // Hiển thị Dialog thông báo khi gửi email thành công
+    if (showSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = { /* Không cho phép tắt tùy tiện khi chưa bấm nút */ },
+            title = { Text(text = stringResource(R.string.forgotPass_checkYourMail)) },
+            text = {
+                Text(text = stringResource(R.string.forgotPass_contentDialog))
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.resetUiState() // Trả State về Idle
+                        onSendEmailSuccess() // Quay về màn Login
+                    }
+                ) {
+                    Text(stringResource(R.string.forgot_iUnderstand))
+                }
+            }
+        )
     }
 }

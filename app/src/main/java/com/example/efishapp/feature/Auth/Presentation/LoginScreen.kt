@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,12 +26,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.efishapp.Core.designsystem.ErrorDialog
-import com.example.efishapp.Core.designsystem.LoadingDialog
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.efishapp.R
+import com.example.efishapp.core.designsystem.ErrorDialog
+import com.example.efishapp.core.designsystem.LoadingDialog
 import com.example.efishapp.feature.Auth.Presentation.components.AuthTextField
 import com.example.efishapp.feature.Auth.Presentation.components.GoogleSignInButton
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -38,10 +42,10 @@ import com.google.android.gms.common.api.ApiException
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel,
+    viewModel: AuthViewModel = hiltViewModel(),
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -53,10 +57,12 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
+    // State tạm thời để giữ thông tin Token khi chờ người dùng xác nhận liên kết tài khoản
+    var pendingIdTokenForLink by remember { mutableStateOf<String?>(null) }
+
     // --- CẤU HÌNH GOOGLE SIGN-IN SDK TẠI TẦNG UI ---
     val gso = remember {
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            // default_web_client_id tự động sinh ra khi bạn cắm file google-services.json vào dự án
             .requestIdToken("716504332000-4ipvopmpv2g3leaq7bloc909m8i2pprj.apps.googleusercontent.com")
             .requestEmail()
             .build()
@@ -71,24 +77,32 @@ fun LoginScreen(
         try {
             val account = task.getResult(ApiException::class.java)
             val idToken = account?.idToken
+            val googleEmail = account?.email ?: ""
+
             if (idToken != null) {
-                // Đã lấy được Google ID Token -> Đẩy xuống bộ não ViewModel để Firebase xác thực
-                viewModel.loginWithGoogle(idToken)
+                // Đẩy cả token và email xuống để bộ não ViewModel check trùng phương thức đăng nhập
+                viewModel.loginWithGoogle(idToken, googleEmail)
             } else {
-                // Đề phòng trường hợp Token rỗng, đưa UI state về bình thường
                 viewModel.resetUiState()
             }
         } catch (e: ApiException) {
-            // Người dùng hủy chọn hoặc thiết bị lỗi kết nối
             viewModel.resetUiState()
         }
     }
 
-    // Xử lý các hiệu ứng phụ dựa trên sự thay đổi của AuthUiState
+    // Xử lý các hiệu ứng chuyển màn hoặc chặn xác nhận liên kết tài khoản
     LaunchedEffect(uiState) {
-        if (uiState is AuthUiState.Success) {
-            onLoginSuccess()
-            viewModel.resetUiState() // Đưa State về Idle sau khi hoàn thành chuyển màn
+        when (uiState) {
+            is AuthUiState.Success -> {
+                val exists = viewModel.checkProfileExists()
+                onLoginSuccess(exists)
+                viewModel.resetUiState() // Đưa State về Idle sau khi hoàn thành chuyển màn
+            }
+            is AuthUiState.NeedAccountLinkingConfirmation -> {
+                // Bắt được tín hiệu trùng tài khoản Email/Pass trước đó -> giữ token lại để mở Dialog
+                pendingIdTokenForLink = (uiState as AuthUiState.NeedAccountLinkingConfirmation).idToken
+            }
+            else -> Unit
         }
     }
 
@@ -100,7 +114,7 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Chào Mừng Trở Lại",
+            text = "EfishApp",
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
@@ -108,10 +122,10 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Ô nhập Email
+        // Ô nhập Email (Đã xóa bỏ đoạn gán Modifier lỗi)
         AuthTextField(
             value = email,
-            onValueChange = { email = it; Modifier },
+            onValueChange = { email = it },
             label = "Email",
             keyboardType = KeyboardType.Email,
             modifier = Modifier.fillMaxWidth()
@@ -119,10 +133,10 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Ô nhập Mật khẩu
+        // Ô nhập Mật khẩu (Đã xóa bỏ đoạn gán Modifier lỗi)
         AuthTextField(
             value = password,
-            onValueChange = { password = it; Modifier },
+            onValueChange = { password = it },
             label = "Mật khẩu",
             isPassword = true,
             passwordVisible = isPasswordVisible,
@@ -132,7 +146,7 @@ fun LoginScreen(
 
         // Quên mật khẩu link
         Text(
-            text = "Quên mật khẩu?",
+            text = stringResource(R.string.login_forgetPassword),
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .fillMaxWidth()
@@ -150,21 +164,22 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text(text = "Đăng Nhập")
+            Text(text = stringResource(R.string.login_btn_login))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Hoặc")
+        Text(text = stringResource(R.string.login_or))
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Nút Đăng nhập bằng Google thương hiệu (ĐÃ ĐƯỢC KÍCH HOẠT LOGIC)
+        // Nút Đăng nhập bằng Google thương hiệu
         GoogleSignInButton(
             onClick = {
-                // Kích hoạt hiển thị màn hình chọn tài khoản Google của Android
-                val signInIntent = googleSignInClient.signInIntent
-                googleSignInLauncher.launch(signInIntent)
+                googleSignInClient.signOut().addOnCompleteListener {
+                    val signInIntent = googleSignInClient.signInIntent
+                    googleSignInLauncher.launch(signInIntent)
+                }
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -176,16 +191,16 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Chưa có tài khoản? ")
+            Text(text = stringResource(R.string.login_isExistAccount))
             Text(
-                text = "Đăng ký ngay",
+                text = stringResource(R.string.login_btn_loginNow),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onNavigateToRegister() }
             )
         }
     }
 
-    // XỬ LÝ TRẠNG THÁI LOADING VÀ ERROR DIALOG
+    // XỬ LÝ TRẠNG THÁI LOADING VÀ ERROR DIALOG TỪ CORE
     when (uiState) {
         is AuthUiState.Loading -> {
             LoadingDialog()
@@ -195,5 +210,39 @@ fun LoginScreen(
             ErrorDialog(message = errorMessage, onDismiss = { viewModel.resetUiState() })
         }
         else -> Unit
+    }
+
+    // HỘP THOẠI HỎI Ý KIẾN LIÊN KẾT TÀI KHOẢN GOOGLE VÀO EMAIL/PASSWORD CÓ SẴN
+    if (pendingIdTokenForLink != null) {
+        AlertDialog(
+            onDismissRequest = {
+                pendingIdTokenForLink = null
+                viewModel.resetUiState()
+            },
+            title = { Text(stringResource(R.string.login_linkedAccount)) },
+            text = {
+                Text(stringResource(R.string.login_linkAccountContent))
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.confirmAccountLinking(pendingIdTokenForLink!!)
+                        pendingIdTokenForLink = null
+                    }
+                ) {
+                    Text(stringResource(R.string.login_agreeLink))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        pendingIdTokenForLink = null
+                        viewModel.resetUiState() // Hủy, giữ nguyên trạng thái cũ độc lập
+                    }
+                ) {
+                    Text(stringResource(R.string.login_cancelLink))
+                }
+            }
+        )
     }
 }

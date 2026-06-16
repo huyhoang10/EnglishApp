@@ -11,11 +11,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.efishapp.R
+import com.example.efishapp.feature.flashcard.domain.model.ActionType
+import com.example.efishapp.feature.flashcard.presentation.FlashcardUiEvent
 
 data class FlashcardButtonsStyleConfig(
     val buttonHeight: Dp = 44.dp,
@@ -33,16 +37,25 @@ data class FlashcardButtonData(
 
 
 @Composable
-fun FlashcardActionButtons() {
+fun FlashcardActionButtons(
+    onClickAgain: ()-> Unit,
+    onClickHard: ()-> Unit,
+    onClickGood: ()-> Unit,
+    onClickEasy: ()-> Unit,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp) // Khoảng cách đều giữa các nút
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         val actionButtons = listOf(
-            FlashcardButtonData(text = "Again", containerColor = Color(0xFFE6153C), onClick = { /* vm.onAnswerAgain() */ }),
-            FlashcardButtonData(text = "Hard", containerColor = Color(0xFFFFA726), onClick = { /* vm.onAnswerHard() */ }),
-            FlashcardButtonData(text = "Good", containerColor = Color(0xFF29B6F6), onClick = { /* vm.onAnswerGood() */ }),
-            FlashcardButtonData(text = "Easy", containerColor = Color(0xFF9CCC65), onClick = { /* vm.onAnswerEasy() */ })
+            FlashcardButtonData(text = stringResource(R.string.flashcard_againButton), containerColor = Color(0xFFE6153C),
+                onClick = onClickAgain),
+            FlashcardButtonData(text = stringResource(R.string.flashcard_hardButton), containerColor = Color(0xFFFFA726),
+                onClick = onClickHard),
+            FlashcardButtonData(text = stringResource(R.string.flashcard_goodButton), containerColor = Color(0xFF29B6F6),
+                onClick = onClickGood),
+            FlashcardButtonData(text = stringResource(R.string.flashcard_easyButton), containerColor = Color(0xFF9CCC65),
+                onClick = onClickEasy)
         )
         actionButtons.forEach {dataAction ->
             ActionButton(dataAction, modifier = Modifier.weight(1f))
@@ -55,7 +68,7 @@ fun ActionButton(dataAction: FlashcardButtonData,
                  config: FlashcardButtonsStyleConfig = FlashcardButtonsStyleConfig(),
                  modifier: Modifier = Modifier) {
     Button(
-        onClick = { /* Xử lý sự kiện khi ấn nút */ },
+        onClick = dataAction.onClick,
         modifier = modifier.height(config.buttonHeight),
         shape = RoundedCornerShape(config.cornerRadius),
         colors = ButtonDefaults.buttonColors(containerColor = dataAction.containerColor),

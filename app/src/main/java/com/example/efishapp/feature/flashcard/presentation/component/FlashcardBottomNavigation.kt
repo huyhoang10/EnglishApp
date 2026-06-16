@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.efishapp.feature.flashcard.presentation.FlashcardUiEvent
 
 data class FlashcardBottomNavConfig(
     val barHeight: Dp = 64.dp,
@@ -30,10 +32,11 @@ data class FlashcardBottomNavConfig(
 
 @Composable
 fun FlashcardBottomNavigation(
-    onClickDetails: () -> Unit,
-    onUndoClick: () -> Unit = {}, // Bổ sung sự kiện để bên ngoài có thể xử lý nút Quay lại
+    onClickBack: ()-> Unit,
+    onClickDetail: ()-> Unit,
+    onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier,
-    config: FlashcardBottomNavConfig = FlashcardBottomNavConfig() // Nhận cấu hình tập trung mặc định
+    config: FlashcardBottomNavConfig = FlashcardBottomNavConfig()
 ) {
     NavigationBar(
         containerColor = config.containerColor,
@@ -47,7 +50,7 @@ fun FlashcardBottomNavigation(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            IconButton(onClick = onUndoClick) {
+            IconButton(onClick = onClickBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
@@ -56,10 +59,19 @@ fun FlashcardBottomNavigation(
                 )
             }
 
-            IconButton(onClick = onClickDetails) {
+            IconButton(onClick = onNavigateToHome) {
+                Icon(
+                    imageVector = Icons.Default.Home,
+                    contentDescription = "home",
+                    tint = config.iconTint,
+                    modifier = Modifier.size(config.iconSize)
+                )
+            }
+
+            IconButton(onClick = onClickDetail) {
                 Icon(
                     imageVector = Icons.Default.Lightbulb,
-                    contentDescription = "Deck",
+                    contentDescription = "Detail",
                     tint = config.iconTint,
                     modifier = Modifier.size(config.iconSize)
                 )

@@ -1,6 +1,7 @@
 package com.example.efishapp.core.ui.component
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Gamepad
@@ -18,15 +19,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 
 // Định nghĩa các tính năng (Tabs) xuất hiện trên thanh điều hướng
 enum class ScreenTab(val title: String, val icon: ImageVector) {
-    HOME("HOME", Icons.Filled.Home),
-    MY_FOLDER("MY FOLDER", Icons.Filled.Folder),
-    REVIEW("REVIEW", Icons.Filled.Refresh), // Icon vòng lặp/làm mới đại diện cho ôn tập
-    GAME("GAME", Icons.Filled.Gamepad),
-    SETTING("SETTING", Icons.Filled.Settings)
+    HOME("Trang chủ", Icons.Filled.Home),
+    MY_FOLDER("Thư mục", Icons.Filled.Folder),
+    REVIEW("Ôn tập", Icons.Filled.Checklist), // Icon vòng lặp/làm mới đại diện cho ôn tập
+    GAME("Trò chơi", Icons.Filled.Gamepad),
+    SETTING("Cài đặt", Icons.Filled.Settings)
 }
 
 // Data class quản lý các thông số thiết kế (gạt bỏ gán cứng)
@@ -39,6 +41,7 @@ data class BottomNavConfig(
     val indicatorColor: Color = Color(0xFFE2E8F0), // Vùng nền tròn bao quanh icon khi active
     val elevation: Dp = 8.dp
 )
+
 
 @Composable
 fun AppBottomNavigationBar(

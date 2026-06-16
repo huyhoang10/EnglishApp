@@ -1,0 +1,19 @@
+apple|Quả táo|/ˈæpəl/|An apple a day keeps the doctor away.|A round fruit with red, green, or yellow skin.
+banana|Quả chuối|/bəˈnɑːnə/|I eat a banana every morning.|A long curved fruit with a yellow skin.
+cherry|Anh đào|/ˈtʃeri/|She picked fresh cherries from the garden.|A small round red or black fruit with a stone inside.
+orange|Cam (quả)|/ˈɒrɪndʒ/|Would you like some orange juice?|A round citrus fruit with a thick bright orange skin.
+grape|Nho|/ɡreɪp/|Grapes grow on vines.|A small round green or purple fruit used to make wine.
+strawberry|Dâu tây|/ˈstrɔːbəri/|We had strawberry ice cream.|A soft red fruit with tiny seeds on the surface.
+watermelon|Dưa hấu|/ˈwɔːtərmelən/|The watermelon is sweet and refreshing.|A large round fruit with green skin and red flesh.
+pineapple|Dứa, khóm|/ˈpaɪnæpəl/|This pineapple juice is delicious.|A large tropical fruit with a rough brown skin.
+mango|Xoài|/ˈmæŋɡoʊ/|The mango is very sweet.|A tropical fruit with orange or green skin and yellow flesh.
+peach|Đào (quả)|/piːtʃ/|We visited a peach orchard.|A round fruit with fuzzy skin and a large stone inside.
+pear|Lê|/peər/|This pear is ripe and juicy.|A sweet fruit with green or yellow skin.
+lemon|Chanh|/ˈlemən/|Add some lemon juice to the salad.|A yellow citrus fruit with sour juice.
+cherry|Cerasus Anh đào|/ˈtʃeri/|The cherry blossoms are beautiful in spring.|A small, round stone fruit, typically bright or dark red.
+dragon fruit|Thanh long|/ˈdræɡən fruːt/|Dragon fruit is rich in vitamins.|A fruit with pinkish-red skin and white or red flesh.
+papaya|Đu đủ|/pəˈpaɪə/|The papaya tree bears fruit year-round.|A large tropical fruit with orange flesh and black seeds.
+avocado|Bơ|/ˌævəˈkɑːdoʊ/|I like avocado on toast.|A pear-shaped fruit with dark green skin and green flesh.
+pomegranate|Lựu|/ˈpɒmɪɡrænɪt/|Pomegranate juice is very healthy.|A round fruit with a tough skin containing many seeds.
+jackfruit|Mít|/ˈdʒækfruːt/|Jackfruit is the largest tree fruit.|A large tropical fruit with spiky green skin.
+durian|Sầu riêng|/ˈdʊriən/|Durian has a strong smell.|A large tropical fruit with spiky skin and creamy flesh.

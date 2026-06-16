@@ -7,15 +7,17 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 
 @Composable
 fun AuthTextField(
     value: String,
-    onValueChange: (String) -> Modifier,
+    onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
     isPassword: Boolean = false,
@@ -38,14 +40,14 @@ fun AuthTextField(
         trailingIcon = {
             if (isPassword && onPasswordToggle != null) {
                 // Hãy đảm bảo bạn đã thêm các icon tương ứng vào thư mục drawable của core hoặc feature
-                val icon = if (passwordVisible) {
-                    painterResource(id = android.R.drawable.ic_menu_view) // Thay bằng icon mắt mở của bạn
+                val iconImageVector = if (passwordVisible) {
+                    Icons.Default.Visibility // Icon mắt mở
                 } else {
-                    painterResource(id = android.R.drawable.ic_secure) // Thay bằng icon mắt đóng của bạn
+                    Icons.Default.VisibilityOff // Icon mắt nhắm (có đường gạch chéo)
                 }
 
                 IconButton(onClick = onPasswordToggle) {
-                    Icon(painter = icon, contentDescription = "Toggle Password Visibility")
+                    Icon(imageVector = iconImageVector, contentDescription = "Ẩn/Hiện mật khẩu")
                 }
             }
         }

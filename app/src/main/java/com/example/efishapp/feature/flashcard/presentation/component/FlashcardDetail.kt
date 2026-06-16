@@ -19,12 +19,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.efishapp.feature.flashcard.presentation.Vocabulary
+import com.example.efishapp.feature.flashcard.domain.model.Vocabulary
 
 @Composable
 fun DetailCard(vocabulary: Vocabulary){
     Card(modifier = Modifier.fillMaxSize(),
-        colors = CardDefaults.cardColors(contentColor = Color.White)) {
+        colors = CardDefaults.cardColors(containerColor = Color.White)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -45,9 +45,6 @@ data class DetailRowStyleConfig(
 
 )
 
-/**
- * 2. Thành phần Composable hiển thị thông tin chi tiết theo dòng.
- */
 @Composable
 fun DetailTextRow(
     label: String,
