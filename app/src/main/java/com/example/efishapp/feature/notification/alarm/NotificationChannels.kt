@@ -13,7 +13,7 @@ object NotificationChannels {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channel = NotificationChannel(
             DailyStudyReminderReceiver.CHANNEL_ID,
-            "Daily study reminders",
+            "Daily Study Reminders",
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
             description = "Reminds you to study English every day"

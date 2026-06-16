@@ -147,7 +147,10 @@ fun EfishNavGraph(
 
         composable(Screen.DAILY_STUDY_REMINDER) {
             val dailyStudyReminderViewModel: DailyStudyReminderViewModel = hiltViewModel()
-            DailyStudyReminderScreen(dailyStudyReminderViewModel)
+            DailyStudyReminderScreen(
+                vm = dailyStudyReminderViewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
 
         composable(Screen.DUE_WORDS_REMINDER) {
@@ -207,7 +210,8 @@ fun EfishNavGraph(
                 onNavigateToCongratulation = { totalRemember, totalForget ->
                     navController.navigate(CongratulationScreenRoute(totalRemember,totalForget))
                 },
-                onNavigateNotifyEmpty = {navController.navigate(Screen.EMPTY_VOCABULARY)}
+                onNavigateNotifyEmpty = {navController.navigate(Screen.EMPTY_VOCABULARY)},
+                onNavigateToHome = {navController.navigate(Screen.HOME)}
             )
         }
 
@@ -225,11 +229,6 @@ fun EfishNavGraph(
 
         composable(Screen.EMPTY_VOCABULARY) {
             EmptyReviewScreen(
-//                {
-//                    navController.navigate(Screen.HOME){
-//                        popUpTo(Screen.FOLDER) { inclusive = true }
-//                    }
-//                }
                 { navController.navigate(Screen.HOME) }
             )
         }

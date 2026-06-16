@@ -11,8 +11,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.efishapp.R
 import com.example.efishapp.feature.setting.domain.model.AppTheme
 
 // 1. Hàm Stateful: Kết nối dữ liệu từ ViewModel thực tế
@@ -56,7 +57,7 @@ fun SettingContent(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = "Cài đặt hệ thống", style = MaterialTheme.typography.titleLarge)
+        Text(text = stringResource(R.string.system_setting), style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(24.dp))
 
         Card(
@@ -76,15 +77,17 @@ fun SettingContent(
                 // Icon Chế độ tối (Hình mặt trăng)
                 Icon(
                     imageVector = if (isDarkMode) Icons.Default.DarkMode else Icons.Default.WbSunny,
-                    contentDescription = if (isDarkMode) "Chế độ tối" else "Chế độ sáng",
+                    contentDescription = if (isDarkMode) "Dark Mode" else "Light Mode",
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "Chế độ tối", style = MaterialTheme.typography.titleMedium)
+                    Text(text = stringResource(R.string.system_darkMode), style = MaterialTheme.typography.titleMedium)
                     Text(
-                        text = if (isDarkMode) "Đang bật" else "Đang tắt",
+                        text = if (isDarkMode) stringResource(R.string.system_enabledDarkMode) else stringResource(
+                            R.string.system_disableDarkMode
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -116,15 +119,16 @@ fun SettingContent(
             ) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
-                    contentDescription = "Cài đặt thông báo",
+                    contentDescription = stringResource(R.string.system_studyNotification),
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "Thông báo học tập", style = MaterialTheme.typography.titleMedium)
+                    Text(text = stringResource(R.string.system_studyNotification),
+                        style = MaterialTheme.typography.titleMedium)
                     Text(
-                        text = "Thiết lập thời gian nhắc nhở hàng ngày",
+                        text = stringResource(R.string.system_setupRemind),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -141,16 +145,16 @@ fun SettingContent(
                 containerColor = MaterialTheme.colorScheme.error // Màu đỏ cảnh báo
             )
         ) {
-            Text(text = "Đăng xuất tài khoản")
+            Text(text = stringResource(R.string.system_logout))
         }
         if (showLogoutDialog) {
             AlertDialog(
                 onDismissRequest = { showLogoutDialog = false }, // Tắt dialog khi bấm ra ngoài vùng trống
                 title = {
-                    Text(text = "Xác nhận đăng xuất")
+                    Text(text = stringResource(R.string.system_confirmLogout))
                 },
                 text = {
-                    Text(text = "Bạn có chắc chắn muốn đăng xuất không?")
+                    Text(text = stringResource(R.string.system_contentDialog))
                 },
                 confirmButton = {
                     Button(
@@ -162,14 +166,14 @@ fun SettingContent(
                             onLogoutClick() // Bắn sự kiện logout ra NavGraph xử lý chuyển màn hình
                         }
                     ) {
-                        Text("Đăng xuất")
+                        Text(stringResource(R.string.system_logout))
                     }
                 },
                 dismissButton = {
                     TextButton(
                         onClick = { showLogoutDialog = false } // Bấm hủy thì tắt dialog đi là xong
                     ) {
-                        Text("Hủy bỏ")
+                        Text(stringResource(R.string.system_cancel))
                     }
                 }
             )

@@ -1,4 +1,4 @@
-package com.example.efishapp.feature.notification.Domain.model
+package com.example.efishapp.feature.notification.domain.model
 
 data class DailyStudyNotification(
     val title: String = "EnglishApp",

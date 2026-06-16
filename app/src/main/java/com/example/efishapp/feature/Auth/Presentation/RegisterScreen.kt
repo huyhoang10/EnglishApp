@@ -22,10 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.efishapp.R
 import com.example.efishapp.core.designsystem.ErrorDialog
 import com.example.efishapp.core.designsystem.LoadingDialog
 import com.example.efishapp.feature.Auth.Presentation.components.AuthTextField
@@ -62,7 +64,7 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Đăng ký tài khoản",
+            text = stringResource(R.string.register_registerTitle),
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
@@ -71,7 +73,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Mật khẩu phải từ 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
+            text = stringResource(R.string.register_requirementPassword),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -108,7 +110,7 @@ fun RegisterScreen(
         AuthTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = "Xác nhận mật khẩu",
+            label = stringResource(R.string.login_checkPassword),
             isPassword = true,
             passwordVisible = isConfirmPasswordVisible,
             onPasswordToggle = { isConfirmPasswordVisible = !isConfirmPasswordVisible },
@@ -141,7 +143,7 @@ fun RegisterScreen(
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text(text = "Đăng Ký")
+            Text(text = stringResource(R.string.register_btnRegister))
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -151,9 +153,9 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Đã có tài khoản? ")
+            Text(text = stringResource(R.string.register_isExistAcc))
             Text(
-                text = "Đăng nhập",
+                text = stringResource(R.string.register_btnLogin),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onNavigateToLogin() }
             )
@@ -176,9 +178,9 @@ fun RegisterScreen(
     if (showSuccessDialog) {
         AlertDialog(
             onDismissRequest = { /* Không cho phép tắt bằng cách bấm ra ngoài */ },
-            title = { Text(text = "Đăng ký thành công!") },
+            title = { Text(text = stringResource(R.string.register_loginSuccess)) },
             text = {
-                Text(text = "Một email xác thực đã được gửi tới ứng dụng hộp thư của bạn. Vui lòng kiểm tra và kích hoạt tài khoản trước khi đăng nhập.")
+                Text(text = stringResource(R.string.register_checkMail))
             },
             confirmButton = {
                 Button(

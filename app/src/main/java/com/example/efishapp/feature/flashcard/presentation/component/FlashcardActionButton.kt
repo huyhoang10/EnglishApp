@@ -11,11 +11,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.efishapp.R
 import com.example.efishapp.feature.flashcard.domain.model.ActionType
 import com.example.efishapp.feature.flashcard.presentation.FlashcardUiEvent
 
@@ -46,13 +48,13 @@ fun FlashcardActionButtons(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         val actionButtons = listOf(
-            FlashcardButtonData(text = "Again", containerColor = Color(0xFFE6153C),
+            FlashcardButtonData(text = stringResource(R.string.flashcard_againButton), containerColor = Color(0xFFE6153C),
                 onClick = onClickAgain),
-            FlashcardButtonData(text = "Hard", containerColor = Color(0xFFFFA726),
+            FlashcardButtonData(text = stringResource(R.string.flashcard_hardButton), containerColor = Color(0xFFFFA726),
                 onClick = onClickHard),
-            FlashcardButtonData(text = "Good", containerColor = Color(0xFF29B6F6),
+            FlashcardButtonData(text = stringResource(R.string.flashcard_goodButton), containerColor = Color(0xFF29B6F6),
                 onClick = onClickGood),
-            FlashcardButtonData(text = "Easy", containerColor = Color(0xFF9CCC65),
+            FlashcardButtonData(text = stringResource(R.string.flashcard_easyButton), containerColor = Color(0xFF9CCC65),
                 onClick = onClickEasy)
         )
         actionButtons.forEach {dataAction ->

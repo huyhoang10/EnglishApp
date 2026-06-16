@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
@@ -17,9 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.efishapp.R
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,6 +37,43 @@ fun ProfileScreen(
     val scrollState = rememberScrollState()
     var showDeleteDialog by remember { mutableStateOf(false) }
 
+    // DatePicker State
+    val datePickerState = rememberDatePickerState()
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val date = Date(millis)
+                        val calendar = Calendar.getInstance()
+                        calendar.time = date
+                        val formattedDate = String.format(
+                            Locale.getDefault(),
+                            "%02d/%02d/%04d",
+                            calendar.get(Calendar.DAY_OF_MONTH),
+                            calendar.get(Calendar.MONTH) + 1,
+                            calendar.get(Calendar.YEAR)
+                        )
+                        viewModel.onDateOfBirthChange(formattedDate)
+                    }
+                    showDatePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text(stringResource(R.string.profile_cancelButton))
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
     LaunchedEffect(uiState.isDeleteSuccess) {
         if (uiState.isDeleteSuccess) {
             onDeleteSuccess()
@@ -41,7 +83,7 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("User Profile", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.profile_userProfile), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -54,7 +96,11 @@ fun ProfileScreen(
                             .padding(end = 8.dp)
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(if (uiState.isEditMode) MaterialTheme.colorScheme.secondary else Color(0xFF43766C))
+                            .background(
+                                if (uiState.isEditMode) MaterialTheme.colorScheme.secondary else Color(
+                                    0xFF43766C
+                                )
+                            )
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
@@ -76,7 +122,7 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Avatar Placeholder (Static as per request)
+            // Ảnh đại diện tĩnh
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -100,7 +146,7 @@ fun ProfileScreen(
                     OutlinedTextField(
                         value = uiState.editedFullName,
                         onValueChange = { viewModel.onFullNameChange(it) },
-                        label = { Text("Full Name") },
+                        label = { Text(stringResource(R.string.profile_fullname)) },
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -109,36 +155,41 @@ fun ProfileScreen(
                         onValueChange = { },
                         label = { Text("Email") },
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = false // Email usually read-only for security
+                        enabled = false // Email thường chỉ đọc vì lý do bảo mật
                     )
 
                     OutlinedTextField(
                         value = uiState.editedDateOfBirth,
-                        onValueChange = { input ->
-                            if (input.all { it.isDigit() || it == '/' || it == '-' }) {
-                                viewModel.onDateOfBirthChange(input)
-                            }
-                        },
-                        label = { Text("Date of Birth (DD/MM/YYYY)") },
+                        onValueChange = { },
+                        label = { Text(stringResource(R.string.profile_birthday)) },
                         modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        readOnly = true,
+                        trailingIcon = {
+                            IconButton(onClick = { showDatePicker = true }) {
+                                Icon(Icons.Default.DateRange, contentDescription = "Select Date")
+                            }
+                        }
                     )
 
                     // Gender Selection
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Text("Gender", style = MaterialTheme.typography.labelLarge)
+                        Text(stringResource(R.string.profile_gender), style = MaterialTheme.typography.labelLarge)
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(selected = uiState.editedGender == "Nam", onClick = { viewModel.onGenderChange("Nam") })
-                            Text("Nam")
+                            RadioButton(selected = uiState.editedGender == "Male", onClick = { viewModel.onGenderChange("Male") })
+                            Text(stringResource(R.string.profile_male))
                             Spacer(Modifier.width(16.dp))
-                            RadioButton(selected = uiState.editedGender == "Nữ", onClick = { viewModel.onGenderChange("Nữ") })
-                            Text("Nữ")
+                            RadioButton(selected = uiState.editedGender == "Female", onClick = { viewModel.onGenderChange("Female") })
+                            Text(stringResource(R.string.profile_female))
                         }
                     }
 
                     // Goal Selection
                     var goalExpanded by remember { mutableStateOf(false) }
-                    val goals = listOf("Học tập", "Công việc", "Du lịch", "Giao tiếp")
+                    val goals = listOf(stringResource(R.string.profile_goalStudy),
+                        stringResource(R.string.profile_goalWork),
+                        stringResource(R.string.profile_goalTravel),
+                        stringResource(R.string.profile_goalCommunication)
+                    )
                     ExposedDropdownMenuBox(
                         expanded = goalExpanded,
                         onExpandedChange = { goalExpanded = !goalExpanded }
@@ -147,9 +198,11 @@ fun ProfileScreen(
                             value = uiState.editedGoal,
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text("Goal") },
+                            label = { Text(stringResource(R.string.profile_goal)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = goalExpanded) },
-                            modifier = Modifier.menuAnchor().fillMaxWidth()
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
                         )
                         ExposedDropdownMenu(expanded = goalExpanded, onDismissRequest = { goalExpanded = false }) {
                             goals.forEach { goal ->
@@ -169,9 +222,11 @@ fun ProfileScreen(
                             value = uiState.editedLevel,
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text("English Level") },
+                            label = { Text(stringResource(R.string.profile_englishLevel)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = levelExpanded) },
-                            modifier = Modifier.menuAnchor().fillMaxWidth()
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
                         )
                         ExposedDropdownMenu(expanded = levelExpanded, onDismissRequest = { levelExpanded = false }) {
                             levels.forEach { level ->
@@ -189,12 +244,12 @@ fun ProfileScreen(
                 } else {
                     // --- VIEW MODE ---
                     val profile = uiState.profile
-                    InfoItem(label = "Full Name", value = profile?.fullName ?: "N/A")
+                    InfoItem(label = stringResource(R.string.profile_fullname), value = profile?.fullName ?: "N/A")
                     InfoItem(label = "Email", value = profile?.email ?: "N/A")
-                    InfoItem(label = "Date of Birth", value = profile?.dateOfBirth ?: "N/A")
-                    InfoItem(label = "Gender", value = profile?.gender ?: "N/A")
-                    InfoItem(label = "Goal", value = profile?.goal ?: "N/A")
-                    InfoItem(label = "English Level", value = profile?.level ?: "N/A")
+                    InfoItem(label = stringResource(R.string.profile_birthday), value = profile?.dateOfBirth ?: "N/A")
+                    InfoItem(label = stringResource(R.string.profile_gender), value = profile?.gender ?: "N/A")
+                    InfoItem(label = stringResource(R.string.profile_goal), value = profile?.goal ?: "N/A")
+                    InfoItem(label = stringResource(R.string.profile_englishLevel), value = profile?.level ?: "N/A")
 
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -203,7 +258,7 @@ fun ProfileScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Delete Account")
+                        Text(stringResource(R.string.profile_deleteAccount))
                     }
                 }
             }
@@ -217,19 +272,19 @@ fun ProfileScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Xác nhận xóa") },
-            text = { Text("Bạn có chắc chắn muốn xóa tài khoản này không?") },
+            title = { Text("Confirm Deletion") },
+            text = { Text("Are you sure you want to delete this account?") },
             confirmButton = {
                 TextButton(onClick = { 
                     viewModel.deleteAccount()
                     showDeleteDialog = false 
                 }) {
-                    Text("Xóa", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.profile_deleteButton), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Hủy")
+                    Text(stringResource(R.string.profile_cancelButton))
                 }
             }
         )

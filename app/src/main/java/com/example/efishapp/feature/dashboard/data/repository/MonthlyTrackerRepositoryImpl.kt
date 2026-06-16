@@ -73,7 +73,7 @@ class MonthlyTrackerRepositoryImpl @Inject constructor(
         try {
             collectionRef.document(userId).update(updates).await()
         } catch (e: Exception) {
-            Log.e("Firestore_Debug", "Error updating monthly accuracy: ${e.message}")
+            Log.e("MonthlyTrackerRepositoryImpl", "Error updating monthly accuracy: ${e.message}")
         }
     }
 

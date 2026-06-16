@@ -9,8 +9,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.efishapp.R
 
 @Composable
 fun ImportExportDialog(
@@ -22,7 +24,7 @@ fun ImportExportDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Tạo thư mục",
+                text = stringResource(R.string.folder_createFolder),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -33,7 +35,7 @@ fun ImportExportDialog(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Bạn muốn tạo thư mục bằng cách nào?",
+                    text = stringResource(R.string.folder_wayToCreate),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -47,7 +49,7 @@ fun ImportExportDialog(
                     OptionCard(
                         modifier = Modifier.weight(1f),
                         icon = Icons.Default.CreateNewFolder,
-                        title = "Tạo thủ công",
+                        title = stringResource(R.string.folder_anual),
                         description = "Nhập tên và chọn màu",
                         onClick = onCreateManually
                     )
@@ -55,7 +57,7 @@ fun ImportExportDialog(
                     OptionCard(
                         modifier = Modifier.weight(1f),
                         icon = Icons.Default.UploadFile,
-                        title = "Import file",
+                        title = stringResource(R.string.folder_importFile),
                         description = "Tên file là tên thư mục",
                         onClick = onImportFile
                     )

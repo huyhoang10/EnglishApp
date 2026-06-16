@@ -37,6 +37,7 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
                     isTtsReady: Boolean = true,
                     onClickSpeech: (String) -> Unit,
                     onNavigateToCongratulation: (totalRemember: Int, totalForget: Int) -> Unit,
+                    onNavigateToHome: () -> Unit,
                     onNavigateNotifyEmpty: () -> Unit) {
 
     val state by viewModel.uiState.collectAsState()
@@ -54,7 +55,9 @@ fun FlashcardScreen(viewModel: FlashcardViewModel = hiltViewModel(),
     Scaffold(
         bottomBar = {
             FlashcardBottomNavigation(onClickBack = { viewModel.onEvent(FlashcardUiEvent.OnClickBack) },
-                onClickDetail = { viewModel.onEvent(FlashcardUiEvent.OnClickDetail) }) }
+                onClickDetail = { viewModel.onEvent(FlashcardUiEvent.OnClickDetail) },
+                onNavigateToHome = { onNavigateToHome() }) }
+
     ) { innerPadding ->
         when {
             state.isLoading -> {

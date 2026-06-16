@@ -24,6 +24,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -31,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.efishapp.R
 import com.example.efishapp.core.ui.typography.ChartTypography
 import com.example.efishapp.feature.dashboard.domain.DailyVocabTracker
 import com.example.efishapp.feature.dashboard.domain.DayOfWeek
@@ -86,7 +88,7 @@ fun WeeklyVocabularyChart(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Thống kê từ vựng trong tuần",
+                text = stringResource(R.string.dashboard_titleWeeklyChart),
                 style = ChartTypography.title,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -218,9 +220,9 @@ fun WeeklyVocabularyChart(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                LegendItem(color = config.reviewColor, label = "Từ ôn tập")
+                LegendItem(color = config.reviewColor, label = stringResource(R.string.dashboard_reviewVocabLabel))
                 Spacer(modifier = Modifier.width(20.dp))
-                LegendItem(color = config.newColor, label = "Từ học mới")
+                LegendItem(color = config.newColor, label = stringResource(R.string.dashboard_newVocabLabel))
             }
         }
     }

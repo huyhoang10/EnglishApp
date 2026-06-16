@@ -6,19 +6,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.efishapp.core.designsystem.LoadingDialog
-import com.example.efishapp.core.ui.component.AppBottomNavigationBar
-import com.example.efishapp.core.ui.component.ScreenTab
 import com.example.efishapp.feature.dashboard.domain.DailyVocabTracker
 import com.example.efishapp.feature.dashboard.domain.MonthlyStudyTracker
 import com.example.efishapp.feature.dashboard.presentation.component.GreetingCard
 import com.example.efishapp.feature.dashboard.presentation.component.MonthlyStatsScreen
-import com.example.efishapp.feature.dashboard.presentation.component.ReviewCard
+import com.example.efishapp.feature.dashboard.presentation.component.LevelCard
 import com.example.efishapp.feature.dashboard.presentation.component.StreakCard
 import com.example.efishapp.feature.dashboard.presentation.component.WeeklyVocabularyChart
 
@@ -81,7 +78,7 @@ fun DashboarContent(
         GreetingCard(userName, onUserProfileClick = onNavigateToUserProfile, onNotificationClick = onNavigateToNotification)
         Row {
             StreakCard(streak, modifier = Modifier.weight(1f))
-            ReviewCard(totalVocabLearned, modifier = Modifier.weight(1f))
+            LevelCard(totalVocabLearned, modifier = Modifier.weight(1f))
         }
 
         WeeklyVocabularyChart(weeklyLearningStats)

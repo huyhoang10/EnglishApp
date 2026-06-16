@@ -10,8 +10,8 @@ import com.example.efishapp.R
 class DailyStudyReminderReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        val title = intent.getStringExtra(EXTRA_TITLE) ?: "EnglishApp"
-        val message = intent.getStringExtra(EXTRA_MESSAGE) ?: "Time to study!"
+        val title = intent.getStringExtra(EXTRA_TITLE) ?: "EfishApp"
+        val message = intent.getStringExtra(EXTRA_MESSAGE) ?: "It's time for your daily English lesson!"
 
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
