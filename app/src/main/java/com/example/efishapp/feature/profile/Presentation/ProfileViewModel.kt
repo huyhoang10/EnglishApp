@@ -88,24 +88,26 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    // Xóa tài khoản: Kiểm tra bảo mật trước, sau đó xóa dữ liệu Firestore và cuối cùng xóa Auth
     fun deleteAccount() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
+
+            // 1. Thực hiện xóa Auth trước.
+            // Nếu phiên quá cũ, hàm này sẽ trả về lỗi RECENT_AUTH_REQUIRED mà không xóa gì cả.
+            val authResult = repository.deleteFirebaseAuth()
             
-            // Xóa dữ liệu trong Firestore
-            val dbResult = repository.deleteUserProfile()
-            
-            dbResult.onSuccess {
-                // Xóa tài khoản trong Firebase Auth
-                val authResult = repository.deleteFirebaseAuth()
-                
-                authResult.onSuccess {
-                    _uiState.update { it.copy(isDeleteSuccess = true) }
-                }.onFailure { e ->
-                    _uiState.update { it.copy(isLoading = false, error = "Xóa Auth thất bại: ${e.message}") }
-                }
+            authResult.onSuccess {
+                // 2. Auth xóa thành công, tiếp tục xóa dữ liệu trong Firestore
+                val dbResult = repository.deleteUserProfile()
+                _uiState.update { it.copy(isDeleteSuccess = true) }
             }.onFailure { e ->
-                _uiState.update { it.copy(isLoading = false, error = "Xóa Database thất bại: ${e.message}") }
+                val errorMessage = if (e.message == "RECENT_AUTH_REQUIRED") {
+                    "Vì lý do bảo mật, vui lòng đăng xuất và đăng nhập lại trước khi xóa tài khoản của bạn."
+                } else {
+                    e.message ?: "Không thể xóa tài khoản"
+                }
+                _uiState.update { it.copy(isLoading = false, error = errorMessage) }
             }
         }
     }
