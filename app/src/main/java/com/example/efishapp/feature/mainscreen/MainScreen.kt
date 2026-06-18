@@ -18,8 +18,12 @@ import com.example.efishapp.core.util.OnDeviceTTSHelper
 import com.example.efishapp.feature.dashboard.presentation.DashboardScreen
 import com.example.efishapp.feature.dashboard.presentation.DashboardViewModel
 import com.example.efishapp.feature.folder.presentation.FolderScreen
+import com.example.efishapp.feature.game.domain.model.GameLevel
+import com.example.efishapp.feature.game.domain.model.GameType
+import com.example.efishapp.feature.game.presentation.GameScreen
 import com.example.efishapp.feature.setting.presentation.SettingScreen
 import com.example.efishapp.feature.setting.presentation.SettingViewModel
+import com.example.efishapp.navigation.GameResultScreenRoute
 
 @Composable
 fun MainScreen(
@@ -30,6 +34,7 @@ fun MainScreen(
     onNavigateToGame: () -> Unit,
     onLogoutSuccess: () -> Unit,
     onNavigateToFolderDetail: (String, String) -> Unit,
+    onNavigateToResult: (Int, Int, GameType, GameLevel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentTab by rememberSaveable { mutableStateOf(ScreenTab.HOME) }
@@ -74,7 +79,12 @@ fun MainScreen(
                     onNavigateToFolderDetail = onNavigateToFolderDetail
                 )
             }
-            ScreenTab.GAME -> { onNavigateToGame() }
+            ScreenTab.GAME -> { //onNavigateToGame()
+                GameScreen(
+                    {},
+                    onNavigateToResult = onNavigateToResult
+                )
+            }
         }
     }
 }

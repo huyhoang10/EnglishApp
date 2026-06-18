@@ -141,6 +141,9 @@ fun EfishNavGraph(
                 onNavigateToGame = { navController.navigate(Screen.GAME) },
                 onNavigateToFolderDetail = { folderId, folderName ->
                     navController.navigate(VocabularyScreenRoute(folderId, folderName))
+                },
+                onNavigateToResult = { correct, wrong, gameType, gameLevel ->
+                    navController.navigate(GameResultScreenRoute(correct, wrong, gameType.name, gameLevel.name))
                 }
             )
         }
@@ -235,7 +238,9 @@ fun EfishNavGraph(
 
         composable(Screen.GAME) {
             GameScreen(
-                onNavigateBack = { navController.navigate(Screen.HOME) },
+                onNavigateBack = {
+                    navController.navigate(Screen.HOME)
+                },
                 onNavigateToResult = { correct, wrong, gameType, gameLevel ->
                     navController.navigate(GameResultScreenRoute(correct, wrong, gameType.name, gameLevel.name))
                 }

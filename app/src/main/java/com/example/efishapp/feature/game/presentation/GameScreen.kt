@@ -156,11 +156,11 @@ private fun GameSelectionScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Trò chơi", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Quay lại", tint = Color.White)
-                    }
-                },
+//                navigationIcon = {
+//                    IconButton(onClick = onNavigateBack) {
+//                        Icon(Icons.Default.ArrowBack, contentDescription = "Quay lại", tint = Color.White)
+//                    }
+//                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = PrimaryBlue,
                     titleContentColor = Color.White,

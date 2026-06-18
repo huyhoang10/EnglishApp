@@ -46,7 +46,7 @@ class UpdateFlashcardProgressUseCase @Inject constructor(
 
             val isNewVocab = currentProgress.learnAt.isBlank()
 
-            // CHỈ chặn review nếu đó là từ cũ, sai ngày hẹn VÀ không phải bấm "AGAIN"
+            // CHỈ chặn review nếu đó là từ cũ, sai ngày hẹn VÀ action truoc không phải bấm "AGAIN"
             if (!isNewVocab && currentProgress.nextReviewDate != todayStr && !isActionAgain) {
                 continue
             }

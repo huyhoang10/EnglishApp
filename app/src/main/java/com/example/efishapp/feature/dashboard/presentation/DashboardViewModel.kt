@@ -34,7 +34,7 @@ fun LoadingDashboard() {
 
     viewModelScope.launch {
         // 1. Chỉ bật Loading DUY NHẤT một lần ở đây
-        _uiState.update { it.copy(isLoading = true) }
+        //_uiState.update { it.copy(isLoading = true) }
 
         try {
             // 2. Kích hoạt cả 3 UseCase chạy song song (Async) để tiết kiệm thời gian
